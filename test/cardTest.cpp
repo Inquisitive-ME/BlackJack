@@ -10,10 +10,24 @@
 #include "GUnit/GSteps.h"
 #include "GUnit.h"
 
+GSTEPS("Card.createNewCardWithRank")
+{
+  using namespace testing;
+  card testCard;
 
-TEST(cardTest, FLIP) {
-  card testCard = card();
-  ASSERT_FALSE(testCard.isFaceUp());
-  testCard.flip();
-  ASSERT_TRUE(testCard.isFaceUp());
+  Given("Create new card with rank {rank}"_step) = [&](int rank)
+  {
+    testCard = card(rank);
+  };
+  Then("Card value should be {value}"_step) = [&](int value)
+  {
+    EXPECT_EQ(testCard.getValue(), value);
+  };
 }
+
+//TEST(cardTest, FLIP) {
+//  card testCard = card();
+//  ASSERT_FALSE(testCard.isFaceUp());
+//  testCard.flip();
+//  ASSERT_TRUE(testCard.isFaceUp());
+//}
