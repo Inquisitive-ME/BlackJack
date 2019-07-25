@@ -1,16 +1,16 @@
-# Download and unpack googletest at configure time
-configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+# Download and unpack GUnit at configure time
+configure_file(includeGUnit.cmake GUnit-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
         RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download )
 if(result)
-    message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+    message(FATAL_ERROR "CMake step for GUnit failed: ${result}")
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
         RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download )
 if(result)
-    message(FATAL_ERROR "Build step for googletest failed: ${result}")
+    message(FATAL_ERROR "Build step for GUnit failed: ${result}")
 endif()
 
 # Prevent overriding the parent project's compiler/linker
@@ -19,18 +19,21 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 # Add googletest directly to our build. This defines
 # the gtest and gtest_main targets.
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-        ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/GUnit-src
+        ${CMAKE_CURRENT_BINARY_DIR}/GUnit-build
         EXCLUDE_FROM_ALL)
 
-# The gtest/gtest_main targets carry header search path
-# dependencies automatically when using CMake 2.8.11 or
-# later. Otherwise we have to add them here ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-    include_directories("${gtest_SOURCE_DIR}/include")
-endif()
+#export the include directory location as GUNIT_INCLUDE_DIR
+set(GUNIT_INCLUDE_DIRS
+        ${CMAKE_CURRENT_BINARY_DIR}/GUnit-src/include
+        ${gtest_SOURCE_DIR}/include
+        ${gmock_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_BINARY_DIR}/GUnit-src/libs/gherkin-cpp/include
+        ${CMAKE_CURRENT_BINARY_DIR}/GUnit-src/libs/json/src)
+
+include_directories(${GUNIT_INCLUDE_DIRS})
 
 # Now simply link against gtest or gtest_main as needed. Eg
-add_executable(example example.cpp)
-target_link_libraries(example gtest_main)
-add_test(NAME example_test COMMAND example)
+add_executable(cardTest cardTest.cpp ../src/card.cpp)
+target_link_libraries(cardTest gtest_main)
+add_test(NAME card_test COMMAND cardTest)
