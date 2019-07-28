@@ -15,17 +15,26 @@
 GSTEPS("Card.createNewCardWithRank") {
 using namespace testing;
 
-Given("Create new card with rank {rank}"_step) =
-[&](int rank) {
-  card testCard(rank);
+  Given("Create new card with rank {rank}"_step) = [&](int rank) {
+    card testCard(rank);
 
-Then("Card value should be {value}") =
-[&](int value) {
-EXPECT_EQ(value, testCard.getValue());
-};
-Then("Card isAce {isAce}") = [&](bool isAce)
-{
-  EXPECT_EQ(isAce, testCard.isAce());
-};
-};
+    Then("Card value should be {value}") = [&](int value) {
+      EXPECT_EQ(value, testCard.getValue());
+    };
+
+    Then("High Low Count should be {HighLowCount}, Zen Count should be {ZenCount} and Omega II Count should be {OmegaIICount}") =
+        [&](int HighLowCount, int ZenCount, int OmegaIICount){
+      EXPECT_EQ(HighLowCount, testCard.getHighLowCount());
+      EXPECT_EQ(ZenCount, testCard.getZenCount());
+      EXPECT_EQ(OmegaIICount, testCard.getOmegaIICount());
+    };
+
+    Then("Print String should be {PrintString}") = [&](const std::string& PrintString){
+      EXPECT_EQ(PrintString, testCard.print());
+    };
+
+    Then("Card isAce {isAce}") = [&](bool isAce) {
+      EXPECT_EQ(isAce, testCard.isAce());
+    };
+  };
 }

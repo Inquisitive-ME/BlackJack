@@ -20,8 +20,13 @@ private:
   int rank;
   int value;
   int HighLowCount;
-  int count;
+  int ZenCount;
+  int OmmegaIICount;
   bool faceup;
+
+  void calculateHighLowCount();
+  void calculateZenCount();
+  void calculateOmegaIICount();
 
 public:
   card();
@@ -38,6 +43,16 @@ public:
   int getHighLowCount()
   {
     return HighLowCount;
+  }
+
+  int getZenCount()
+  {
+    return ZenCount;
+  }
+
+  int getOmegaIICount()
+  {
+    return OmmegaIICount;
   }
 
   bool isFaceUp()

@@ -9,11 +9,13 @@
 card::card()
 {
   rank = 0;
-  value =0;
-  faceup=false;
-  count = 0;
-
+  value = 0;
+  faceup = false;
+  HighLowCount = 0;
+  ZenCount = 0;
+  OmmegaIICount = 0;
 }
+
 card::card(int rank)
 {
   this->rank = rank;
@@ -26,55 +28,9 @@ card::card(int rank)
     printf("Using Invalid Ranks");
 
   faceup = true;
-
-  if(faceup)
-  {
-    switch(COUNT_TYPE){
-      //High Low
-      case 0:
-      {
-        if((rank >= 2) && (rank <= 6))
-          HighLowCount = 1;
-        else if(rank >=10 || rank == 1)
-          HighLowCount = -1;
-        else
-          HighLowCount = 0;
-      }
-      break;
-      //Zen
-      case 1:
-      {
-        if(rank == 2 || rank ==3 || rank == 7)
-          count = 1;
-        else if(rank == 4 || rank ==5 || rank == 6)
-          count = 2;
-        else if(rank == 1)
-          count = -1;
-        else if(rank >=10)
-          count = -2;
-        else
-          count = 0;
-      }
-      break;
-      //OmegaII
-      case 2:
-      {
-        if(rank == 2 || rank ==3 || rank == 7)
-          count = 1;
-        else if(rank == 4 || rank ==5 || rank == 6)
-          count = 2;
-        else if(rank == 9)
-          count = -1;
-        else if(rank >=10)
-          count = -2;
-        else
-          count = 0;
-      }
-      break;
-    }
-  }
-  else
-    count =0;
+  calculateHighLowCount();
+  calculateZenCount();
+  calculateOmegaIICount();
 }
 
 void card::flip()
@@ -82,53 +38,50 @@ void card::flip()
   faceup = !faceup;
   if(faceup)
   {
-    switch(COUNT_TYPE){
-      //High Low
-      case 0:
-      {
-        if(rank >= 2 && rank <= 6)
-          count = 1;
-        else if(rank >=10)
-          count = -1;
-        else
-          count = 0;
-      }
-      break;
-      //Zen
-      case 1:
-      {
-        if(rank == 2 || rank ==3 || rank == 7)
-          count = 1;
-        else if(rank == 4 || rank ==5 || rank == 6)
-          count = 2;
-        else if(rank == 1)
-          count = -1;
-        else if(rank >=10)
-          count = -2;
-        else
-          count = 0;
-      }
-      break;
-      //OmegaII
-      case 2:
-      {
-        if(rank == 2 || rank ==3 || rank == 7)
-          count = 1;
-        else if(rank == 4 || rank ==5 || rank == 6)
-          count = 2;
-        else if(rank == 9)
-          count = -1;
-        else if(rank >=10)
-          count = -2;
-        else
-          count = 0;
-      }
-      break;
-    }
+    calculateHighLowCount();
+    calculateZenCount();
+    calculateOmegaIICount();
   }
-  else
-    count =0;
 }
+
+void card::calculateHighLowCount()
+{
+  if((rank >= 2) && (rank <= 6))
+    HighLowCount = 1;
+  else if(rank >=10 || rank == 1)
+    HighLowCount = -1;
+  else
+    HighLowCount = 0;
+}
+
+void card::calculateZenCount()
+{
+  if(rank == 2 || rank ==3 || rank == 7)
+    ZenCount = 1;
+  else if(rank == 4 || rank ==5 || rank == 6)
+    ZenCount = 2;
+  else if(rank == 1)
+    ZenCount = -1;
+  else if(rank >=10)
+    ZenCount = -2;
+  else
+    ZenCount = 0;
+}
+
+void card::calculateOmegaIICount()
+{
+  if(rank == 2 || rank ==3 || rank == 7)
+    OmmegaIICount = 1;
+  else if(rank == 4 || rank ==5 || rank == 6)
+    OmmegaIICount = 2;
+  else if(rank == 9)
+    OmmegaIICount = -1;
+  else if(rank >=10)
+    OmmegaIICount = -2;
+  else
+    OmmegaIICount = 0;
+}
+
 std::string card::print()
 {
   if(rank >=2 && rank <=10)
@@ -147,5 +100,3 @@ std::string card::print()
     return "0";
   }
 }
-
-
