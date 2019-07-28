@@ -42,6 +42,12 @@ void card::flip()
     calculateZenCount();
     calculateOmegaIICount();
   }
+  else
+  {
+    HighLowCount = 0;
+    ZenCount = 0;
+    OmmegaIICount = 0;
+  }
 }
 
 void card::calculateHighLowCount()

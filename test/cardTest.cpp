@@ -38,3 +38,24 @@ using namespace testing;
     };
   };
 }
+
+GTEST("Card", "[Card should counts should be 0 when flipped face down]")
+{
+  card testCard(4);
+  EXPECT_TRUE(testCard.isFaceUp());
+
+  // Verify Counts are populated
+  EXPECT_EQ(1, testCard.getHighLowCount());
+  EXPECT_EQ(2, testCard.getZenCount());
+  EXPECT_EQ(2, testCard.getOmegaIICount());
+
+  testCard.flip();
+  EXPECT_FALSE(testCard.isFaceUp());
+
+  // Verify Counts are 0
+  EXPECT_EQ(0, testCard.getHighLowCount());
+  EXPECT_EQ(0, testCard.getZenCount());
+  EXPECT_EQ(0, testCard.getOmegaIICount());
+
+}
+// TODO try to add normal GTest for testing flip function
