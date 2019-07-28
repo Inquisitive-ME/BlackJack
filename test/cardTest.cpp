@@ -58,4 +58,3 @@ GTEST("Card", "[Card should counts should be 0 when flipped face down]")
   EXPECT_EQ(0, testCard.getOmegaIICount());
 
 }
-// TODO try to add normal GTest for testing flip function
