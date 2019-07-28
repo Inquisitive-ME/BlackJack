@@ -19,6 +19,7 @@ class card
 private:
   int rank;
   int value;
+  int HighLowCount;
   int count;
   bool faceup;
 
@@ -34,9 +35,9 @@ public:
     return value;
   }
 
-  int getCount()
+  int getHighLowCount()
   {
-    return count;
+    return HighLowCount;
   }
 
   bool isFaceUp()

@@ -34,11 +34,11 @@ card::card(int rank)
       case 0:
       {
         if((rank >= 2) && (rank <= 6))
-          count = 1;
+          HighLowCount = 1;
         else if(rank >=10 || rank == 1)
-          count = -1;
+          HighLowCount = -1;
         else
-          count = 0;
+          HighLowCount = 0;
       }
       break;
       //Zen
