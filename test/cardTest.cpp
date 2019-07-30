@@ -2,8 +2,6 @@
 // Created by richard on 7/21/19.
 //
 
-#include "../src/card.h"
-
 #include "GUnit/GTest.h"
 #include "GUnit/GMock.h"
 #include "GUnit/GMake.h"
@@ -39,7 +37,7 @@ using namespace testing;
   };
 }
 
-GTEST("Card", "[Card should counts should be 0 when flipped face down]")
+GTEST("Card", "Card should counts should be 0 when flipped face down")
 {
   card testCard(4);
   EXPECT_TRUE(testCard.isFaceUp());

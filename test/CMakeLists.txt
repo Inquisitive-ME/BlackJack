@@ -41,3 +41,7 @@ set(GUNIT_LINK_DIRS
 link_directories(${GUNIT_LINK_DIRS})
 test(cardTest SCENARIO=${CMAKE_CURRENT_SOURCE_DIR}/cardTest.feature)
 target_link_libraries(cardTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
+
+test(handTest SCENARIO="")
+target_link_libraries(handTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
+
