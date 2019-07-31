@@ -5,7 +5,8 @@ project(BlackJack)
 set(SOURCE_FILES
         main.cpp
         card.cpp
-	hand.cpp)
+		hand.cpp
+		getRandomInt.cpp)
 
 add_library(BlackJack_Testing STATIC ${SOURCE_FILES})
 

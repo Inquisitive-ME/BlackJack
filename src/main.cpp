@@ -5,6 +5,7 @@
 #include <iostream>
 #include "card.h"
 #include "hand.h"
+#include "getRandomInt.h"
 
 using namespace std;
 
