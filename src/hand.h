@@ -19,12 +19,13 @@ private:
   int total;
   bool soft;
   bool blackjack;
+  void add_move(card cardToMove);
 
 public:
   hand(float bet);
 
   void clear();
-  void print();
+  std::string print();
   void add(card cardToAdd);
   void give(int cardIndex, hand& handToGiveTo);
   uint getNumCards();

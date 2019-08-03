@@ -11,18 +11,42 @@
 GTEST("getRandomInt", "Verify uniform distribution of getRandomInt")
 {
   double numNumbersToGenerate = 100000;
-  int rangeToGenerate = 10;
+  int rangeMin = 0;
+  int rangeMax = 9;
+  int generatedRange=rangeMax - rangeMin + 1;
   double expected_accuracy = 0.005;
+
+  int maxValue = rangeMin;
+  int minValue = rangeMax;
 
   int count[10] = {0,0,0,0,0,0,0,0,0,0};
   for(int i = 0; i < numNumbersToGenerate; i++)
   {
-    int test = getRandomInt(0, rangeToGenerate);
+    int test = getRandomInt(rangeMin, rangeMax);
     count[test] = count[test] + 1;
+
+    if(test < minValue)
+    {
+      minValue = test;
+    }
+
+    if(test > maxValue)
+    {
+      maxValue = test;
+    }
   }
-  for(int i = 0; i < rangeToGenerate; i++)
+  SHOULD("Have an even distribution")
   {
-    EXPECT_LT(std::abs(count[i] - (numNumbersToGenerate / rangeToGenerate))/numNumbersToGenerate, expected_accuracy);
+    for (int i = 0; i < rangeMax; i++)
+    {
+      EXPECT_LT(std::abs(count[i] - (numNumbersToGenerate / generatedRange)) / numNumbersToGenerate, expected_accuracy);
+    }
   }
+  SHOULD("Generate the minimum and maximum values of the given range")
+  {
+    EXPECT_EQ(minValue, rangeMin);
+    EXPECT_EQ(maxValue, rangeMax);
+  }
+
 
 }

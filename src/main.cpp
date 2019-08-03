@@ -19,7 +19,7 @@ int main()
   cout << "Created Card " << testCard.print() << endl;
   testHand.add(testCard);
   cout << "Testing Hand: " << endl;
-  testHand.print();
+  cout << testHand.print() << endl;
 
   int numNumberToGenerate = 1000000;
 
@@ -28,7 +28,7 @@ int main()
   int count[10] = {0,0,0,0,0,0,0,0,0,0};
   for(int i = 0; i < numNumberToGenerate; i++)
   {
-    int test = getRandomInt(0, 10);
+    int test = getRandomInt(0, 9);
     count[test] = count[test] + 1;
   }
   auto finish = std::chrono::high_resolution_clock::now();

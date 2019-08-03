@@ -8,8 +8,6 @@
 #include "GUnit/GTest.h"
 #include <string>
 
-//TODO get Total Feature test to do different combinations
-
 
 GTEST("Hand", "Creating new hand has bet value")
 {
@@ -46,11 +44,84 @@ GTEST("Hand", "Add random number of cards verify count and total")
 }
 
 // Give to another hand
+GTEST("Hand", "Verify Giving card from one hand to another")
+{
+  hand giveHand(0);
+  hand receiveHand(0);
+  uint expectedEndGiveHandSize = 0;
+
+  card testCard(getRandomInt(1, 13));
+
+  giveHand.add(testCard);
+  giveHand.give(0, receiveHand);
+
+  SHOULD("receiving hand has same card as given to it")
+  {
+    EXPECT_EQ(testCard.print(), receiveHand.getCards()[0].print());
+  }
+
+  SHOULD("hand giving card should have no cards and a total of 0")
+  {
+    EXPECT_EQ(expectedEndGiveHandSize, giveHand.getNumCards());
+    EXPECT_EQ(0, giveHand.getTotal());
+  }
+}
+
+GTEST("Hand", "Verify giving card from non zero index in a hand to another hand")
+{
+  int indexToGive = getRandomInt(0, 9);
+  std::string expectedResult = "";
+
+  hand giveHand(0);
+  hand receiveHand(0);
+
+  for(int i = 0; i < 10; i++)
+  {
+    card testCard(getRandomInt(1,13));
+    giveHand.add(testCard);
+    if(i == indexToGive)
+    {
+      expectedResult = testCard.print();
+    }
+  }
+
+  giveHand.give(indexToGive, receiveHand);
+  EXPECT_EQ(expectedResult, receiveHand.getCards()[0].print());
+}
 
 // busted
+GTEST("Hand", "Test Busted Hand")
+{
+  std::vector<int> cardValues{8, 12, 4};
+
+  hand testHand(0);
+
+  for(int cardValue : cardValues)
+  {
+    testHand.add(card(cardValue));
+  }
+
+  EXPECT_TRUE(testHand.isBusted());
+
+}
 
 // soft
+GTEST("Hand", "test if hand is soft")
+{
+  card testAce(1);
+  card testCard(7);
 
-// total with ace as 1
+  hand testHand(0);
 
-// print
+  testHand.add(testAce);
+  testHand.add(testCard);
+
+  EXPECT_EQ(18, testHand.getTotal());
+  EXPECT_TRUE(testHand.isSoft());
+
+  testHand.add(testCard);
+
+  EXPECT_EQ(15, testHand.getTotal());
+  EXPECT_FALSE(testHand.isSoft());
+}
+

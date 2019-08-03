@@ -5,6 +5,7 @@
  *      Author: richard
  */
 #include "hand.h"
+#include <utility>
 
 hand::hand(float bet) {
   this->bet = bet;
@@ -23,20 +24,26 @@ void hand::add(card cardToAdd)
   cards.push_back(cardToAdd);
 }
 
+void hand::add_move(card cardToAdd)
+{
+  cards.push_back(std::move(cardToAdd));
+}
 void hand::give(int cardIndex,hand& handToGiveTo)
 {
-  handToGiveTo.add(cards[cardIndex]);
+  handToGiveTo.add_move(cards[cardIndex]);
   cards.erase (cards.begin() + cardIndex);
 }
 
-void hand::print()
+std::string hand::print()
 {
+  std::string returnString = "";
   for(uint i=0; i<cards.size(); i++)
   {
     if(cards[i].isFaceUp())
-      std::cout << cards[i].print() << " ";
+      returnString.append(cards[i].print());
   }
-  std::cout << "Total: " << getTotal() << std::endl;
+  returnString.append(" Total: ");
+  returnString.append(std::to_string(getTotal()));
 }
 
 uint hand::getNumCards()

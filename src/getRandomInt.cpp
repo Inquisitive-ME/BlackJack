@@ -12,7 +12,7 @@ int getRandomInt(int min, int max)
   double rnum = 0;
   std::random_device rd;
   std::mt19937_64 mt(rd());
-  std::uniform_real_distribution<double> dist(min, max);
+  std::uniform_real_distribution<double> dist(min, max+1);
 
   rnum = dist(mt);
 
