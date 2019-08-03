@@ -6,6 +6,8 @@
 #include "card.h"
 #include "hand.h"
 #include "getRandomInt.h"
+#include <iostream>
+#include <chrono>
 
 using namespace std;
 
@@ -18,6 +20,21 @@ int main()
   testHand.add(testCard);
   cout << "Testing Hand: " << endl;
   testHand.print();
+
+  int numNumberToGenerate = 1000000;
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  int count[10] = {0,0,0,0,0,0,0,0,0,0};
+  for(int i = 0; i < numNumberToGenerate; i++)
+  {
+    int test = getRandomInt(0, 10);
+    count[test] = count[test] + 1;
+  }
+  auto finish = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = finish - start;
+
+  cout << "Took " << elapsed.count() << " seconds to generate " << numNumberToGenerate << " random numbers" << endl;
 
   return 0;
 }
