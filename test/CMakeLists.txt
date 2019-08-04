@@ -47,3 +47,6 @@ target_link_libraries(handTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_T
 
 test(randomTest SCENARIO="")
 target_link_libraries(randomTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
+
+test(playerTest SCENARIO="")
+target_link_libraries(playerTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)

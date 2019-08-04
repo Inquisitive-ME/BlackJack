@@ -18,7 +18,6 @@ private:
   float bet;
   int total;
   bool soft;
-  bool blackjack;
   void add_move(card cardToMove);
 
 public:
@@ -32,36 +31,21 @@ public:
   std::vector<card>& getCards();
   int getTotal();
   bool isBusted();
+  bool isBlackJack();
 
   float getBet()
   {
     return bet;
   }
 
-  bool isSoft()
-  {
-    return soft;
-  }
-
-  void doubleDown()
+  void doubleBet()
   {
     bet *= 2;
   }
 
-  void blackJack()
+  bool isSoft()
   {
-    bet *= 1.5;
-    blackjack = true;
-  }
-
-  void Surrender()
-  {
-    bet *= 0.5;
-  }
-
-  bool hasBlackJack()
-  {
-    return blackjack;
+    return soft;
   }
 
   virtual ~hand()

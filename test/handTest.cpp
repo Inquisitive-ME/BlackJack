@@ -8,6 +8,7 @@
 #include "GUnit/GTest.h"
 #include <string>
 
+// TODO try mocking to mock cards
 
 GTEST("Hand", "Creating new hand has bet value")
 {
@@ -106,7 +107,7 @@ GTEST("Hand", "Test Busted Hand")
 }
 
 // soft
-GTEST("Hand", "test if hand is soft")
+GTEST("Hand", "test for hand isSoft")
 {
   card testAce(1);
   card testCard(7);
@@ -123,5 +124,38 @@ GTEST("Hand", "test if hand is soft")
 
   EXPECT_EQ(15, testHand.getTotal());
   EXPECT_FALSE(testHand.isSoft());
+}
+
+GTEST("Hand", "test for blackjack is true")
+{
+  card testAce(1);
+  card testTen(10);
+
+  hand testHand(0);
+
+  testHand.add(testAce);
+  testHand.add(testTen);
+
+  EXPECT_TRUE(testHand.isBlackJack());
+}
+
+GTEST("Hand", "test isBlackJack is false")
+{
+  card testAce(1);
+  card testFive(5);
+
+  hand testHand(0);
+
+  testHand.add(testAce);
+  testHand.add(testFive);
+  testHand.add(testFive);
+
+  EXPECT_FALSE(testHand.isBlackJack());
+
+  testHand.clear();
+  testHand.add(testFive);
+  testHand.add(testFive);
+
+  EXPECT_FALSE(testHand.isBlackJack());
 }
 

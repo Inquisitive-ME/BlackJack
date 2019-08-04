@@ -5,6 +5,7 @@
 #include <iostream>
 #include "card.h"
 #include "hand.h"
+#include "player.h"
 #include "getRandomInt.h"
 #include <iostream>
 #include <chrono>
@@ -15,11 +16,13 @@ int main()
 {
   card testCard(11);
   hand testHand(0);
+  player testPlayer;
 
   cout << "Created Card " << testCard.print() << endl;
   testHand.add(testCard);
-  cout << "Testing Hand: " << endl;
-  cout << testHand.print() << endl;
+  cout << "Test Hand: " << testHand.print() << endl;
+  testPlayer.getHands().push_back(testHand);
+  cout << "test Players Hand = " << testPlayer.getHands()[0].print() << endl;
 
   int numNumberToGenerate = 1000000;
 

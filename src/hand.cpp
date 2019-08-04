@@ -11,7 +11,6 @@ hand::hand(float bet) {
   this->bet = bet;
   total = 0;
   soft = false;
-  blackjack = false;
 }
 
 void hand::clear()
@@ -44,6 +43,8 @@ std::string hand::print()
   }
   returnString.append(" Total: ");
   returnString.append(std::to_string(getTotal()));
+
+  return returnString;
 }
 
 uint hand::getNumCards()
@@ -92,4 +93,9 @@ bool hand::isBusted()
   }
   else
     return false;
+}
+
+bool hand::isBlackJack()
+{
+  return (getTotal() == 21 && cards.size() == 2);
 }
