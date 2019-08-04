@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "card.h"
-#include "hand.h"
+#include "BJHand.h"
 #include "player.h"
 #include "getRandomInt.h"
 #include <iostream>
@@ -15,7 +15,7 @@ using namespace std;
 int main()
 {
   card testCard(11);
-  hand testHand(0);
+  BJHand testHand(0);
   player testPlayer;
 
   cout << "Created Card " << testCard.print() << endl;

@@ -6,16 +6,6 @@
  */
 #include "card.h"
 
-card::card()
-{
-  rank = 0;
-  value = 0;
-  faceup = false;
-  HighLowCount = 0;
-  ZenCount = 0;
-  OmmegaIICount = 0;
-}
-
 card::card(int rank)
 {
   this->rank = rank;

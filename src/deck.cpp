@@ -18,14 +18,13 @@ deck::deck(int numDecks, int whenShuffle)
   count = 0;
   numberOfDecks = numDecks;
   whenToShuffle = whenShuffle;
-
 }
 
 void deck::populate()
 {
-  getCards().clear();
+  clear();
   count = 0;
-  for(int i=0; i<numberOfDecks; i++)
+  for(uint i=0; i<numberOfDecks; i++)
   {
     for(int j=0; j<4; j++)
     {
@@ -36,12 +35,12 @@ void deck::populate()
       }
     }
   }
-  std::random_shuffle(getCards().begin(),getCards().end());
+  std::random_shuffle(cards.begin(),cards.end());
 }
 
-void deck::addCount(int cnt)
+void deck::addCount(card cardToAddCount)
 {
-  count+=cnt;
+  count+=cardToAddCount.getHighLowCount();
 }
 
 int deck::getCount()
@@ -60,22 +59,22 @@ void deck::deal(hand& dealToHand,int numCards)
     }
     // TODO this could be removed for speed if it doesn't add to being more random
     int cardToGive = getRandomInt(0,getNumCards()-1);
-    addCount(getCards()[cardToGive].getCount());
+    addCount(cards[cardToGive]);
     give(cardToGive,dealToHand);
   }
 }
 
-void deck::deal(Player& dealToPlayer,int numCards)
+void deck::deal(player& dealToPlayer,int numCards)
 {
-  for(hand pHand : dealToPlayer.getHand())
+  for(BJHand pHand : dealToPlayer.getHands())
   {
     for(int j=0; j<numCards; j++)
     {
       if(getNumCards() < whenToShuffle)
         populate();
       int cardToGive = getRandomInt(0,getNumCards()-1);
-      addCount(getCards()[cardToGive].getCount());
-      give(cardToGive, phand);
+      addCount(cards[cardToGive]);
+      give(cardToGive, pHand);
     }
   }
 }

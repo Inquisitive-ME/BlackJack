@@ -14,39 +14,19 @@
 class hand
 {
 private:
-  std::vector<card> cards;
-  float bet;
-  int total;
-  bool soft;
   void add_move(card cardToMove);
 
+protected:
+  std::vector<card> cards;
+
 public:
-  hand(float bet);
+  hand();
 
   void clear();
-  std::string print();
   void add(card cardToAdd);
   void give(int cardIndex, hand& handToGiveTo);
   uint getNumCards();
-  std::vector<card>& getCards();
-  int getTotal();
-  bool isBusted();
-  bool isBlackJack();
-
-  float getBet()
-  {
-    return bet;
-  }
-
-  void doubleBet()
-  {
-    bet *= 2;
-  }
-
-  bool isSoft()
-  {
-    return soft;
-  }
+  card getCard(int cardIndex);
 
   virtual ~hand()
   {

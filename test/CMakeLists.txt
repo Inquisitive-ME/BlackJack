@@ -45,8 +45,14 @@ target_link_libraries(cardTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_T
 test(handTest SCENARIO="")
 target_link_libraries(handTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
 
+test(BJHandTest SCENARIO="")
+target_link_libraries(BJHandTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
+
 test(randomTest SCENARIO="")
 target_link_libraries(randomTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
 
 test(playerTest SCENARIO="")
 target_link_libraries(playerTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
+
+test(deckTest SCENARIO="")
+target_link_libraries(deckTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)

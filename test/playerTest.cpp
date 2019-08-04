@@ -146,10 +146,10 @@ GTEST(playerTest, "test player split")
   }
   SHOULD("First hand should have first card of original hand, second hand should have second card")
   {
-    EXPECT_EQ(uint(1), testPlayer.getHand(0).getCards().size());
-    EXPECT_TRUE(testAce == testPlayer.getHand(0).getCards()[0]);
-    EXPECT_EQ(uint(1), testPlayer.getHand(1).getCards().size());
-    EXPECT_TRUE(testFive == testPlayer.getHand(1).getCards()[0]);
+    EXPECT_EQ(uint(1), testPlayer.getHand(0).getNumCards());
+    EXPECT_TRUE(testAce == testPlayer.getHand(0).getCard(0));
+    EXPECT_EQ(uint(1), testPlayer.getHand(1).getNumCards());
+    EXPECT_TRUE(testFive == testPlayer.getHand(1).getCard(0));
   }
 
 }

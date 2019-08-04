@@ -14,7 +14,7 @@ player::player() {
 
   name = " ";
   purse = 0;
-  std::vector <hand> hands;
+  std::vector <BJHand> hands;
 }
 
 // Redo player class so that it is more intelligent
@@ -26,7 +26,7 @@ player::player(std::string playerName, float startPurse=0)
 {
   name = playerName;
   purse = startPurse;
-  std::vector <hand> hands;
+  std::vector <BJHand> hands;
 }
 
 void player::winHand(int handNumber)
@@ -48,7 +48,7 @@ void player::loseHand(int handNumber)
 
 void player::dealerBusted()
 {
-  for(hand playerHand : hands)
+  for(BJHand playerHand : hands)
   {
     if(playerHand.isBusted())
     {
@@ -67,7 +67,7 @@ void player::dealerBusted()
 
 void player::split(int handNum)
 {
-  hand newHand(hands[handNum].getBet());
+  BJHand newHand(hands[handNum].getBet());
   hands[handNum].give(0,newHand);
   hands.insert(hands.begin()+handNum,newHand);
   //In the game the additional card is dealt from the deck to each hand
@@ -88,19 +88,19 @@ uint player::numHands()
   return(hands.size());
 }
 
-hand& player::getHand(uint handNum)
+BJHand& player::getHand(uint handNum)
 {
   return(hands[handNum]);
 }
 
-std::vector<hand>& player::getHands()
+std::vector<BJHand>& player::getHands()
 {
   return(hands);
 }
 
 void player::newHand(float pbet)
 {
-  hands.push_back(hand(pbet));
+  hands.push_back(BJHand(pbet));
 }
 
 void player::removeHand(int handNumberToRemove)

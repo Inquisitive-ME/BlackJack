@@ -19,14 +19,14 @@ private:
   int count;
   uint numberOfDecks;
   uint whenToShuffle;
+  void addCount(card);
 public:
   deck();
   deck(int numDecks,int whenShuffle);
   void populate();
   int getCount();
-  void addCount(int);
   void deal(hand&,int);
-  void deal(Player&,int);
+  void deal(player&,int);
   virtual ~deck();
 };
 

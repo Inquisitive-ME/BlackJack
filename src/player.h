@@ -8,14 +8,14 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "hand.h"
+#include "BJHand.h"
 #include <vector>
 
 class player {
 private:
   std::string name;
   float purse;
-  std::vector <hand> hands;
+  std::vector <BJHand> hands;
 
 public:
   player();
@@ -27,8 +27,8 @@ public:
   void doubleDown(int);
   void surrender(int);
   uint numHands();
-  hand& getHand(uint handNum);
-  std::vector<hand>& getHands();
+  BJHand& getHand(uint handNum);
+  std::vector<BJHand>& getHands();
   void newHand(float);
   void removeHand(int handNumberToRemove);
   void clearAllHands();

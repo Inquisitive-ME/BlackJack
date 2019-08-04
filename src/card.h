@@ -29,7 +29,6 @@ private:
   void calculateOmegaIICount();
 
 public:
-  card();
   card(int rank);
 
   bool operator== (const card &compareCard)
