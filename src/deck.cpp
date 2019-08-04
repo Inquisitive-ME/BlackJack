@@ -53,28 +53,30 @@ void deck::deal(hand& dealToHand,int numCards)
 {
   for(int i=0; i<numCards; i++)
   {
-    if(getNumCards() < whenToShuffle)
-    {
-      populate();
-    }
     // TODO this could be removed for speed if it doesn't add to being more random
     int cardToGive = getRandomInt(0,getNumCards()-1);
     addCount(cards[cardToGive]);
     give(cardToGive,dealToHand);
+    if(getNumCards() <= whenToShuffle)
+    {
+      populate();
+    }
   }
 }
 
 void deck::deal(player& dealToPlayer,int numCards)
 {
-  for(BJHand pHand : dealToPlayer.getHands())
+  for(BJHand& pHand : dealToPlayer.getHands())
   {
     for(int j=0; j<numCards; j++)
     {
-      if(getNumCards() < whenToShuffle)
-        populate();
       int cardToGive = getRandomInt(0,getNumCards()-1);
       addCount(cards[cardToGive]);
       give(cardToGive, pHand);
+      if(getNumCards() <= whenToShuffle)
+      {
+        populate();
+      }
     }
   }
 }
