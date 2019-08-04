@@ -7,7 +7,7 @@
 #include "hand.h"
 #include <utility>
 
-hand::hand(float bet) {
+hand::hand(float bet = 0) {
   this->bet = bet;
   total = 0;
   soft = false;
@@ -61,27 +61,24 @@ int hand::getTotal()
 {
   total =0;
   bool hasAce = false;
-  if (getNumCards() > 0)
+  for(uint i=0; i < getNumCards(); i++)
   {
-    for(uint i=0; i < getNumCards(); i++)
+    if(getCards()[i].isFaceUp())
     {
-      if(getCards()[i].isFaceUp())
+      if(getCards()[i].isAce())
       {
-        if(getCards()[i].isAce())
-        {
-          hasAce = true;
-        }
-        total+= getCards()[i].getValue();
+        hasAce = true;
       }
+      total+= getCards()[i].getValue();
     }
-    if(hasAce && total <= 11)
-    {
-      soft = true;
-      total +=10;
-    }
-    else
-      soft = false;
   }
+  if(hasAce && total <= 11)
+  {
+    soft = true;
+    total +=10;
+  }
+  else
+    soft = false;
   return total;
 }
 

@@ -9,7 +9,19 @@
 #include "GUnit/GTest.h"
 #include <string>
 
-//TODO use mocks to mock the hand class
+class playerTest : public::testing::Test{
+public:
+  int betForHand = 5;
+  player testPlayer;
+  card testAce = card(1);
+  card testFive = card(5);
+  card testTen = card(10);
+
+  void SetUp() override{
+    testPlayer.newHand(betForHand);
+  }
+
+};
 
 GTEST("Player", "Creating player has name and purse")
 {
@@ -22,12 +34,8 @@ GTEST("Player", "Creating player has name and purse")
 
 }
 
-GTEST("Player", "testing new hand function")
+GTEST(playerTest, "testing new hand function")
 {
-  int betForHand = 5;
-  player testPlayer;
-  testPlayer.newHand(betForHand);
-
   SHOULD("Added new hand to player hands")
   {
     EXPECT_EQ(uint(1), testPlayer.numHands());
@@ -38,43 +46,110 @@ GTEST("Player", "testing new hand function")
   }
 }
 
-GTEST("Player", "testing player win function")
+GTEST(playerTest, "testing player win function")
 {
-  player testPlayer;
-  int betForHand = 5;
-  testPlayer.newHand(betForHand);
-
-  testPlayer.win();
+  testPlayer.winHand(0);
   EXPECT_EQ(betForHand, testPlayer.getPurse());
 }
 
-GTEST("Player", "player wins with blackjack")
+GTEST(playerTest, "player wins with blackjack")
 {
-  player testPlayer;
-  int betForHand = 5;
-  testPlayer.newHand(betForHand);
+  testPlayer.getHand(0).add(testAce);
+  testPlayer.getHand(0).add(testTen);
 
-  testPlayer.win();
-  EXPECT_EQ(betForHand, testPlayer.getPurse());
+  testPlayer.winHand(0);
+  EXPECT_EQ(betForHand * 1.5, testPlayer.getPurse());
 
 }
 
-GTEST("Player", "testing player win function")
+GTEST(playerTest, "testing player win with total = 21")
 {
-  player testPlayer;
-  int betForHand = 5;
-  testPlayer.newHand(betForHand);
+  testPlayer.getHand(0).add(testAce);
+  testPlayer.getHand(0).add(testFive);
+  testPlayer.getHand(0).add(testFive);
 
-  testPlayer.win();
+  testPlayer.winHand(0);
   EXPECT_EQ(betForHand, testPlayer.getPurse());
 }
 
-//blackjack
+GTEST(playerTest, "testing player lose function")
+{
+  testPlayer.loseHand(0);
+  EXPECT_EQ(-betForHand, testPlayer.getPurse());
+}
 
-//doubledown
+GTEST(playerTest, "test player double down")
+{
+  testPlayer.doubleDown(0);
+  EXPECT_EQ(betForHand * 2, testPlayer.getHand(0).getBet());
+
+}
+
+GTEST(playerTest, "test dealer bust function with 2 non busted hands")
+{
+  testPlayer.newHand(betForHand);
+  testPlayer.dealerBusted();
+  EXPECT_EQ(betForHand * 2, testPlayer.getPurse());
+
+}
+
+GTEST(playerTest, "test dealer bust function with 1 busted hand")
+{
+  testPlayer.getHand(0).add(testTen);
+  testPlayer.getHand(0).add(testTen);
+  testPlayer.getHand(0).add(testFive);
+  testPlayer.newHand(betForHand);
+  testPlayer.newHand(betForHand);
+  testPlayer.getHand(2).add(testTen);
+
+  testPlayer.dealerBusted();
+  float expectedPurse = betForHand + betForHand - betForHand;
+  EXPECT_EQ(expectedPurse, testPlayer.getPurse());
+
+}
+
+GTEST(playerTest, "test dealer bust function with 1 blackjack hand")
+{
+  testPlayer.getHand(0).add(testTen);
+  testPlayer.getHand(0).add(testAce);
+  testPlayer.newHand(betForHand);
+
+  testPlayer.dealerBusted();
+  float expectedPurse = betForHand * 1.5 + betForHand;
+  EXPECT_EQ(expectedPurse, testPlayer.getPurse());
+
+}
 
 //surrender
-
-//busted
+GTEST(playerTest, "test player surrender")
+{
+  testPlayer.surrender(0);
+  EXPECT_EQ(-betForHand * 0.5, testPlayer.getPurse());
+}
 
 //split
+GTEST(playerTest, "test player split")
+{
+  testPlayer.getHand(0).add(testAce);
+  testPlayer.getHand(0).add(testFive);
+
+  testPlayer.split(0);
+
+  SHOULD("Player has 2 hands")
+  {
+    EXPECT_EQ(uint(2), testPlayer.getHands().size());
+  }
+  SHOULD("Each hand should have the starting bet value")
+  {
+    EXPECT_EQ(betForHand, testPlayer.getHand(0).getBet());
+    EXPECT_EQ(betForHand, testPlayer.getHand(1).getBet());
+  }
+  SHOULD("First hand should have first card of original hand, second hand should have second card")
+  {
+    EXPECT_EQ(uint(1), testPlayer.getHand(0).getCards().size());
+    EXPECT_TRUE(testAce == testPlayer.getHand(0).getCards()[0]);
+    EXPECT_EQ(uint(1), testPlayer.getHand(1).getCards().size());
+    EXPECT_TRUE(testFive == testPlayer.getHand(1).getCards()[0]);
+  }
+
+}

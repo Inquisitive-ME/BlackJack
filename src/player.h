@@ -23,12 +23,9 @@ public:
   void winHand(int handNumber);
   void loseHand(int handNumber);
   void dealerBusted();
-  void hit();
-  void stay();
   void split(int);
   void doubleDown(int);
   void surrender(int);
-  void busted(int);
   uint numHands();
   hand& getHand(uint handNum);
   std::vector<hand>& getHands();

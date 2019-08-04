@@ -31,7 +31,14 @@ player::player(std::string playerName, float startPurse=0)
 
 void player::winHand(int handNumber)
 {
-  purse += hands[handNumber].getBet();
+  if(hands[handNumber].isBlackJack())
+  {
+    purse += (1.5 * hands[handNumber].getBet());
+  }
+  else
+  {
+    purse += hands[handNumber].getBet();
+  }
 }
 
 void player::loseHand(int handNumber)
@@ -75,12 +82,6 @@ void player::surrender(int handNum)
 {
   purse -= (hands[handNum].getBet() * SURRENDERPENALTY);
 }
-
-void player::busted(int handNum)
-{
-  purse -= hands[handNum].getBet();
-}
-
 
 uint player::numHands()
 {

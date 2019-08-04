@@ -32,6 +32,16 @@ public:
   card();
   card(int rank);
 
+  bool operator== (const card &compareCard)
+  {
+    return rank == compareCard.rank;
+  }
+
+  bool operator!= (const card&compareCard)
+  {
+    return rank != compareCard.rank;
+  }
+
   void flip();
   std::string print();
 

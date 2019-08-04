@@ -8,8 +8,6 @@
 #include "GUnit/GTest.h"
 #include <string>
 
-// TODO try mocking to mock cards
-
 GTEST("Hand", "Creating new hand has bet value")
 {
   hand testHand(5);
@@ -58,7 +56,7 @@ GTEST("Hand", "Verify Giving card from one hand to another")
 
   SHOULD("receiving hand has same card as given to it")
   {
-    EXPECT_EQ(testCard.print(), receiveHand.getCards()[0].print());
+    EXPECT_TRUE(testCard == receiveHand.getCards()[0]);
   }
 
   SHOULD("hand giving card should have no cards and a total of 0")
@@ -71,7 +69,7 @@ GTEST("Hand", "Verify Giving card from one hand to another")
 GTEST("Hand", "Verify giving card from non zero index in a hand to another hand")
 {
   int indexToGive = getRandomInt(0, 9);
-  std::string expectedResult = "";
+  card expectedCard;
 
   hand giveHand(0);
   hand receiveHand(0);
@@ -82,12 +80,12 @@ GTEST("Hand", "Verify giving card from non zero index in a hand to another hand"
     giveHand.add(testCard);
     if(i == indexToGive)
     {
-      expectedResult = testCard.print();
+      expectedCard = testCard;
     }
   }
 
   giveHand.give(indexToGive, receiveHand);
-  EXPECT_EQ(expectedResult, receiveHand.getCards()[0].print());
+  EXPECT_TRUE(expectedCard == receiveHand.getCards()[0]);
 }
 
 // busted
