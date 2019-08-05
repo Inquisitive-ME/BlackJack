@@ -143,3 +143,31 @@ GTEST("Deck", "Deal from deck to player hands")
     EXPECT_EQ(expectedUniqueCards, actualUniqueCards);
   }
 }
+
+GTEST("Deck", "Test addCount callback")
+{
+  deck testDeck(1,0);
+  testDeck.populate();
+
+  BJHand testHand(0);
+
+  std::cerr << "Deck Count = " << testDeck.getCount() << std::endl;
+
+  testDeck.deal(testHand, 1);
+  while(testHand.getCard(0).getHighLowCount() == 0)
+  {
+      testHand.clear();
+      testDeck.deal(testHand, 1);
+  }
+
+  std::cerr << "Card delt count = " << testHand.getCard(0).getHighLowCount() << std::endl;
+
+  std::cerr << "Deck Count = " << testDeck.getCount() << std::endl;
+
+  testHand.getCard(0).flip();
+
+  std::cerr << "Deck Count = " << testDeck.getCount() << std::endl;
+
+
+
+}

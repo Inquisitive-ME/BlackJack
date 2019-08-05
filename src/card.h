@@ -10,9 +10,9 @@
 
 #include <stdio.h>
 #include <string>
+#include <functional>
 
-//Count can be 0 = High Low, 1 = Zen, 2 = OmegaII
-#define COUNT_TYPE 0
+class deck;
 
 class card
 {
@@ -23,6 +23,8 @@ private:
   int ZenCount;
   int OmmegaIICount;
   bool faceup;
+  bool useFlipCallBack;
+  std::function<void(card&)> flipCallback;
 
   void calculateHighLowCount();
   void calculateZenCount();
@@ -30,6 +32,13 @@ private:
 
 public:
   card(int rank);
+
+  void setFlipCallBack(std::function<void(card&)> setCallback)
+  {
+    flipCallback = setCallback;
+    useFlipCallBack = true;
+    if(isFaceUp()){flipCallback(*this);}
+  }
 
   bool operator== (const card &compareCard)
   {

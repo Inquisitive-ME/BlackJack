@@ -56,3 +56,6 @@ target_link_libraries(playerTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack
 
 test(deckTest SCENARIO="")
 target_link_libraries(deckTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)
+
+test(dealerTest SCENARIO="")
+target_link_libraries(dealerTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)

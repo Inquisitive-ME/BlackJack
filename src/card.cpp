@@ -5,7 +5,7 @@
  *      Author: richard
  */
 #include "card.h"
-
+#include <iostream>
 card::card(int rank)
 {
   this->rank = rank;
@@ -17,27 +17,18 @@ card::card(int rank)
   else
     printf("Using Invalid Ranks");
 
-  faceup = true;
+  faceup = false;
   calculateHighLowCount();
   calculateZenCount();
   calculateOmegaIICount();
+
+  useFlipCallBack = false;
 }
 
 void card::flip()
 {
   faceup = !faceup;
-  if(faceup)
-  {
-    calculateHighLowCount();
-    calculateZenCount();
-    calculateOmegaIICount();
-  }
-  else
-  {
-    HighLowCount = 0;
-    ZenCount = 0;
-    OmmegaIICount = 0;
-  }
+  if(useFlipCallBack){flipCallback(*this);}
 }
 
 void card::calculateHighLowCount()

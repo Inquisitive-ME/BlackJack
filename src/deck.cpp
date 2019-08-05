@@ -31,6 +31,7 @@ void deck::populate()
       for(int k=1; k<=13; k++)
       {
         card addCard(k);
+        addCard.setFlipCallBack(std::bind(&deck::addCountFromCard, this, std::placeholders::_1));
         add(addCard);
       }
     }
@@ -38,9 +39,17 @@ void deck::populate()
   std::random_shuffle(cards.begin(),cards.end());
 }
 
-void deck::addCount(card cardToAddCount)
+void deck::addCountFromCard(card cardToAddCount)
 {
-  count+=cardToAddCount.getHighLowCount();
+  std::cout << "addCountFromCard Called" << std::endl;
+  if(cardToAddCount.isFaceUp())
+  {
+    count+=cardToAddCount.getHighLowCount();
+  }
+  else
+  {
+    count-=cardToAddCount.getHighLowCount();
+  }
 }
 
 int deck::getCount()
@@ -55,7 +64,6 @@ void deck::deal(hand& dealToHand,int numCards)
   {
     // TODO this could be removed for speed if it doesn't add to being more random
     int cardToGive = getRandomInt(0,getNumCards()-1);
-    addCount(cards[cardToGive]);
     give(cardToGive,dealToHand);
     if(getNumCards() <= whenToShuffle)
     {
@@ -71,7 +79,6 @@ void deck::deal(player& dealToPlayer,int numCards)
     for(int j=0; j<numCards; j++)
     {
       int cardToGive = getRandomInt(0,getNumCards()-1);
-      addCount(cards[cardToGive]);
       give(cardToGive, pHand);
       if(getNumCards() <= whenToShuffle)
       {

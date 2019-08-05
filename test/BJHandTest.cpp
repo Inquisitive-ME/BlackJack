@@ -7,10 +7,46 @@
 
 #include "GUnit/GTest.h"
 
-GTEST("BJHand", "Creating new hand has bet value")
+class BJHandTest : public::testing::Test{
+public:
+  //TODO need to clean this up so it works
+  int betForHand = 5;
+  card testAce = card(1);
+  card testFive = card(5);
+  card testSeven = card(7);
+  card testTen = card(10);
+
+  BJHandTest(){
+    // You can do set-up work for each test here.
+  }
+
+  ~BJHandTest() override{
+    // You can do clean-up work that doesn't throw exceptions here.
+  }
+
+
+
+  void SetUp() override{
+    // Code here will be called immediately after the constructor (right
+    // before each test).
+    BJHand testHand(5);
+    testAce.flip();
+    testFive.flip();
+    testSeven.flip();
+    testTen.flip();
+  }
+
+  void TearDown() override {
+    // Code here will be called immediately after each test (right
+    // before the destructor).
+  }
+
+  // Objects declared here can be used by all tests in the test suite.
+};
+
+GTEST(BJHandTest, "Creating new hand has bet value")
 {
-  BJHand testHand(5);
-  EXPECT_EQ(5, testHand.getBet());
+  EXPECT_EQ(betForHand, testHand.getBet());
 }
 
 // random number of cards not including Ace test total
@@ -25,6 +61,7 @@ GTEST("BJHand", "Add random number of cards verify count and total")
     for (uint i = 0; i < numCards; i++)
     {
       card testCard(getRandomInt(2, 13));
+      testCard.flip();
       expectedTotal += testCard.getValue();
       testHand.add(testCard);
     }
@@ -42,13 +79,14 @@ GTEST("BJHand", "Add random number of cards verify count and total")
 
 GTEST("BJHand", "Test Busted Hand")
 {
-  std::vector<int> cardValues{8, 12, 4};
+  std::vector<card> testCards{card(8), card(12), card(4)};
 
   BJHand testHand(0);
 
-  for(int cardValue : cardValues)
+  for(card testCard : testCards)
   {
-    testHand.add(card(cardValue));
+    testHand.add(testCard);
+    testCard.flip();
   }
 
   EXPECT_TRUE(testHand.isBusted());
@@ -57,7 +95,9 @@ GTEST("BJHand", "Test Busted Hand")
 GTEST("BJHand", "test for hand isSoft")
 {
   card testAce(1);
+  testAce.flip();
   card testCard(7);
+  testCard.flip();
 
   BJHand testHand(0);
 

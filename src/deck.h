@@ -19,7 +19,7 @@ private:
   int count;
   uint numberOfDecks;
   uint whenToShuffle;
-  void addCount(card);
+  void addCountFromCard(card);
 public:
   deck();
   deck(int numDecks,int whenShuffle);

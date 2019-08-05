@@ -37,22 +37,18 @@ using namespace testing;
   };
 }
 
-GTEST("Card", "Card should counts should be 0 when flipped face down")
+GTEST("Card", "Verify flipCallback is called when first assigned and card is flipped")
 {
   card testCard(4);
-  EXPECT_TRUE(testCard.isFaceUp());
+  bool testCallback = false;
 
-  // Verify Counts are populated
-  EXPECT_EQ(1, testCard.getHighLowCount());
-  EXPECT_EQ(2, testCard.getZenCount());
-  EXPECT_EQ(2, testCard.getOmegaIICount());
+  testCard.setFlipCallBack([&](card passedCard){testCallback = passedCard.isFaceUp();});
+
+  EXPECT_FALSE(testCard.isFaceUp());
+  EXPECT_FALSE(testCallback);
 
   testCard.flip();
-  EXPECT_FALSE(testCard.isFaceUp());
-
-  // Verify Counts are 0
-  EXPECT_EQ(0, testCard.getHighLowCount());
-  EXPECT_EQ(0, testCard.getZenCount());
-  EXPECT_EQ(0, testCard.getOmegaIICount());
+  EXPECT_TRUE(testCard.isFaceUp());
+  EXPECT_TRUE(testCallback);
 
 }
