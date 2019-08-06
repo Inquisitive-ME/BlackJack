@@ -41,7 +41,6 @@ void deck::populate()
 
 void deck::addCountFromCard(card cardToAddCount)
 {
-  std::cout << "addCountFromCard Called" << std::endl;
   if(cardToAddCount.isFaceUp())
   {
     count+=cardToAddCount.getHighLowCount();

@@ -9,8 +9,8 @@
 
 dealer::dealer():BJHand(0)
 {
-
 }
+
 bool dealer::isHitting()
 {
   int dealerTotal=getTotal();
@@ -19,18 +19,6 @@ bool dealer::isHitting()
   else
     return(dealerTotal<17);
 }
-void dealer::flipFirstCard()
-{
-  if(getCard(0).isFaceUp())
-  {
-    getCard(0).flip();
-  }
-  else
-  {
-    getCard(0).flip();
-  }
-}
-
 
 dealer::~dealer() {
   //std::cout << "BJDealer Destroyed" << std::endl;

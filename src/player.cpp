@@ -11,7 +11,6 @@
 #define SURRENDERPENALTY 0.5
 
 player::player() {
-
   name = " ";
   purse = 0;
   std::vector <BJHand> hands;
@@ -114,6 +113,6 @@ void player::clearAllHands()
 }
 
 player::~player() {
-  //std::cout << "player Destroyed" << std::endl;
+//  std::cout << "player Destroyed" << std::endl;
 }
 

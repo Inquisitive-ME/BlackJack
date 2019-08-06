@@ -17,6 +17,7 @@ card::card(int rank)
   else
     printf("Using Invalid Ranks");
 
+  //TODO try starting with card faceup so that we don't have to do a flip and callback for most of the cards dealt
   faceup = false;
   calculateHighLowCount();
   calculateZenCount();

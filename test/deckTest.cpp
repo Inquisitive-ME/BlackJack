@@ -8,20 +8,6 @@
 
 #include "GUnit/GTest.h"
 
-//class playerTest : public::testing::Test{
-//public:
-//  int betForHand = 5;
-//  player testPlayer;
-//  card testAce = card(1);
-//  card testFive = card(5);
-//  card testTen = card(10);
-//
-//  void SetUp() override{
-//    testPlayer.newHand(betForHand);
-//  }
-//
-//};
-
 GTEST("Deck", "Test populate method")
 {
   int numDecks = 6;
@@ -151,23 +137,25 @@ GTEST("Deck", "Test addCount callback")
 
   BJHand testHand(0);
 
-  std::cerr << "Deck Count = " << testDeck.getCount() << std::endl;
+  EXPECT_EQ(0, testDeck.getCount());
 
   testDeck.deal(testHand, 1);
-  while(testHand.getCard(0).getHighLowCount() == 0)
+  while (testHand.getCard(0).getHighLowCount() == 0)
   {
-      testHand.clear();
-      testDeck.deal(testHand, 1);
+    testHand.clear();
+    testDeck.deal(testHand, 1);
   }
 
-  std::cerr << "Card delt count = " << testHand.getCard(0).getHighLowCount() << std::endl;
+  // Deck is still count of 0 before flipping card
+  EXPECT_EQ(0, testDeck.getCount());
 
-  std::cerr << "Deck Count = " << testDeck.getCount() << std::endl;
+  int expectedCount = testHand.getCard(0).getHighLowCount();
+  testHand.flipCard(0);
+  // Deck has count of card after flipping it
+  EXPECT_EQ(expectedCount, testDeck.getCount());
 
-  testHand.getCard(0).flip();
-
-  std::cerr << "Deck Count = " << testDeck.getCount() << std::endl;
-
-
+  testHand.flipCard(0);
+  // Deck count is zero again after flipping card
+  EXPECT_EQ(0, testDeck.getCount());
 
 }

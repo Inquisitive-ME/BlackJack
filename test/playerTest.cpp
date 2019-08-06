@@ -11,7 +11,6 @@
 
 class playerTest : public::testing::Test{
 public:
-  // TODO need to understand this better, does each test share the same player, and is the new hand called for each test?
   int betForHand = 5;
   player testPlayer;
   card testAce = card(1);
@@ -20,6 +19,9 @@ public:
 
   void SetUp() override{
     testPlayer.newHand(betForHand);
+    testAce.flip();
+    testFive.flip();
+    testTen.flip();
   }
 
 };

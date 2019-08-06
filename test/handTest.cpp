@@ -74,5 +74,18 @@ GTEST("Hand", "Verify giving card from non zero index in a hand to another hand"
   EXPECT_TRUE(expectedCard == receiveHand.getCard(0));
 }
 
+GTEST("Hand", "Verify flip card")
+{
+  hand testHand;
+  card testCard(0);
+
+  testHand.add(testCard);
+
+  testHand.flipCard(0);
+  EXPECT_TRUE(testHand.getCard(0).isFaceUp());
+  testHand.flipCard(0);
+  EXPECT_FALSE(testHand.getCard(0).isFaceUp());
+}
+
 
 

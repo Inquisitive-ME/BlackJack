@@ -36,3 +36,7 @@ card hand::getCard(int cardIndex)
 {
   return cards[cardIndex];
 };
+void hand::flipCard(int cardIndex)
+{
+  cards[cardIndex].flip();
+};

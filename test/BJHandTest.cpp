@@ -11,37 +11,19 @@ class BJHandTest : public::testing::Test{
 public:
   //TODO need to clean this up so it works
   int betForHand = 5;
-  card testAce = card(1);
-  card testFive = card(5);
-  card testSeven = card(7);
-  card testTen = card(10);
+  BJHand testHand;
+  card testAce;
+  card testFive;
+  card testSeven;
+  card testTen;
 
-  BJHandTest(){
-    // You can do set-up work for each test here.
-  }
-
-  ~BJHandTest() override{
-    // You can do clean-up work that doesn't throw exceptions here.
-  }
-
-
-
-  void SetUp() override{
-    // Code here will be called immediately after the constructor (right
-    // before each test).
-    BJHand testHand(5);
+  BJHandTest() : testHand(betForHand), testAce(1), testFive(5), testSeven(7), testTen(10)
+  {
     testAce.flip();
     testFive.flip();
     testSeven.flip();
     testTen.flip();
   }
-
-  void TearDown() override {
-    // Code here will be called immediately after each test (right
-    // before the destructor).
-  }
-
-  // Objects declared here can be used by all tests in the test suite.
 };
 
 GTEST(BJHandTest, "Creating new hand has bet value")
@@ -77,62 +59,40 @@ GTEST("BJHand", "Add random number of cards verify count and total")
   }
 }
 
-GTEST("BJHand", "Test Busted Hand")
+GTEST(BJHandTest, "Test Busted Hand")
 {
-  std::vector<card> testCards{card(8), card(12), card(4)};
-
-  BJHand testHand(0);
-
-  for(card testCard : testCards)
-  {
-    testHand.add(testCard);
-    testCard.flip();
-  }
+  testHand.add(testTen);
+  testHand.add(testFive);
+  testHand.add(testSeven);
 
   EXPECT_TRUE(testHand.isBusted());
 }
 
-GTEST("BJHand", "test for hand isSoft")
+GTEST(BJHandTest, "test for hand isSoft")
 {
-  card testAce(1);
-  testAce.flip();
-  card testCard(7);
-  testCard.flip();
-
-  BJHand testHand(0);
 
   testHand.add(testAce);
-  testHand.add(testCard);
+  testHand.add(testSeven);
 
   EXPECT_EQ(18, testHand.getTotal());
   EXPECT_TRUE(testHand.isSoft());
 
-  testHand.add(testCard);
+  testHand.add(testSeven);
 
   EXPECT_EQ(15, testHand.getTotal());
   EXPECT_FALSE(testHand.isSoft());
 }
 
-GTEST("BJHand", "test for blackjack is true")
+GTEST(BJHandTest, "test for blackjack is true")
 {
-  card testAce(1);
-  card testTen(10);
-
-  BJHand testHand(0);
-
   testHand.add(testAce);
   testHand.add(testTen);
 
   EXPECT_TRUE(testHand.isBlackJack());
 }
 
-GTEST("BJHand", "test isBlackJack is false")
+GTEST(BJHandTest, "test isBlackJack is false")
 {
-  card testAce(1);
-  card testFive(5);
-
-  BJHand testHand(0);
-
   testHand.add(testAce);
   testHand.add(testFive);
   testHand.add(testFive);

@@ -15,7 +15,6 @@ class dealer: public BJHand {
 public:
   dealer();
   bool isHitting();
-  void flipFirstCard();
   virtual ~dealer();
 };
 

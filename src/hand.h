@@ -27,6 +27,7 @@ public:
   void give(int cardIndex, hand& handToGiveTo);
   uint getNumCards();
   card getCard(int cardIndex);
+  void flipCard(int cardIndex);
 
   virtual ~hand()
   {
