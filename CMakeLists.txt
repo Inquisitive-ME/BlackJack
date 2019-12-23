@@ -12,7 +12,7 @@ if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools/arm-bcm2708/gcc-linaro-arm
     message(FATAL_ERROR "tools is expected to be git repo https://github.com/raspberrypi/tools.git")
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall" )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall" )
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -02")
 

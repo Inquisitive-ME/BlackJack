@@ -1,16 +1,19 @@
-# Download and unpack GUnit at configure time
-configure_file(includeGUnit.cmake GUnit-download/CMakeLists.txt)
-execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download )
-if(result)
-    message(FATAL_ERROR "CMake step for GUnit failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        RESULT_VARIABLE result
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download )
-if(result)
-    message(FATAL_ERROR "Build step for GUnit failed: ${result}")
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download/CMakeLists.txt)
+else()
+    # Download and unpack GUnit at configure time
+    configure_file(includeGUnit.cmake GUnit-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download )
+    if(result)
+        message(FATAL_ERROR "CMake step for GUnit failed: ${result}")
+    endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build .
+            RESULT_VARIABLE result
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GUnit-download )
+    if(result)
+        message(FATAL_ERROR "Build step for GUnit failed: ${result}")
+    endif()
 endif()
 
 # Prevent overriding the parent project's compiler/linker

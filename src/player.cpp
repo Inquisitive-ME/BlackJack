@@ -16,7 +16,7 @@ player::player() {
   std::vector <BJHand> hands;
 }
 
-// Redo player class so that it is more intelligent
+// TODO Redo player class so that it is more intelligent
 // win should include blackjack
 // should have a dealer busted
 // isBusted should evaluate automatically
