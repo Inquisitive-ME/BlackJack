@@ -10,6 +10,7 @@ set(SOURCE_FILES
 		player.cpp
 		deck.cpp
 		dealer.cpp
+		BJGame.cpp
 		getRandomInt.cpp)
 
 add_library(BlackJack_Testing STATIC ${SOURCE_FILES})
