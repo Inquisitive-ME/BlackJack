@@ -4,11 +4,13 @@
 //
 
 #include "../src/BJGame.h"
+#include <algorithm>
 
 #include "GUnit/GTest.h"
 
 class TestImplementationPlayer: public abstractGamePlayer{
 public:
+    TestImplementationPlayer(std::string playerName) : abstractGamePlayer(playerName){};
     int getBet(){return betForHand;};
     //virtual bool purchaseInsurance(int count);
     MOVES getMove(){return HIT;};
@@ -32,7 +34,7 @@ public:
     card testSeven;
     card testTen;
 
-    BJGameTest() : testPlayer(), testAce(1), testFive(5), testSeven(7), testTen(10)
+    BJGameTest() : testPlayer("player1"), testAce(1), testFive(5), testSeven(7), testTen(10)
     {
         testAce.flip();
         testFive.flip();
@@ -42,15 +44,30 @@ public:
     }
 };
 
-GTEST(BJGameTest, "Starting Deal")
+GTEST(BJGameTest, "Test starting deal")
 {
     BJGame testGame;
+    deck startingDeck = testGame.getDeck();
 
-    std::vector<abstractGamePlayer *> tempPlayerList = {&testPlayer};
-    testGame.startGame(tempPlayerList);
+    std::vector<abstractGamePlayer *> playerList = {&testPlayer};
+    testGame.startGame(playerList);
     testGame.starting_deal();
-    std::vector<abstractGamePlayer *> playerList = testGame.getPlayers();
-    abstractGamePlayer* resultPlayer = playerList[0];
-
-    EXPECT_EQ(betForHand, resultPlayer->getHand(0).getBet());
+    testGame.printDeck();
+    SHOULD("Every Player in game should have hand with correct bet and 2 cards")
+    {
+    std::for_each(playerList.begin(), playerList.end(), [this](abstractGamePlayer *resultPlayer){
+        std::cout << "Check " << resultPlayer->getName() << std::endl;
+        EXPECT_EQ(betForHand, resultPlayer->getHand(0).getBet());
+        EXPECT_EQ(2, resultPlayer->getHand(0).getNumCards());
+    });
+    }
+    SHOULD("Dealer should 2 cards with a total greater than 1")
+    {
+        EXPECT_EQ(2, testGame.getDealer().getNumCards());
+        EXPECT_TRUE(testGame.getDealer().getTotal() > 0);
+    }
+    SHOULD("Deck lost 2 cards per player and 2 cards for the dealer")
+    {
+        EXPECT_EQ(2 + 2 * playerList.size(), startingDeck.getNumCards() - testGame.getDeck().getNumCards());
+    }
 }

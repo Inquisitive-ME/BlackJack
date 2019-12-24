@@ -15,6 +15,7 @@ enum MOVES {HIT, STAY, SPLIT, DOUBLED, SURRENDER};
 class abstractGamePlayer: public player {
 public:
     abstractGamePlayer(){}
+    abstractGamePlayer(std::string playerName, float startPurse=0) : player(playerName, startPurse) {};
     virtual ~abstractGamePlayer(){}
 
     virtual int getBet() = 0;

@@ -14,7 +14,6 @@
 
 class BJGame {
 private:
-    int numPlayers;
     std::vector<abstractGamePlayer *> PlayersInGame;
     deck gDeck;
     dealer Dealer;
@@ -25,8 +24,9 @@ public:
     void startGame(std::vector<abstractGamePlayer *> players);
     void starting_deal();
     void printHand(std::string name, BJHand& pHand);
+    deck getDeck(){return gDeck;};
+    dealer getDealer(){return Dealer;};
     void printDeck();
-    std::vector<abstractGamePlayer *> getPlayers();  //mainly for testing
     virtual ~BJGame(){};
 };
 
