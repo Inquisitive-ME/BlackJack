@@ -12,6 +12,13 @@
 #include "abstractGamePlayer.h"
 #include "dealer.h"
 
+namespace BJGameFunctions {
+    using std::vector;
+    void printHand(std::string name, BJHand& pHand);
+    void starting_deal(deck &gameDeck, dealer &gameDealer, vector<abstractGamePlayer*> PlayersInGame);
+    void evaluate_dealer_has_blackjack(vector<abstractGamePlayer*> PlayersInGame, deck &gDeck, bool PRINT_OUTPUT = false);
+}
+
 class BJGame {
 private:
     std::vector<abstractGamePlayer *> PlayersInGame;
@@ -22,10 +29,6 @@ private:
 public:
     BJGame();
     void startGame(std::vector<abstractGamePlayer *> players);
-    void starting_deal();
-    void printHand(std::string name, BJHand& pHand);
-    deck getDeck(){return gDeck;};
-    dealer getDealer(){return Dealer;};
     void printDeck();
     virtual ~BJGame(){};
 };

@@ -27,9 +27,10 @@ public:
   void give(int cardIndex, hand& handToGiveTo);
   uint getNumCards();
   card getCard(int cardIndex);
-  void flipCard(int cardIndex);
+  virtual void flipCard(int cardIndex);
+  virtual bool operator==(const hand& otherHand) const {return true;};
 
-  virtual ~hand()
+    virtual ~hand()
   {
     //std::cout << "Hand Destroyed" << std::endl;
   }

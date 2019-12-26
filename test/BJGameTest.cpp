@@ -4,9 +4,23 @@
 //
 
 #include "../src/BJGame.h"
+#include "../src/deck.h"
 #include <algorithm>
 
+#include "gmock/gmock.h"
 #include "GUnit/GTest.h"
+
+//TODO Figure out how to update google test version
+class MockDeck: public deck{
+public:
+    MOCK_METHOD2(deal, void(hand&, int));
+    MOCK_METHOD2(deal, void(player&, int));
+};
+
+class MockDealer: public dealer{
+public:
+    MOCK_METHOD1(flipCard, void(int));
+};
 
 class TestImplementationPlayer: public abstractGamePlayer{
 public:
@@ -46,28 +60,43 @@ public:
 
 GTEST(BJGameTest, "Test starting deal")
 {
-    BJGame testGame;
-    deck startingDeck = testGame.getDeck();
+    deck startingDeck;
+    startingDeck.populate();
+    int initialNumCards = startingDeck.getNumCards();
+    dealer testDealer;
 
     std::vector<abstractGamePlayer *> playerList = {&testPlayer};
-    testGame.startGame(playerList);
-    testGame.starting_deal();
-    testGame.printDeck();
+
+    BJGameFunctions::starting_deal(startingDeck, testDealer, playerList);
     SHOULD("Every Player in game should have hand with correct bet and 2 cards")
     {
     std::for_each(playerList.begin(), playerList.end(), [this](abstractGamePlayer *resultPlayer){
         std::cout << "Check " << resultPlayer->getName() << std::endl;
         EXPECT_EQ(betForHand, resultPlayer->getHand(0).getBet());
-        EXPECT_EQ(2, resultPlayer->getHand(0).getNumCards());
+        EXPECT_EQ((uint) 2, resultPlayer->getHand(0).getNumCards());
     });
     }
     SHOULD("Dealer should 2 cards with a total greater than 1")
     {
-        EXPECT_EQ(2, testGame.getDealer().getNumCards());
-        EXPECT_TRUE(testGame.getDealer().getTotal() > 0);
+        EXPECT_EQ((uint) 2, testDealer.getNumCards());
+        EXPECT_TRUE(testDealer.getTotal() > 0);
     }
     SHOULD("Deck lost 2 cards per player and 2 cards for the dealer")
     {
-        EXPECT_EQ(2 + 2 * playerList.size(), startingDeck.getNumCards() - testGame.getDeck().getNumCards());
+        EXPECT_EQ(2 + 2 * playerList.size(), initialNumCards - startingDeck.getNumCards());
     }
+}
+
+GTEST(BJGameTest, "Test evaluate_dealer_has_blackjack")
+{
+    using namespace testing;
+    MockDeck testDeck;
+    testDeck.populate();
+    MockDealer testDealer;
+    std::vector<abstractGamePlayer *> playerList = {&testPlayer};
+    EXPECT_CALL(testDeck, deal(Matcher<player&>(_), 2)).Times(1);
+    EXPECT_CALL(testDeck, deal(testDealer, 2)).Times(1);
+    EXPECT_CALL(testDealer, flipCard(_));
+    BJGameFunctions::starting_deal(testDeck, testDealer, playerList);
+
 }

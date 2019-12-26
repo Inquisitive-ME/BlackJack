@@ -25,8 +25,8 @@ public:
   deck(int numDecks,int whenShuffle);
   void populate();
   int getCount();
-  void deal(hand&,int);
-  void deal(player&,int);
+  virtual void deal(hand&,int);
+  virtual void deal(player&,int);
   virtual ~deck();
 };
 
