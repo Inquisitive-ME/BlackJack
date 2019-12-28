@@ -20,6 +20,7 @@ private:
 public:
   player();
   player(std::string playerName, float startPurse);
+
   void winHand(int handNumber);
   void loseHand(int handNumber);
   void dealerBusted();
@@ -29,7 +30,7 @@ public:
   uint numHands();
   BJHand& getHand(uint handNum);
   std::vector<BJHand>& getHands();
-  void newHand(float);
+  virtual void newHand(float);
   void removeHand(int handNumberToRemove);
   void clearAllHands();
   float getPurse()
@@ -41,6 +42,8 @@ public:
     return(name);
   }
   virtual ~player();
+  virtual bool operator==(const player& otherPlayer) const
+  {return this == &otherPlayer;};
 };
 
 #endif /* PLAYER_H_ */
