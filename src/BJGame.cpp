@@ -5,7 +5,6 @@
 #include "BJGame.h"
 
 using namespace std;
-// TODO create free functions in namespace which are then used by BJGame class
 
 namespace BJGameFunctions
 {
@@ -18,7 +17,6 @@ namespace BJGameFunctions
     void starting_deal(deck &gameDeck, dealer &gameDealer, vector<abstractGamePlayer *> PlayersInGame)
     {
         //TODO this is where you would get the prebet Deck
-        //Get all players bets and deal hand
         for_each(PlayersInGame.begin(), PlayersInGame.end(), [&gameDeck](abstractGamePlayer *player){
             player->newHand(player->getBet());
             gameDeck.deal(*player, 2);
@@ -35,6 +33,7 @@ namespace BJGameFunctions
         {
             for(BJHand pHand : player->getHands())
             {
+                // TODO this could be a function that get's passed into for each
                 if(PRINT_OUTPUT){printHand(player->getName(), pHand);}
                 while(not(pHand.isBusted()) && pHand.getTotal() <21)
                 {
@@ -64,8 +63,6 @@ void BJGame::startGame(std::vector<abstractGamePlayer*> players)
 {
     PlayersInGame = players;
 }
-
-
 
 void BJGame::printDeck()
 {

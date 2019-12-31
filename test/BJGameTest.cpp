@@ -42,13 +42,13 @@ TEST(BJGameFunctions, test_starting_deal)
 
     EXPECT_CALL(testPlayer1, getBet()).WillOnce(Return(1));
     EXPECT_CALL(testPlayer1, newHand(1));
-    EXPECT_CALL(testDeck, deal(Matcher<player&>(Eq(ByRef(testPlayer1))), 2)).Times(1);
+    EXPECT_CALL(testDeck, deal(Matcher<player&>(Eq(ByRef(testPlayer1))), 2));
 
     EXPECT_CALL(testPlayer2, getBet()).WillOnce(Return(2));
     EXPECT_CALL(testPlayer2, newHand(2));
-    EXPECT_CALL(testDeck, deal(Matcher<player&>(Eq(ByRef(testPlayer2))), 2)).Times(1);
+    EXPECT_CALL(testDeck, deal(Matcher<player&>(Eq(ByRef(testPlayer2))), 2));
 
-    EXPECT_CALL(testDeck, deal(testDealer, 2)).Times(1);
+    EXPECT_CALL(testDeck, deal(testDealer, 2));
     EXPECT_CALL(testDealer, flipCard(_));
 
     BJGameFunctions::starting_deal(testDeck, testDealer, playerList);

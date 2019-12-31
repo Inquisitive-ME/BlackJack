@@ -9,6 +9,7 @@
 #include <list>
 
 #include "player.h"
+//TODO Should this just be in player.h?
 
 enum MOVES {HIT, STAY, SPLIT, DOUBLED, SURRENDER};
 
