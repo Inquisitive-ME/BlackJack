@@ -15,6 +15,7 @@ private:
   bool soft;
 
 public:
+  BJHand();
   BJHand(float bet);
   std::string print();
   int getTotal();

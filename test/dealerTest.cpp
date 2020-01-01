@@ -20,7 +20,7 @@ public:
   }
 
 };
-TEST_F(dealerTest, test_is_hitting_not_soft)
+TEST_F(dealerTest, Dealer_is_hitting_when_hand_is_not_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testTen);
@@ -29,7 +29,7 @@ TEST_F(dealerTest, test_is_hitting_not_soft)
   ASSERT_TRUE(testDealer.isHitting());
 }
 
-TEST_F(dealerTest, test_not_hitting_not_soft)
+TEST_F(dealerTest, Dealer_is_not_hitting_when_hand_is_not_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testTen);
@@ -39,7 +39,7 @@ TEST_F(dealerTest, test_not_hitting_not_soft)
   ASSERT_FALSE(testDealer.isHitting());
 }
 
-TEST_F(dealerTest, test_hitting_soft)
+TEST_F(dealerTest, Dealer_is_hitting_with_two_aces_one_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testAce);
@@ -48,7 +48,7 @@ TEST_F(dealerTest, test_hitting_soft)
   ASSERT_TRUE(testDealer.isHitting());
 }
 
-TEST_F(dealerTest, test_not_hitting_soft)
+TEST_F(dealerTest, Dealer_is_not_hitting_with_three_aces_one_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testAce);

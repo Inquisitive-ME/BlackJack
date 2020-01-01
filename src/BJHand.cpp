@@ -4,7 +4,14 @@
 
 #include "BJHand.h"
 
-BJHand::BJHand(float bet = 0) {
+BJHand::BJHand()
+{
+  bet = 0;
+  total = 0;
+  soft = false;
+}
+
+BJHand::BJHand(float bet) {
   this->bet = bet;
   total = 0;
   soft = false;
@@ -12,7 +19,7 @@ BJHand::BJHand(float bet = 0) {
 
 std::string BJHand::print()
 {
-  std::string returnString = "";
+  std::string returnString;
   for(card mcard : cards)
   {
     if(mcard.isFaceUp())

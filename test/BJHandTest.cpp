@@ -56,7 +56,7 @@ TEST(BJHand, Add_random_number_of_cards_verify_count_and_total)
     ASSERT_EQ(0, testHand.getTotal());
 }
 
-TEST_F(BJHandTest, Test_Busted_Hand)
+TEST_F(BJHandTest, Busted_hand_is_busted)
 {
     testHand.add(testTen);
     testHand.add(testFive);
@@ -65,7 +65,7 @@ TEST_F(BJHandTest, Test_Busted_Hand)
     ASSERT_TRUE(testHand.isBusted());
 }
 
-TEST_F(BJHandTest, test_for_hand_isSoft)
+TEST_F(BJHandTest, Hand_with_ace_isSoft)
 {
     testHand.add(testAce);
     testHand.add(testSeven);
@@ -79,7 +79,7 @@ TEST_F(BJHandTest, test_for_hand_isSoft)
     ASSERT_FALSE(testHand.isSoft());
 }
 
-TEST_F(BJHandTest, test_blackjack_is_true)
+TEST_F(BJHandTest, Blackjack_is_true)
 {
     testHand.add(testAce);
     testHand.add(testTen);
@@ -87,7 +87,7 @@ TEST_F(BJHandTest, test_blackjack_is_true)
     ASSERT_TRUE(testHand.isBlackJack());
 }
 
-TEST_F(BJHandTest, test_BlackJack_is_false_with_ace_as_1)
+TEST_F(BJHandTest, BlackJack_is_false_with_ace_as_1)
 {
     testHand.add(testAce);
     testHand.add(testFive);

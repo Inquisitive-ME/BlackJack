@@ -37,19 +37,19 @@ TEST(Player, Creating_player_has_name_and_purse)
   ASSERT_EQ(testPurse, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, testing_new_hand_function)
+TEST_F(playerTest, New_hand_creates_hand_with_correct_bet)
 {
     ASSERT_EQ(uint(1), testPlayer.numHands());
     ASSERT_EQ(betForHand, testPlayer.getHands()[0].getBet());
 }
 
-TEST_F(playerTest, testing_player_win_function)
+TEST_F(playerTest, Win_function)
 {
   testPlayer.winHand(0);
   ASSERT_EQ(betForHand, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, player_wins_with_blackjack)
+TEST_F(playerTest, Win_with_blackjack)
 {
   testPlayer.getHand(0).add(testAce);
   testPlayer.getHand(0).add(testTen);
@@ -58,7 +58,7 @@ TEST_F(playerTest, player_wins_with_blackjack)
   ASSERT_EQ(betForHand * 1.5, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, testing_player_win_with_total_21)
+TEST_F(playerTest, Win_with_total_21_not_blackjack)
 {
   testPlayer.getHand(0).add(testAce);
   testPlayer.getHand(0).add(testFive);
@@ -68,26 +68,26 @@ TEST_F(playerTest, testing_player_win_with_total_21)
   ASSERT_EQ(betForHand, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, testing_player_lose_function)
+TEST_F(playerTest, Lose_function)
 {
   testPlayer.loseHand(0);
   ASSERT_EQ(-betForHand, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, test_player_double_down)
+TEST_F(playerTest, Double_down)
 {
   testPlayer.doubleDown(0);
   ASSERT_EQ(betForHand * 2, testPlayer.getHand(0).getBet());
 }
 
-TEST_F(playerTest, test_dealer_bust_function_with_2_non_busted_hands)
+TEST_F(playerTest, Dealer_bust_function_with_2_non_busted_hands)
 {
   testPlayer.newHand(betForHand);
   testPlayer.dealerBusted();
   ASSERT_EQ(betForHand * 2, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, test_dealer_bust_function_with_1_busted_hand)
+TEST_F(playerTest, Dealer_bust_function_with_1_busted_hand)
 {
   testPlayer.getHand(0).add(testTen);
   testPlayer.getHand(0).add(testTen);
@@ -101,7 +101,7 @@ TEST_F(playerTest, test_dealer_bust_function_with_1_busted_hand)
   ASSERT_EQ(expectedPurse, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, test_dealer_bust_function_with_1_blackjack_hand)
+TEST_F(playerTest, Dealer_bust_function_with_1_blackjack_hand)
 {
   testPlayer.getHand(0).add(testTen);
   testPlayer.getHand(0).add(testAce);
@@ -112,13 +112,13 @@ TEST_F(playerTest, test_dealer_bust_function_with_1_blackjack_hand)
   ASSERT_EQ(expectedPurse, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, test_player_surrender)
+TEST_F(playerTest, Surrender)
 {
   testPlayer.surrender(0);
   EXPECT_EQ(-betForHand * 0.5, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, test_player_split)
+TEST_F(playerTest, Split)
 {
   testPlayer.getHand(0).add(testAce);
   testPlayer.getHand(0).add(testFive);

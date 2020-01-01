@@ -52,14 +52,14 @@ INSTANTIATE_TEST_SUITE_P(all_card_values, CardTest,
                                          );
 
 
-TEST_P(CardTest, create_new_card_and_verify_value){
+TEST_P(CardTest, Create_new_card_and_verify_value){
     card_test const& card_values = GetParam();
     card testCard(card_values.rank);
 
     ASSERT_EQ(card_values.value, testCard.getValue());
 }
 
-TEST_P(CardTest, create_new_card_and_verify_counts)
+TEST_P(CardTest, Create_new_card_and_verify_counts)
 {
     card_test const& card_values = GetParam();
     card testCard(card_values.rank);
@@ -69,7 +69,7 @@ TEST_P(CardTest, create_new_card_and_verify_counts)
     ASSERT_EQ(card_values.OmegaIICount, testCard.getOmegaIICount());
 }
 
-TEST_P(CardTest, create_new_card_and_verify_print)
+TEST_P(CardTest, Create_new_card_and_verify_print)
 {
 
     card_test const& card_values = GetParam();
@@ -78,7 +78,7 @@ TEST_P(CardTest, create_new_card_and_verify_print)
     ASSERT_EQ(card_values.PrintString, testCard.print());
 }
 
-TEST_P(CardTest, create_new_card_and_verify_isAce)
+TEST_P(CardTest, Create_new_card_and_verify_isAce)
 {
     card_test const& card_values = GetParam();
     card testCard(card_values.rank);
