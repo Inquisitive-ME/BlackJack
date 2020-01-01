@@ -11,8 +11,10 @@ set(SOURCE_FILES
 		deck.cpp
 		dealer.cpp
 		BJGame.cpp
-		getRandomInt.cpp)
+		getRandomInt.cpp
+        blackjack_database.cpp)
 
-add_library(BlackJack_Testing STATIC ${SOURCE_FILES})
+find_library(SQLITE sqlite3)
 
 add_executable(BlackJack ${SOURCE_FILES})
+target_link_libraries(BlackJack ${SQLITE})

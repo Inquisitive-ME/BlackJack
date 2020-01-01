@@ -29,6 +29,7 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 file(GLOB SRC_FILES ../src/*.cpp)
 list(FILTER SRC_FILES EXCLUDE REGEX ".*main.cpp$")
 
+find_library(SQLITE sqlite3)
 function(test name scenario)
     # scenario is additional google test run parameters
     string(REPLACE "/" "_" out ${name})
@@ -36,7 +37,7 @@ function(test name scenario)
     #add_test(${out} ./${out})
     # gtest_discover_tests will only run tests that change
     gtest_discover_tests(${out} TEST_PREFIX ${scenario}:)
-    target_link_libraries(${out} gtest_main gmock_main)
+    target_link_libraries(${out} ${SQLITE} gtest_main gmock_main)
     add_custom_command(TARGET ${out} COMMAND ./${out} ${scenario})
 endfunction()
 
@@ -55,6 +56,7 @@ test(BJHandTest "")
 test(dealerTest "")
 test(playerTest "")
 test(randomTest "")
+test(blackjack_database_test "")
 #link_directories(${GUNIT_LINK_DIRS})
 #test(cardTest SCENARIO=${CMAKE_CURRENT_SOURCE_DIR}/cardTest.feature)
 #target_link_libraries(cardTest ${CMAKE_CURRENT_BINARY_DIR}/../src/libBlackJack_Testing.a)

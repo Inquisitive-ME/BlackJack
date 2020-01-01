@@ -16,3 +16,10 @@ cp /run/media/amgaera/root/usr/ rootfs/ -rv
 cp /run/media/amgaera/root/opt/vc rootfs/opt/ -rv
 ```
 or you can copy the entire /lib and /usr libraries from the raspberry pi
+
+## Sqlite3 dependency
+In order to build you must have sqlite3 installed on your local machine to build for linux
+and the rootfs must be copied from a rapberry pi with sqlite3 in order to cross compile
+
+## TODO's
+* Add needed rootfs files for sqlite3 to repo so there is no need to copy over rootfs
