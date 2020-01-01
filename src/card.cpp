@@ -15,7 +15,7 @@ card::card(int rank)
   else if(rank > 10)
     value = 10;
   else
-    printf("Using Invalid Ranks");
+    printf("%d is an invalid rank\n", rank);
 
   //TODO try starting with card faceup so that we don't have to do a flip and callback for most of the cards dealt
   // TODO timed test to verify

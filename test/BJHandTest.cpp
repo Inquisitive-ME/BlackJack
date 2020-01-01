@@ -3,13 +3,13 @@
 //
 
 #include "../src/BJHand.h"
-#include "../src/getRandomInt.cpp"
+#include "../src/getRandomInt.h"
 
-#include "GUnit/GTest.h"
+#include "gtest/gtest.h"
+#include "myGTest.h"
 
 class BJHandTest : public::testing::Test{
 public:
-  //TODO need to clean this up so it works
   int betForHand = 5;
   BJHand testHand;
   card testAce;
@@ -26,20 +26,20 @@ public:
   }
 };
 
-GTEST(BJHandTest, "Creating new hand has bet value")
+TEST_F(BJHandTest, Creating_new_hand_has_bet_value)
 {
-  EXPECT_EQ(betForHand, testHand.getBet());
+  ASSERT_EQ(betForHand, testHand.getBet());
 }
 
 // random number of cards not including Ace test total
-GTEST("BJHand", "Add random number of cards verify count and total")
+TEST(BJHand, Add_random_number_of_cards_verify_count_and_total)
 {
-  uint numCards = getRandomInt(0, 100);
-  int expectedTotal = 0;
-  BJHand testHand(0);
+    uint numCards = getRandomInt(0, 100);
+    int expectedTotal = 0;
+    BJHand testHand(0);
 
-  SHOULD("Add " + std::to_string(numCards) + " cards to hand")
-  {
+    GTEST_LOG << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
+
     for (uint i = 0; i < numCards; i++)
     {
       card testCard(getRandomInt(2, 13));
@@ -48,60 +48,58 @@ GTEST("BJHand", "Add random number of cards verify count and total")
       testHand.add(testCard);
     }
     EXPECT_EQ(numCards, testHand.getNumCards());
-    EXPECT_EQ(expectedTotal, testHand.getTotal());
-  }
+    ASSERT_EQ(expectedTotal, testHand.getTotal());
 
-  SHOULD("Clear Hand")
-  {
+    GTEST_LOG << "Clear Hand" << std::endl;
     testHand.clear();
     EXPECT_EQ(uint(0), testHand.getNumCards());
-    EXPECT_EQ(0, testHand.getTotal());
-  }
+    ASSERT_EQ(0, testHand.getTotal());
 }
 
-GTEST(BJHandTest, "Test Busted Hand")
+TEST_F(BJHandTest, Test_Busted_Hand)
 {
-  testHand.add(testTen);
-  testHand.add(testFive);
-  testHand.add(testSeven);
+    testHand.add(testTen);
+    testHand.add(testFive);
+    testHand.add(testSeven);
 
-  EXPECT_TRUE(testHand.isBusted());
+    ASSERT_TRUE(testHand.isBusted());
 }
 
-GTEST(BJHandTest, "test for hand isSoft")
+TEST_F(BJHandTest, test_for_hand_isSoft)
 {
+    testHand.add(testAce);
+    testHand.add(testSeven);
 
-  testHand.add(testAce);
-  testHand.add(testSeven);
+    EXPECT_EQ(18, testHand.getTotal());
+    ASSERT_TRUE(testHand.isSoft());
 
-  EXPECT_EQ(18, testHand.getTotal());
-  EXPECT_TRUE(testHand.isSoft());
+    testHand.add(testSeven);
 
-  testHand.add(testSeven);
-
-  EXPECT_EQ(15, testHand.getTotal());
-  EXPECT_FALSE(testHand.isSoft());
+    EXPECT_EQ(15, testHand.getTotal());
+    ASSERT_FALSE(testHand.isSoft());
 }
 
-GTEST(BJHandTest, "test for blackjack is true")
+TEST_F(BJHandTest, test_blackjack_is_true)
 {
-  testHand.add(testAce);
-  testHand.add(testTen);
+    testHand.add(testAce);
+    testHand.add(testTen);
 
-  EXPECT_TRUE(testHand.isBlackJack());
+    ASSERT_TRUE(testHand.isBlackJack());
 }
 
-GTEST(BJHandTest, "test isBlackJack is false")
+TEST_F(BJHandTest, test_BlackJack_is_false_with_ace_as_1)
 {
-  testHand.add(testAce);
-  testHand.add(testFive);
-  testHand.add(testFive);
+    testHand.add(testAce);
+    testHand.add(testFive);
+    testHand.add(testFive);
 
-  EXPECT_FALSE(testHand.isBlackJack());
+    ASSERT_FALSE(testHand.isBlackJack());
+}
 
-  testHand.clear();
-  testHand.add(testFive);
-  testHand.add(testFive);
+TEST_F(BJHandTest, BlackJack_is_false)
+{
+    testHand.add(testFive);
+    testHand.add(testFive);
 
-  EXPECT_FALSE(testHand.isBlackJack());
+    ASSERT_FALSE(testHand.isBlackJack());
 }

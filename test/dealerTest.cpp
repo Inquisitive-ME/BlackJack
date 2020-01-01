@@ -4,7 +4,7 @@
 
 #include "../src/dealer.h"
 
-#include "GUnit/GTest.h"
+#include "gtest/gtest.h"
 
 class dealerTest : public::testing::Test{
 public:
@@ -20,40 +20,40 @@ public:
   }
 
 };
-GTEST(dealerTest, "test is hitting not soft")
+TEST_F(dealerTest, test_is_hitting_not_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testTen);
   testDealer.add(testAce);
 
-  EXPECT_TRUE(testDealer.isHitting());
+  ASSERT_TRUE(testDealer.isHitting());
 }
 
-GTEST(dealerTest, "test not hitting not soft")
+TEST_F(dealerTest, test_not_hitting_not_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testTen);
   testDealer.add(testAce);
   testDealer.add(testAce);
 
-  EXPECT_FALSE(testDealer.isHitting());
+  ASSERT_FALSE(testDealer.isHitting());
 }
 
-GTEST(dealerTest, "test hitting soft")
+TEST_F(dealerTest, test_hitting_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testAce);
   testDealer.add(testAce);
 
-  EXPECT_TRUE(testDealer.isHitting());
+  ASSERT_TRUE(testDealer.isHitting());
 }
 
-GTEST(dealerTest, "test not hitting soft")
+TEST_F(dealerTest, test_not_hitting_soft)
 {
   testDealer.add(testFive);
   testDealer.add(testAce);
   testDealer.add(testAce);
   testDealer.add(testAce);
 
-  EXPECT_FALSE(testDealer.isHitting());
+  ASSERT_FALSE(testDealer.isHitting());
 }

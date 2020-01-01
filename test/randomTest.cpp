@@ -6,9 +6,10 @@
 #include <cmath>
 #include <iostream>
 
-#include "GUnit/GTest.h"
+#include "gtest/gtest.h"
+#include "myGTest.h"
 
-GTEST("getRandomInt", "Verify uniform distribution of getRandomInt")
+TEST(getRandomInt, Verify_uniform_distribution_of_getRandomInt)
 {
   double numNumbersToGenerate = 100000;
   int rangeMin = 0;
@@ -35,18 +36,15 @@ GTEST("getRandomInt", "Verify uniform distribution of getRandomInt")
       maxValue = test;
     }
   }
-  SHOULD("Have an even distribution")
-  {
+
+  GTEST_LOG << "Verify Even Distribution" << std::endl;
     for (int i = 0; i < rangeMax; i++)
     {
-      EXPECT_LT(std::abs(count[i] - (numNumbersToGenerate / generatedRange)) / numNumbersToGenerate, expected_accuracy);
+      ASSERT_LT(std::abs(count[i] - (numNumbersToGenerate / generatedRange)) / numNumbersToGenerate, expected_accuracy);
     }
-  }
-  SHOULD("Generate the minimum and maximum values of the given range")
-  {
-    EXPECT_EQ(minValue, rangeMin);
-    EXPECT_EQ(maxValue, rangeMax);
-  }
 
+  GTEST_LOG << "Verify the minimum and maximum values were generated" << std::endl;
+    ASSERT_EQ(minValue, rangeMin);
+    ASSERT_EQ(maxValue, rangeMax);
 
 }

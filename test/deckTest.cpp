@@ -8,7 +8,7 @@
 
 #include "GUnit/GTest.h"
 
-GTEST("Deck", "Test populate method")
+TEST(Deck, Test_populate_method)
 {
   int numDecks = 6;
   deck testDeck(numDecks, 0);

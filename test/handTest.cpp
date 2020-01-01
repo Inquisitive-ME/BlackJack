@@ -3,56 +3,47 @@
 //
 
 #include "../src/hand.h"
-#include "../src/getRandomInt.cpp"
+#include "../src/getRandomInt.h"
 
-#include "GUnit/GTest.h"
+#include "gtest/gtest.h"
+#include "myGTest.h"
 
-GTEST("Hand", "Add random number of cards verify count and total")
+//TODO Should be mocking card for unit tests and only use card for integration test
+TEST(Hand, Add_random_number_of_cards_verify_count)
 {
-  uint numCards = getRandomInt(0, 100);
-  hand testHand;
+    uint numCards = getRandomInt(0, 100);
+    hand testHand;
 
-  SHOULD("Add " + std::to_string(numCards) + " cards to hand")
-  {
+    GTEST_LOG << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
     for (uint i = 0; i < numCards; i++)
     {
       card testCard(getRandomInt(1, 13));
       testHand.add(testCard);
     }
-    EXPECT_EQ(numCards, testHand.getNumCards());
-  }
+    ASSERT_EQ(numCards, testHand.getNumCards());
 
-  SHOULD("Clear Hand")
-  {
+    GTEST_LOG << "Clear Hand" << std::endl;
     testHand.clear();
-    EXPECT_EQ(uint(0), testHand.getNumCards());
-  }
+    ASSERT_EQ(uint(0), testHand.getNumCards());
 }
 
-// Give to another hand
-GTEST("Hand", "Verify Giving card from one hand to another")
+TEST(Hand, Verify_Giving_card_from_one_hand_to_another)
 {
-  hand giveHand;
-  hand receiveHand;
-  uint expectedEndGiveHandSize = 0;
+    hand giveHand;
+    hand receiveHand;
+    uint expectedEndGiveHandSize = 0;
 
-  card testCard(getRandomInt(1, 13));
+    card testCard(getRandomInt(1, 13));
 
-  giveHand.add(testCard);
-  giveHand.give(0, receiveHand);
+    giveHand.add(testCard);
+    giveHand.give(0, receiveHand);
 
-  SHOULD("receiving hand has same card as given to it")
-  {
-    EXPECT_TRUE(testCard == receiveHand.getCard(0));
-  }
+    ASSERT_TRUE(testCard == receiveHand.getCard(0));
 
-  SHOULD("hand giving card should have no cards")
-  {
-    EXPECT_EQ(expectedEndGiveHandSize, giveHand.getNumCards());
-  }
+    ASSERT_EQ(expectedEndGiveHandSize, giveHand.getNumCards());
 }
 
-GTEST("Hand", "Verify giving card from non zero index in a hand to another hand")
+TEST(Hand, Verify_giving_card_from_non_zero_index_in_a_hand_to_another_hand)
 {
   int indexToGive = getRandomInt(0, 9);
   card expectedCard(0);
@@ -71,10 +62,10 @@ GTEST("Hand", "Verify giving card from non zero index in a hand to another hand"
   }
 
   giveHand.give(indexToGive, receiveHand);
-  EXPECT_TRUE(expectedCard == receiveHand.getCard(0));
+  ASSERT_TRUE(expectedCard == receiveHand.getCard(0));
 }
 
-GTEST("Hand", "Verify flip card")
+TEST(Hand, Verify_flip_card)
 {
   hand testHand;
   card testCard(0);
@@ -82,9 +73,9 @@ GTEST("Hand", "Verify flip card")
   testHand.add(testCard);
 
   testHand.flipCard(0);
-  EXPECT_TRUE(testHand.getCard(0).isFaceUp());
+  ASSERT_TRUE(testHand.getCard(0).isFaceUp());
   testHand.flipCard(0);
-  EXPECT_FALSE(testHand.getCard(0).isFaceUp());
+  ASSERT_FALSE(testHand.getCard(0).isFaceUp());
 }
 
 

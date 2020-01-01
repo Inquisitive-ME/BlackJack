@@ -4,9 +4,10 @@
 
 
 #include "../src/player.h"
-#include "../src/getRandomInt.cpp"
+#include "../src/getRandomInt.h"
 
-#include "GUnit/GTest.h"
+#include "gtest/gtest.h"
+#include "myGTest.h"
 #include <string>
 
 class playerTest : public::testing::Test{
@@ -26,77 +27,67 @@ public:
 
 };
 
-GTEST("Player", "Creating player has name and purse")
+TEST(Player, Creating_player_has_name_and_purse)
 {
   std::string testName = "test name";
   float testPurse = 10;
 
   player testPlayer(testName, testPurse);
-  EXPECT_EQ(testName, testPlayer.getName());
-  EXPECT_EQ(testPurse, testPlayer.getPurse());
-
+  ASSERT_EQ(testName, testPlayer.getName());
+  ASSERT_EQ(testPurse, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "testing new hand function")
+TEST_F(playerTest, testing_new_hand_function)
 {
-  SHOULD("Added new hand to player hands")
-  {
-    EXPECT_EQ(uint(1), testPlayer.numHands());
-  }
-  SHOULD("new hand should have correct bet")
-  {
-     EXPECT_EQ(betForHand, testPlayer.getHands()[0].getBet());
-  }
+    ASSERT_EQ(uint(1), testPlayer.numHands());
+    ASSERT_EQ(betForHand, testPlayer.getHands()[0].getBet());
 }
 
-GTEST(playerTest, "testing player win function")
+TEST_F(playerTest, testing_player_win_function)
 {
   testPlayer.winHand(0);
-  EXPECT_EQ(betForHand, testPlayer.getPurse());
+  ASSERT_EQ(betForHand, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "player wins with blackjack")
+TEST_F(playerTest, player_wins_with_blackjack)
 {
   testPlayer.getHand(0).add(testAce);
   testPlayer.getHand(0).add(testTen);
 
   testPlayer.winHand(0);
-  EXPECT_EQ(betForHand * 1.5, testPlayer.getPurse());
-
+  ASSERT_EQ(betForHand * 1.5, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "testing player win with total = 21")
+TEST_F(playerTest, testing_player_win_with_total_21)
 {
   testPlayer.getHand(0).add(testAce);
   testPlayer.getHand(0).add(testFive);
   testPlayer.getHand(0).add(testFive);
 
   testPlayer.winHand(0);
-  EXPECT_EQ(betForHand, testPlayer.getPurse());
+  ASSERT_EQ(betForHand, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "testing player lose function")
+TEST_F(playerTest, testing_player_lose_function)
 {
   testPlayer.loseHand(0);
-  EXPECT_EQ(-betForHand, testPlayer.getPurse());
+  ASSERT_EQ(-betForHand, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "test player double down")
+TEST_F(playerTest, test_player_double_down)
 {
   testPlayer.doubleDown(0);
-  EXPECT_EQ(betForHand * 2, testPlayer.getHand(0).getBet());
-
+  ASSERT_EQ(betForHand * 2, testPlayer.getHand(0).getBet());
 }
 
-GTEST(playerTest, "test dealer bust function with 2 non busted hands")
+TEST_F(playerTest, test_dealer_bust_function_with_2_non_busted_hands)
 {
   testPlayer.newHand(betForHand);
   testPlayer.dealerBusted();
-  EXPECT_EQ(betForHand * 2, testPlayer.getPurse());
-
+  ASSERT_EQ(betForHand * 2, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "test dealer bust function with 1 busted hand")
+TEST_F(playerTest, test_dealer_bust_function_with_1_busted_hand)
 {
   testPlayer.getHand(0).add(testTen);
   testPlayer.getHand(0).add(testTen);
@@ -107,11 +98,10 @@ GTEST(playerTest, "test dealer bust function with 1 busted hand")
 
   testPlayer.dealerBusted();
   float expectedPurse = betForHand + betForHand - betForHand;
-  EXPECT_EQ(expectedPurse, testPlayer.getPurse());
-
+  ASSERT_EQ(expectedPurse, testPlayer.getPurse());
 }
 
-GTEST(playerTest, "test dealer bust function with 1 blackjack hand")
+TEST_F(playerTest, test_dealer_bust_function_with_1_blackjack_hand)
 {
   testPlayer.getHand(0).add(testTen);
   testPlayer.getHand(0).add(testAce);
@@ -119,40 +109,32 @@ GTEST(playerTest, "test dealer bust function with 1 blackjack hand")
 
   testPlayer.dealerBusted();
   float expectedPurse = betForHand * 1.5 + betForHand;
-  EXPECT_EQ(expectedPurse, testPlayer.getPurse());
-
+  ASSERT_EQ(expectedPurse, testPlayer.getPurse());
 }
 
-//surrender
-GTEST(playerTest, "test player surrender")
+TEST_F(playerTest, test_player_surrender)
 {
   testPlayer.surrender(0);
   EXPECT_EQ(-betForHand * 0.5, testPlayer.getPurse());
 }
 
-//split
-GTEST(playerTest, "test player split")
+TEST_F(playerTest, test_player_split)
 {
   testPlayer.getHand(0).add(testAce);
   testPlayer.getHand(0).add(testFive);
 
   testPlayer.split(0);
 
-  SHOULD("Player has 2 hands")
-  {
-    EXPECT_EQ(uint(2), testPlayer.getHands().size());
-  }
-  SHOULD("Each hand should have the starting bet value")
-  {
+  GTEST_LOG << "Player has 2 hands" << std::endl;
+    ASSERT_EQ(uint(2), testPlayer.getHands().size());
+
+  GTEST_LOG << "Each hand should have the starting bet value" << std::endl;
     EXPECT_EQ(betForHand, testPlayer.getHand(0).getBet());
     EXPECT_EQ(betForHand, testPlayer.getHand(1).getBet());
-  }
-  SHOULD("First hand should have first card of original hand, second hand should have second card")
-  {
-    EXPECT_EQ(uint(1), testPlayer.getHand(0).getNumCards());
-    EXPECT_TRUE(testAce == testPlayer.getHand(0).getCard(0));
-    EXPECT_EQ(uint(1), testPlayer.getHand(1).getNumCards());
-    EXPECT_TRUE(testFive == testPlayer.getHand(1).getCard(0));
-  }
 
+  GTEST_LOG << "First hand should have first card of original hand, second hand should have second card" << std::endl;
+    EXPECT_EQ(uint(1), testPlayer.getHand(0).getNumCards());
+    ASSERT_TRUE(testAce == testPlayer.getHand(0).getCard(0));
+    EXPECT_EQ(uint(1), testPlayer.getHand(1).getNumCards());
+    ASSERT_TRUE(testFive == testPlayer.getHand(1).getCard(0));
 }

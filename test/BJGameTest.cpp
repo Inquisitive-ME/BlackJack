@@ -7,8 +7,8 @@
 #include "../src/deck.h"
 #include <algorithm>
 
+#include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "GUnit/GTest.h"
 
 class MockDeck: public deck{
 public:
@@ -52,4 +52,9 @@ TEST(BJGameFunctions, test_starting_deal)
     EXPECT_CALL(testDealer, flipCard(_));
 
     BJGameFunctions::starting_deal(testDeck, testDealer, playerList);
+}
+
+TEST(BJGameFunction, DISABLED_test)
+{
+    ASSERT_TRUE(false);
 }
