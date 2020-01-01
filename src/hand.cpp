@@ -7,7 +7,7 @@
 #include "hand.h"
 #include <utility>
 
-hand::hand() {}
+hand::hand() = default;
 
 void hand::clear()
 {
@@ -19,7 +19,7 @@ void hand::add(card cardToAdd)
   cards.push_back(cardToAdd);
 }
 
-void hand::add_move(card cardToAdd)
+void hand::add_move(card& cardToAdd)
 {
   cards.push_back(std::move(cardToAdd));
 }
@@ -30,9 +30,9 @@ void hand::give(int cardIndex,hand& handToGiveTo)
 }
 uint hand::getNumCards()
 {
-  return(cards.size());
+  return(static_cast<uint> (cards.size()));
 }
-card hand::getCard(int cardIndex)
+const card& hand::getCard(int cardIndex)
 {
   return cards[cardIndex];
 };

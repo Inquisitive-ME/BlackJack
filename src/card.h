@@ -8,11 +8,9 @@
 #ifndef CARD_H_
 #define CARD_H_
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <functional>
-
-class deck;
 
 class card
 {
@@ -31,7 +29,7 @@ private:
   void calculateOmegaIICount();
 
 public:
-  card(int rank);
+  explicit card(int rank);
 
   void setFlipCallBack(std::function<void(card&)> setCallback)
   {
@@ -50,41 +48,38 @@ public:
     return rank != compareCard.rank;
   }
 
-  void flip();
-  std::string print();
+  virtual void flip();
+  std::string print() const;
 
-  int getValue()
+  int getValue() const
   {
     return value;
   }
 
-  int getHighLowCount()
+  int getHighLowCount() const
   {
     return HighLowCount;
   }
 
-  int getZenCount()
+  int getZenCount() const
   {
     return ZenCount;
   }
 
-  int getOmegaIICount()
+  int getOmegaIICount() const
   {
     return OmmegaIICount;
   }
 
-  bool isFaceUp()
+  bool isFaceUp() const
   {
     return faceup;
   }
-  bool isAce()
+  bool isAce() const
   {
     return (rank == 1);
   }
-  ~card()
-  {
-    //printf("Card Destroyed\n");
-  };
+  virtual ~card() = default;
 
 };
 

@@ -71,7 +71,7 @@ void card::calculateOmegaIICount()
     OmmegaIICount = 0;
 }
 
-std::string card::print()
+std::string card::print() const
 {
   if(rank >=2 && rank <=10)
     return std::to_string(rank);

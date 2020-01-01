@@ -14,7 +14,7 @@
 class hand
 {
 private:
-  void add_move(card cardToMove);
+  void add_move(card& cardToMove);
 
 protected:
   std::vector<card> cards;
@@ -26,14 +26,11 @@ public:
   void add(card cardToAdd);
   void give(int cardIndex, hand& handToGiveTo);
   uint getNumCards();
-  card getCard(int cardIndex);
+  const card& getCard(int cardIndex);
   virtual void flipCard(int cardIndex);
   virtual bool operator==(const hand& otherHand) const {return true;};
 
-    virtual ~hand()
-  {
-    //std::cout << "Hand Destroyed" << std::endl;
-  }
+    virtual ~hand() = default;
 };
 
 

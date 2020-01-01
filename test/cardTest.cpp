@@ -3,6 +3,7 @@
 //
 
 #include "gtest/gtest.h"
+#include "myGTest.h"
 #include "../src/card.h"
 
 struct card_test
@@ -96,15 +97,27 @@ TEST(Card, Verify_flip_without_callback)
 }
 
 TEST(Card, Verify_flipCallback_is_called_when_card_is_flipped){
-  card testCard(4);
-  bool testCallback = false;
+  int cardValue = 4;
+  card testCard(cardValue);
+  int testCallback = 0;
 
-  testCard.setFlipCallBack([&](card passedCard){testCallback = passedCard.isFaceUp();});
+  testCard.setFlipCallBack([&](card passedCard){testCallback = passedCard.getValue();});
 
   EXPECT_FALSE(testCard.isFaceUp());
-  EXPECT_FALSE(testCallback);
+  EXPECT_NE(testCallback, cardValue);
 
   testCard.flip();
   ASSERT_TRUE(testCard.isFaceUp());
+  ASSERT_EQ(testCallback, cardValue);
+}
+
+TEST(Card, Verify_flipCallBack_is_called_when_set_and_card_is_faceup)
+{
+  card testCard(4);
+  GTEST_LOG << "Make card faceup before setting callback" << std::endl;
+  testCard.flip();
+
+  bool testCallback = false;
+  testCard.setFlipCallBack([&testCallback](card passedCard){testCallback = true;});
   ASSERT_TRUE(testCallback);
 }
