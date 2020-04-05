@@ -10,7 +10,7 @@
 
 #include "hand.h"
 
-#include "player.h"
+#include "player_interface.h"
 #include "getRandomInt.h"
 #include <algorithm>
 
@@ -26,7 +26,7 @@ public:
   void populate();
   int getCount();
   virtual void deal(hand&,int);
-  virtual void deal(player&,int);
+  virtual void deal(PlayerInterface&,int);
   virtual ~deck();
 };
 

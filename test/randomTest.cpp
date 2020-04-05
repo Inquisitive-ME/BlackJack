@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "myGTest.h"
 
 TEST(getRandomInt, Verify_uniform_distribution_of_getRandomInt)
 {
@@ -37,14 +36,12 @@ TEST(getRandomInt, Verify_uniform_distribution_of_getRandomInt)
     }
   }
 
-  GTEST_LOG << "Verify Even Distribution" << std::endl;
     for (int i = 0; i < rangeMax; i++)
     {
-      ASSERT_LT(std::abs(count[i] - (numNumbersToGenerate / generatedRange)) / numNumbersToGenerate, expected_accuracy);
+      ASSERT_LT(std::abs(count[i] - (numNumbersToGenerate / generatedRange)) / numNumbersToGenerate, expected_accuracy) << "Verify Even Distribution" << std::endl;
     }
 
-  GTEST_LOG << "Verify the minimum and maximum values were generated" << std::endl;
-    ASSERT_EQ(minValue, rangeMin);
-    ASSERT_EQ(maxValue, rangeMax);
+    ASSERT_EQ(minValue, rangeMin) << "Verify the minimum values were generated" << std::endl;
+    ASSERT_EQ(maxValue, rangeMax) << "Verify the maximum values were generated" << std::endl;
 
 }

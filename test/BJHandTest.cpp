@@ -6,7 +6,6 @@
 #include "../src/getRandomInt.h"
 
 #include "gtest/gtest.h"
-#include "myGTest.h"
 
 class BJHandTest : public::testing::Test{
 public:
@@ -38,8 +37,6 @@ TEST(BJHand, Add_random_number_of_cards_verify_count_and_total)
     int expectedTotal = 0;
     BJHand testHand(0);
 
-    GTEST_LOG << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
-
     for (uint i = 0; i < numCards; i++)
     {
       card testCard(getRandomInt(2, 13));
@@ -48,12 +45,11 @@ TEST(BJHand, Add_random_number_of_cards_verify_count_and_total)
       testHand.add(testCard);
     }
     EXPECT_EQ(numCards, testHand.getNumCards());
-    ASSERT_EQ(expectedTotal, testHand.getTotal());
+    ASSERT_EQ(expectedTotal, testHand.getTotal()) << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
 
-    GTEST_LOG << "Clear Hand" << std::endl;
     testHand.clear();
     EXPECT_EQ(uint(0), testHand.getNumCards());
-    ASSERT_EQ(0, testHand.getTotal());
+    ASSERT_EQ(0, testHand.getTotal()) << "Hand Cleared\n";
 }
 
 TEST_F(BJHandTest, Busted_hand_is_busted)

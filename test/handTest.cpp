@@ -7,7 +7,6 @@
 
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "myGTest.h"
 
 class MockCard: public card{
 public:
@@ -19,15 +18,13 @@ TEST(Hand, Add_random_number_of_cards_verify_count)
     uint numCards = (uint) getRandomInt(0, 100);
     hand testHand;
 
-    GTEST_LOG << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
     for (uint i = 0; i < numCards; i++)
     {
       MockCard testCard;
       testHand.add(testCard);
     }
-    ASSERT_EQ(numCards, testHand.getNumCards());
+    ASSERT_EQ(numCards, testHand.getNumCards()) << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
 
-    GTEST_LOG << "Clear Hand" << std::endl;
     testHand.clear();
     ASSERT_EQ(uint(0), testHand.getNumCards());
 }

@@ -1,34 +1,33 @@
 /*
- * player.cpp
+ * PlayerImpl.cpp
  *
  *  Created on: May 20, 2018
  *      Author: richard
  */
 
-#include "player.h"
+#include "player_impl.h"
 
 #define BLACKJACKMULTIPLIER 1.5
 #define SURRENDERPENALTY 0.5
 
-player::player() {
+PlayerImpl::PlayerImpl() {
   name = " ";
   purse = 0;
   std::vector <BJHand> hands;
 }
 
-// TODO Redo player class so that it is more intelligent
-// win should include blackjack
+// TODO Redo PlayerImpl class so that it is more intelligent
 // should have a dealer busted
 // isBusted should evaluate automatically
 
-player::player(std::string playerName, float startPurse=0)
+PlayerImpl::PlayerImpl(std::string playerName, float startPurse=0)
 {
   name = playerName;
   purse = startPurse;
   std::vector <BJHand> hands;
 }
 
-void player::winHand(int handNumber)
+void PlayerImpl::winHand(int handNumber)
 {
   if(hands[handNumber].isBlackJack())
   {
@@ -40,12 +39,12 @@ void player::winHand(int handNumber)
   }
 }
 
-void player::loseHand(int handNumber)
+void PlayerImpl::loseHand(int handNumber)
 {
   purse -= hands[handNumber].getBet();
 }
 
-void player::dealerBusted()
+void PlayerImpl::dealerBusted()
 {
   for(BJHand playerHand : hands)
   {
@@ -64,7 +63,7 @@ void player::dealerBusted()
   }
 }
 
-void player::split(int handNum)
+void PlayerImpl::split(int handNum)
 {
   BJHand newHand(hands[handNum].getBet());
   hands[handNum].give(0,newHand);
@@ -72,47 +71,47 @@ void player::split(int handNum)
   //In the game the additional card is dealt from the deck to each hand
 }
 
-void player::doubleDown(int handNum)
+void PlayerImpl::doubleDown(int handNum)
 {
   hands[handNum].doubleBet();
 }
 
-void player::surrender(int handNum)
+void PlayerImpl::surrender(int handNum)
 {
   purse -= (hands[handNum].getBet() * SURRENDERPENALTY);
 }
 
-uint player::numHands()
+const uint PlayerImpl::numHands() const
 {
   return(hands.size());
 }
 
-BJHand& player::getHand(uint handNum)
+BJHand& PlayerImpl::getHand(uint handNum)
 {
   return(hands[handNum]);
 }
 
-std::vector<BJHand>& player::getHands()
+std::vector<BJHand>& PlayerImpl::getHands()
 {
   return(hands);
 }
 
-void player::newHand(float pbet)
+void PlayerImpl::newHand(float pbet)
 {
   hands.push_back(BJHand(pbet));
 }
 
-void player::removeHand(int handNumberToRemove)
+void PlayerImpl::removeHand(int handNumberToRemove)
 {
   hands.erase(hands.begin()+handNumberToRemove);
 }
 
-void player::clearAllHands()
+void PlayerImpl::clearAllHands()
 {
   hands.clear();
 }
 
-player::~player() {
-//  std::cout << "player Destroyed" << std::endl;
+PlayerImpl::~PlayerImpl() {
+//  std::cout << "PlayerImpl Destroyed" << std::endl;
 }
 

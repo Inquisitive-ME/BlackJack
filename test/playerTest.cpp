@@ -3,17 +3,16 @@
 //
 
 
-#include "../src/player.h"
+#include "../src/player_impl.h"
 #include "../src/getRandomInt.h"
 
 #include "gtest/gtest.h"
-#include "myGTest.h"
 #include <string>
 
 class playerTest : public::testing::Test{
 public:
   int betForHand = 5;
-  player testPlayer;
+  PlayerImpl testPlayer;
   card testAce = card(1);
   card testFive = card(5);
   card testTen = card(10);
@@ -32,7 +31,7 @@ TEST(Player, Creating_player_has_name_and_purse)
   std::string testName = "test name";
   float testPurse = 10;
 
-  player testPlayer(testName, testPurse);
+  PlayerImpl testPlayer(testName, testPurse);
   ASSERT_EQ(testName, testPlayer.getName());
   ASSERT_EQ(testPurse, testPlayer.getPurse());
 }
@@ -125,16 +124,13 @@ TEST_F(playerTest, Split)
 
   testPlayer.split(0);
 
-  GTEST_LOG << "Player has 2 hands" << std::endl;
-    ASSERT_EQ(uint(2), testPlayer.getHands().size());
+  ASSERT_EQ(uint(2), testPlayer.getHands().size()) << "Player has 2 hands" << std::endl;
 
-  GTEST_LOG << "Each hand should have the starting bet value" << std::endl;
-    EXPECT_EQ(betForHand, testPlayer.getHand(0).getBet());
-    EXPECT_EQ(betForHand, testPlayer.getHand(1).getBet());
+  EXPECT_EQ(betForHand, testPlayer.getHand(0).getBet()) << "Each hand should have the starting bet value" << std::endl;
+  EXPECT_EQ(betForHand, testPlayer.getHand(1).getBet()) << "Each hand should have the starting bet value" << std::endl;
 
-  GTEST_LOG << "First hand should have first card of original hand, second hand should have second card" << std::endl;
     EXPECT_EQ(uint(1), testPlayer.getHand(0).getNumCards());
-    ASSERT_TRUE(testAce == testPlayer.getHand(0).getCard(0));
+    ASSERT_TRUE(testAce == testPlayer.getHand(0).getCard(0)) << "First hand should have first card of original hand" << std::endl;
     EXPECT_EQ(uint(1), testPlayer.getHand(1).getNumCards());
-    ASSERT_TRUE(testFive == testPlayer.getHand(1).getCard(0));
+    ASSERT_TRUE(testFive == testPlayer.getHand(1).getCard(0)) << "Second hand should have second card" << std::endl;
 }

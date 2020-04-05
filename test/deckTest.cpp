@@ -5,9 +5,9 @@
 
 #include "../src/deck.h"
 #include "../src/getRandomInt.h"
+#include "../src/player_impl.h"
 
 #include "gtest/gtest.h"
-#include "myGTest.h"
 
 TEST(Deck, Populate_with_correct_number_of_cards)
 {
@@ -106,19 +106,17 @@ TEST(Deck, Deal_two_decks_to_two_player_hands)
   int numDecks = 1;
   deck testDeck(numDecks, 0);
 
-  player testPlayer;
+  PlayerImpl testPlayer;
   testPlayer.newHand(0);
   testPlayer.newHand(0);
 
   testDeck.populate();
 
-  GTEST_LOG << "Deal 1 full deck to each player hand" << std::endl;
   testDeck.deal(testPlayer, numDecks * 52);
 
-  EXPECT_EQ(uint(numDecks * 52), testPlayer.getHand(0).getNumCards());
-  EXPECT_EQ(uint(numDecks * 52), testPlayer.getHand(1).getNumCards());
+  EXPECT_EQ(uint(numDecks * 52), testPlayer.getHand(0).getNumCards()) << "Deal 1 full deck to each player hand" << std::endl;
+  EXPECT_EQ(uint(numDecks * 52), testPlayer.getHand(1).getNumCards()) << "Deal 1 full deck to each player hand" << std::endl;
 
-  GTEST_LOG << "Each hand should have all cards expected in deck" << std::endl;
   std::map<std::string, int> cardCount;
   for(BJHand pHand : testPlayer.getHands())
   {
@@ -135,9 +133,9 @@ TEST(Deck, Deal_two_decks_to_two_player_hands)
   for(auto& uniqueCard : cardCount)
   {
     actualUniqueCards++;
-    ASSERT_EQ(expectedUniqueCardsCount, uniqueCard.second);
+    ASSERT_EQ(expectedUniqueCardsCount, uniqueCard.second) << "Each hand should have all cards expected in deck" << std::endl;;
   }
-  ASSERT_EQ(expectedUniqueCards, actualUniqueCards);
+  ASSERT_EQ(expectedUniqueCards, actualUniqueCards) << "Each hand should have all cards expected in deck" << std::endl;;
 }
 
 TEST(Deck, addCount_callback_is_called_after_card_is_dealt_andthen_flipped)

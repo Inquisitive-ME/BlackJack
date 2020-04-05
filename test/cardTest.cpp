@@ -3,7 +3,6 @@
 //
 
 #include "gtest/gtest.h"
-#include "myGTest.h"
 #include "../src/card.h"
 
 struct card_test
@@ -114,7 +113,7 @@ TEST(Card, Verify_flipCallback_is_called_when_card_is_flipped){
 TEST(Card, Verify_flipCallBack_is_called_when_set_and_card_is_faceup)
 {
   card testCard(4);
-  GTEST_LOG << "Make card faceup before setting callback" << std::endl;
+  //Make card faceup before setting callback
   testCard.flip();
 
   bool testCallback = false;

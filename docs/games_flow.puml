@@ -1,0 +1,28 @@
+@startuml
+[*] --> Initialize:List of Players
+scale 600 width
+state Initialize {
+  Initialize: Create Deck
+  Initialize -down-> Deal
+}
+
+state Deal {
+  [*] --> NewValueSelection
+  NewValueSelection --> NewValuePreview : EvNewValue
+  NewValuePreview --> NewValueSelection : EvNewValueRejected
+  NewValuePreview --> NewValueSelection : EvNewValueSaved
+
+  state NewValuePreview {
+     State1 -> State2
+  }
+  Deal -down-> Insurance: Dealer Face Up Card Ace
+}
+
+state Insurance{
+}
+
+state Moves{
+
+}
+
+@enduml

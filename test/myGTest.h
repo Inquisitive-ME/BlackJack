@@ -13,10 +13,17 @@ namespace testing
 {
     namespace internal
     {
+        enum class GTestColor { kDefault, kRed, kGreen, kYellow };
         extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
     }
 }
-#define GTEST_PRINTF(...)  do { testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[          ] "); testing::internal::ColoredPrintf(testing::internal::COLOR_YELLOW, __VA_ARGS__); } while(0)
+#define GTEST_PRINTF(...)                                                   \
+  do {                                                                \
+    testing::internal::ColoredPrintf(testing::internal::GTestColor::kGreen,  \
+                                     "[          ] ");                \
+    testing::internal::ColoredPrintf(testing::internal::GTestColor::kYellow, \
+                                     __VA_ARGS__);                    \
+  } while (0)
 
 // C++ stream interface
 class GTestLog : public std::stringstream

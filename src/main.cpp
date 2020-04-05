@@ -5,7 +5,7 @@
 #include <iostream>
 #include "card.h"
 #include "BJHand.h"
-#include "player.h"
+#include "player_impl.h"
 #include "getRandomInt.h"
 #include <iostream>
 #include <chrono>
@@ -16,7 +16,7 @@ int main()
 {
   card testCard(11);
   BJHand testHand(0);
-  player testPlayer;
+  PlayerImpl testPlayer;
 
   cout << "Created Card " << testCard.print() << endl;
   testHand.add(testCard);

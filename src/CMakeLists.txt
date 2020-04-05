@@ -7,10 +7,10 @@ set(SOURCE_FILES
         card.cpp
 		hand.cpp
 		BJHand.cpp
-		player.cpp
+		player_impl.cpp
 		deck.cpp
 		dealer.cpp
-		BJGame.cpp
+		bj_game.cpp
 		getRandomInt.cpp
         blackjack_database.cpp)
 

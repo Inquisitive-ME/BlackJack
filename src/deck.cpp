@@ -71,7 +71,7 @@ void deck::deal(hand& dealToHand,int numCards)
   }
 }
 
-void deck::deal(player& dealToPlayer,int numCards)
+void deck::deal(PlayerInterface& dealToPlayer,int numCards)
 {
   for(BJHand& pHand : dealToPlayer.getHands())
   {
