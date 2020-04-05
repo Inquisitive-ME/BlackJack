@@ -12,7 +12,8 @@ set(SOURCE_FILES
 		dealer.cpp
 		bj_game.cpp
 		get_random_int.cpp
-        blackjack_database.cpp)
+        blackjack_database.cpp
+		commandline_ai_impl.cpp)
 
 find_library(SQLITE sqlite3)
 

@@ -55,8 +55,6 @@ public:
     }
 
     virtual ~PlayerImpl();
-
-    virtual bool operator==(const PlayerImpl &otherPlayer) const { return this == &otherPlayer; };
 };
 
 #endif /* PLAYER_H_ */

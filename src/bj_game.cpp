@@ -52,7 +52,7 @@ namespace BJGameFunctions {
 
 BJGame::BJGame(std::vector<PlayerInterface *> players, AiInterface &ai) : gamePlayers{std::move(players)}, gameAI{ai} {
     gameDeck.populate();
-    gameState = BET;
+    gameState = DEAL;
 }
 
 void BJGame::printDeck() {
