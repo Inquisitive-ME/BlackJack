@@ -6,24 +6,20 @@
 #define BLACKJACK_COMMANDLINE_AI_IMPL_H
 
 #include "ai_interface.h"
+#include <string>
 
-class CommandLineAI : public AiInterface{
+class CommandLineAI : public AiInterface {
 public:
-  CommandLineAI() = default;
-  virtual ~CommandLineAI() = default;
+    CommandLineAI() = default;
 
-  const int getPlayerBet(const PlayerInterface& gamePlayer) override;
-  const MOVES getMove(const PlayerInterface& gamePlayer) override;
+    virtual ~CommandLineAI() = default;
 
+    const int getPlayerBet(const PlayerInterface &gamePlayer) const override;
 
-
-
-  int getPlayerBet(const PlayerInterface& gamePlayer){
-    string question = gamePlayer.getName() + " how much would you like to bet?";
-    return int(ask_number(question, 5, 500));
-  }
+    const MOVES getMove(const PlayerInterface &gamePlayer) const override;
 
 private:
-  int ask_number(std::string question, int low,int high);
+    int ask_number(std::string question, int low, int high) const;
 };
+
 #endif //BLACKJACK_COMMANDLINE_AI_IMPL_H

@@ -7,11 +7,13 @@
 
 #include "player_interface.h"
 
-class AiInterface{
+class AiInterface {
 public:
     virtual ~AiInterface() = default;
-    virtual const int getPlayerBet(const PlayerInterface& gamePlayer) const = 0;
-    virtual const MOVES getMove(const PlayerInterface& gamePlayer) const = 0;
+
+    virtual const int getPlayerBet(const PlayerInterface &gamePlayer) const = 0;
+
+    virtual const MOVES getMove(const PlayerInterface &gamePlayer) const = 0;
 };
 
 #endif //BLACKJACK_ABSTRACTGAMEPLAYER_H

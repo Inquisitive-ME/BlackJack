@@ -11,28 +11,33 @@
 #include <iostream>
 #include <vector>
 #include "card.h"
-class hand
-{
+
+class hand {
 private:
-  void add_move(card& cardToMove);
+    void add_move(card &cardToMove);
 
 protected:
-  std::vector<card> cards;
+    std::vector<card> cards;
 
 public:
-  hand();
+    hand();
 
-  void clear();
-  void add(card cardToAdd);
-  void give(int cardIndex, hand& handToGiveTo);
-  uint getNumCards();
-  const card& getCard(int cardIndex);
-  virtual void flipCard(int cardIndex);
-  virtual bool operator==(const hand& otherHand) const {return true;};
+    void clear();
+
+    void add(card cardToAdd);
+
+    void give(int cardIndex, hand &handToGiveTo);
+
+    uint getNumCards();
+
+    const card &getCard(int cardIndex);
+
+    virtual void flipCard(int cardIndex);
+
+    virtual bool operator==(const hand &otherHand) const { return true; };
 
     virtual ~hand() = default;
 };
-
 
 
 #endif /* HAND_H_ */

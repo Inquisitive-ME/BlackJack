@@ -10,46 +10,49 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-class MockDeck: public deck{
+class MockDeck : public deck {
 public:
-    MOCK_METHOD2(deal, void(hand&, int));
-    MOCK_METHOD2(deal, void(PlayerInterface&, int));
+    MOCK_METHOD2(deal, void(hand
+            &, int));
+    MOCK_METHOD2(deal, void(PlayerInterface
+            &, int));
 };
 
-class MockDealer: public dealer{
+class MockDealer : public dealer {
 public:
     MOCK_METHOD1(flipCard, void(int));
 };
 
-class MockPlayer: public PlayerInterface{
+class MockPlayer : public PlayerInterface {
 public:
-  MOCK_METHOD1(winHand, void(int));
+    MOCK_METHOD1(winHand, void(int));
 
-  MOCK_METHOD1(loseHand, void(int));
-  MOCK_METHOD0(dealerBusted, void());
-  MOCK_METHOD1(split, void(int));
-  MOCK_METHOD1(doubleDown, void(int));
-  MOCK_METHOD1(surrender, void(int));
-  MOCK_CONST_METHOD0(numHands, const uint());
-  MOCK_METHOD1(getHand, BJHand&(uint));
-  MOCK_METHOD0(getHands, std::vector<BJHand>&());
-  MOCK_METHOD1(removeHand, void(int));
-  MOCK_METHOD0(clearAllHands, void());
-  MOCK_CONST_METHOD0(getPurse, const float());
-  MOCK_CONST_METHOD0(getName, const std::string());
-  MOCK_METHOD0(getBet, int());
-  MOCK_METHOD1(setBet, void(int bet));
-  MOCK_METHOD1(newHand, void(float));
+    MOCK_METHOD1(loseHand, void(int));
+    MOCK_METHOD0(dealerBusted, void());
+    MOCK_METHOD1(split, void(int));
+    MOCK_METHOD1(doubleDown, void(int));
+    MOCK_METHOD1(surrender, void(int));
+    MOCK_CONST_METHOD0(numHands, const uint());
+    MOCK_METHOD1(getHand, BJHand &(uint));
+    MOCK_METHOD0(getHands, std::vector<BJHand> & ());
+    MOCK_METHOD1(removeHand, void(int));
+    MOCK_METHOD0(clearAllHands, void());
+    MOCK_CONST_METHOD0(getPurse, const float());
+    MOCK_CONST_METHOD0(getName, const std::string());
+    MOCK_METHOD0(getBet, int());
+    MOCK_METHOD1(setBet, void(int
+            bet));
+    MOCK_METHOD1(newHand, void(float));
 };
 
-class MockAI: public AiInterface{
+class MockAI : public AiInterface {
 public:
-  MOCK_CONST_METHOD1(getPlayerBet, const int(const PlayerInterface&));
-  MOCK_CONST_METHOD1(getMove, const MOVES(const PlayerInterface&));
+    MOCK_CONST_METHOD1(getPlayerBet, const int(
+            const PlayerInterface&));
+    MOCK_CONST_METHOD1(getMove, const MOVES(const PlayerInterface &));
 };
 
-TEST(BJGameFunctions, deal_to_all_players)
-{
+TEST(BJGameFunctions, deal_to_all_players) {
     using namespace std;
     using namespace testing;
     MockDeck testDeck;
@@ -57,33 +60,31 @@ TEST(BJGameFunctions, deal_to_all_players)
     MockPlayer testPlayer2;
     MockAI testAI;
 
-    vector<PlayerInterface*> playerList = {&testPlayer1, &testPlayer2};
+    vector<PlayerInterface *> playerList = {&testPlayer1, &testPlayer2};
 
-    EXPECT_CALL(testAI, getPlayerBet(Matcher<const PlayerInterface&>(Eq(ByRef(testPlayer1))))).WillOnce(Return(1));
+    EXPECT_CALL(testAI, getPlayerBet(Matcher<const PlayerInterface &>(Eq(ByRef(testPlayer1))))).WillOnce(Return(1));
     EXPECT_CALL(testPlayer1, newHand(1));
-    EXPECT_CALL(testDeck, deal(Matcher<PlayerInterface&>(Eq(ByRef(testPlayer1))), 2));
+    EXPECT_CALL(testDeck, deal(Matcher<PlayerInterface &>(Eq(ByRef(testPlayer1))), 2));
 
-    EXPECT_CALL(testAI, getPlayerBet(Matcher<const PlayerInterface&>(Eq(ByRef(testPlayer2))))).WillOnce(Return(2));
+    EXPECT_CALL(testAI, getPlayerBet(Matcher<const PlayerInterface &>(Eq(ByRef(testPlayer2))))).WillOnce(Return(2));
     EXPECT_CALL(testPlayer2, newHand(2));
-    EXPECT_CALL(testDeck, deal(Matcher<PlayerInterface&>(Eq(ByRef(testPlayer2))), 2));
+    EXPECT_CALL(testDeck, deal(Matcher<PlayerInterface &>(Eq(ByRef(testPlayer2))), 2));
 
     BJGameFunctions::deal_to_all_players(testDeck, playerList, testAI);
 }
 
-TEST(BJGameFunctions, deal_to_dealer)
-{
-  using namespace std;
-  using namespace testing;
-  MockDeck testDeck;
-  MockDealer testDealer;
+TEST(BJGameFunctions, deal_to_dealer) {
+    using namespace std;
+    using namespace testing;
+    MockDeck testDeck;
+    MockDealer testDealer;
 
-  EXPECT_CALL(testDeck, deal(testDealer, 2));
-  EXPECT_CALL(testDealer, flipCard(_));
+    EXPECT_CALL(testDeck, deal(testDealer, 2));
+    EXPECT_CALL(testDealer, flipCard(_));
 
-  BJGameFunctions::deal_to_dealer(testDeck, testDealer);
+    BJGameFunctions::deal_to_dealer(testDeck, testDealer);
 }
 
-TEST(BJGameFunction, DISABLED_test)
-{
+TEST(BJGameFunction, DISABLED_test) {
     ASSERT_TRUE(false);
 }

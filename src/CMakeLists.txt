@@ -6,12 +6,12 @@ set(SOURCE_FILES
         main.cpp
         card.cpp
 		hand.cpp
-		BJHand.cpp
+		bj_hand.cpp
 		player_impl.cpp
 		deck.cpp
 		dealer.cpp
 		bj_game.cpp
-		getRandomInt.cpp
+		get_random_int.cpp
         blackjack_database.cpp)
 
 find_library(SQLITE sqlite3)

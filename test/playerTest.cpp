@@ -4,133 +4,124 @@
 
 
 #include "../src/player_impl.h"
-#include "../src/getRandomInt.h"
+#include "../src/get_random_int.h"
 
 #include "gtest/gtest.h"
 #include <string>
 
-class playerTest : public::testing::Test{
+class playerTest : public ::testing::Test {
 public:
-  int betForHand = 5;
-  PlayerImpl testPlayer;
-  card testAce = card(1);
-  card testFive = card(5);
-  card testTen = card(10);
+    int betForHand = 5;
+    PlayerImpl testPlayer;
+    card testAce = card(1);
+    card testFive = card(5);
+    card testTen = card(10);
 
-  void SetUp() override{
-    testPlayer.newHand(betForHand);
-    testAce.flip();
-    testFive.flip();
-    testTen.flip();
-  }
+    void SetUp() override {
+        testPlayer.newHand(betForHand);
+        testAce.flip();
+        testFive.flip();
+        testTen.flip();
+    }
 
 };
 
-TEST(Player, Creating_player_has_name_and_purse)
-{
-  std::string testName = "test name";
-  float testPurse = 10;
+TEST(Player, Creating_player_has_name_and_purse) {
+    std::string testName = "test name";
+    float testPurse = 10;
 
-  PlayerImpl testPlayer(testName, testPurse);
-  ASSERT_EQ(testName, testPlayer.getName());
-  ASSERT_EQ(testPurse, testPlayer.getPurse());
+    PlayerImpl testPlayer(testName, testPurse);
+    ASSERT_EQ(testName, testPlayer.getName());
+    ASSERT_EQ(testPurse, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, New_hand_creates_hand_with_correct_bet)
-{
+TEST_F(playerTest, New_hand_creates_hand_with_correct_bet) {
     ASSERT_EQ(uint(1), testPlayer.numHands());
     ASSERT_EQ(betForHand, testPlayer.getHands()[0].getBet());
 }
 
-TEST_F(playerTest, Win_function)
-{
-  testPlayer.winHand(0);
-  ASSERT_EQ(betForHand, testPlayer.getPurse());
+TEST_F(playerTest, Win_function) {
+    testPlayer.winHand(0);
+    ASSERT_EQ(betForHand, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Win_with_blackjack)
-{
-  testPlayer.getHand(0).add(testAce);
-  testPlayer.getHand(0).add(testTen);
+TEST_F(playerTest, Win_with_blackjack) {
+    testPlayer.getHand(0).add(testAce);
+    testPlayer.getHand(0).add(testTen);
 
-  testPlayer.winHand(0);
-  ASSERT_EQ(betForHand * 1.5, testPlayer.getPurse());
+    testPlayer.winHand(0);
+    ASSERT_EQ(betForHand * 1.5, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Win_with_total_21_not_blackjack)
-{
-  testPlayer.getHand(0).add(testAce);
-  testPlayer.getHand(0).add(testFive);
-  testPlayer.getHand(0).add(testFive);
+TEST_F(playerTest, Win_with_total_21_not_blackjack) {
+    testPlayer.getHand(0).add(testAce);
+    testPlayer.getHand(0).add(testFive);
+    testPlayer.getHand(0).add(testFive);
 
-  testPlayer.winHand(0);
-  ASSERT_EQ(betForHand, testPlayer.getPurse());
+    testPlayer.winHand(0);
+    ASSERT_EQ(betForHand, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Lose_function)
-{
-  testPlayer.loseHand(0);
-  ASSERT_EQ(-betForHand, testPlayer.getPurse());
+TEST_F(playerTest, Lose_function) {
+    testPlayer.loseHand(0);
+    ASSERT_EQ(-betForHand, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Double_down)
-{
-  testPlayer.doubleDown(0);
-  ASSERT_EQ(betForHand * 2, testPlayer.getHand(0).getBet());
+TEST_F(playerTest, Double_down) {
+    testPlayer.doubleDown(0);
+    ASSERT_EQ(betForHand * 2, testPlayer.getHand(0).getBet());
 }
 
-TEST_F(playerTest, Dealer_bust_function_with_2_non_busted_hands)
-{
-  testPlayer.newHand(betForHand);
-  testPlayer.dealerBusted();
-  ASSERT_EQ(betForHand * 2, testPlayer.getPurse());
+TEST_F(playerTest, Dealer_bust_function_with_2_non_busted_hands) {
+    testPlayer.newHand(betForHand);
+    testPlayer.dealerBusted();
+    ASSERT_EQ(betForHand * 2, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Dealer_bust_function_with_1_busted_hand)
-{
-  testPlayer.getHand(0).add(testTen);
-  testPlayer.getHand(0).add(testTen);
-  testPlayer.getHand(0).add(testFive);
-  testPlayer.newHand(betForHand);
-  testPlayer.newHand(betForHand);
-  testPlayer.getHand(2).add(testTen);
+TEST_F(playerTest, Dealer_bust_function_with_1_busted_hand) {
+    testPlayer.getHand(0).add(testTen);
+    testPlayer.getHand(0).add(testTen);
+    testPlayer.getHand(0).add(testFive);
+    testPlayer.newHand(betForHand);
+    testPlayer.newHand(betForHand);
+    testPlayer.getHand(2).add(testTen);
 
-  testPlayer.dealerBusted();
-  float expectedPurse = betForHand + betForHand - betForHand;
-  ASSERT_EQ(expectedPurse, testPlayer.getPurse());
+    testPlayer.dealerBusted();
+    float expectedPurse = betForHand + betForHand - betForHand;
+    ASSERT_EQ(expectedPurse, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Dealer_bust_function_with_1_blackjack_hand)
-{
-  testPlayer.getHand(0).add(testTen);
-  testPlayer.getHand(0).add(testAce);
-  testPlayer.newHand(betForHand);
+TEST_F(playerTest, Dealer_bust_function_with_1_blackjack_hand) {
+    testPlayer.getHand(0).add(testTen);
+    testPlayer.getHand(0).add(testAce);
+    testPlayer.newHand(betForHand);
 
-  testPlayer.dealerBusted();
-  float expectedPurse = betForHand * 1.5 + betForHand;
-  ASSERT_EQ(expectedPurse, testPlayer.getPurse());
+    testPlayer.dealerBusted();
+    float expectedPurse = betForHand * 1.5 + betForHand;
+    ASSERT_EQ(expectedPurse, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Surrender)
-{
-  testPlayer.surrender(0);
-  EXPECT_EQ(-betForHand * 0.5, testPlayer.getPurse());
+TEST_F(playerTest, Surrender) {
+    testPlayer.surrender(0);
+    EXPECT_EQ(-betForHand * 0.5, testPlayer.getPurse());
 }
 
-TEST_F(playerTest, Split)
-{
-  testPlayer.getHand(0).add(testAce);
-  testPlayer.getHand(0).add(testFive);
+TEST_F(playerTest, Split) {
+    testPlayer.getHand(0).add(testAce);
+    testPlayer.getHand(0).add(testFive);
 
-  testPlayer.split(0);
+    testPlayer.split(0);
 
-  ASSERT_EQ(uint(2), testPlayer.getHands().size()) << "Player has 2 hands" << std::endl;
+    ASSERT_EQ(uint(2), testPlayer.getHands().size()) << "Player has 2 hands" << std::endl;
 
-  EXPECT_EQ(betForHand, testPlayer.getHand(0).getBet()) << "Each hand should have the starting bet value" << std::endl;
-  EXPECT_EQ(betForHand, testPlayer.getHand(1).getBet()) << "Each hand should have the starting bet value" << std::endl;
+    EXPECT_EQ(betForHand, testPlayer.getHand(0).getBet())
+                        << "Each hand should have the starting bet value" << std::endl;
+    EXPECT_EQ(betForHand, testPlayer.getHand(1).getBet())
+                        << "Each hand should have the starting bet value" << std::endl;
 
     EXPECT_EQ(uint(1), testPlayer.getHand(0).getNumCards());
-    ASSERT_TRUE(testAce == testPlayer.getHand(0).getCard(0)) << "First hand should have first card of original hand" << std::endl;
+    ASSERT_TRUE(testAce == testPlayer.getHand(0).getCard(0))
+                                << "First hand should have first card of original hand" << std::endl;
     EXPECT_EQ(uint(1), testPlayer.getHand(1).getNumCards());
     ASSERT_TRUE(testFive == testPlayer.getHand(1).getCard(0)) << "Second hand should have second card" << std::endl;
 }

@@ -7,11 +7,15 @@
 
 #include <sqlite3.h>
 
-class blackjack_database{
+class blackjack_database {
 public:
-  blackjack_database();
-  virtual ~blackjack_database();
-  int create();
-  void open(char * file_name);
+    blackjack_database();
+
+    virtual ~blackjack_database();
+
+    int create();
+
+    void open(char *file_name);
 };
+
 #endif //BLACKJACK_BLACKJACK_DATABASE_H
