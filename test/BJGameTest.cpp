@@ -12,10 +12,8 @@
 
 class MockDeck : public deck {
 public:
-    MOCK_METHOD2(deal, void(hand
-            &, int));
-    MOCK_METHOD2(deal, void(PlayerInterface
-            &, int));
+    MOCK_METHOD2(deal, void(hand&, int));
+    MOCK_METHOD2(deal, void(PlayerInterface&, int));
 };
 
 class MockDealer : public dealer {
@@ -40,16 +38,18 @@ public:
     MOCK_CONST_METHOD0(getPurse, const float());
     MOCK_CONST_METHOD0(getName, const std::string());
     MOCK_METHOD0(getBet, int());
-    MOCK_METHOD1(setBet, void(int
-            bet));
+    MOCK_METHOD1(setBet, void(int bet));
     MOCK_METHOD1(newHand, void(float));
+    MOCK_METHOD0(payInsurance, void());
 };
 
 class MockAI : public AiInterface {
 public:
-    MOCK_CONST_METHOD1(getPlayerBet, const int(
-            const PlayerInterface&));
-    MOCK_CONST_METHOD1(getMove, const MOVES(const PlayerInterface &));
+    MOCK_METHOD1(getPlayerBet, const int(const PlayerInterface&));
+    MOCK_METHOD2(getMove, const MOVES(std::vector<card>, const PlayerInterface &));
+    MOCK_METHOD0(continuePlaying,const bool());
+    MOCK_METHOD1(payInsurance, const bool(const PlayerInterface &));
+
 };
 
 TEST(BJGameFunctions, deal_to_all_players) {

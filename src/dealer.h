@@ -17,6 +17,8 @@ public:
 
     bool isHitting();
 
+    std::vector<card> getFaceUpCards();
+
     virtual ~dealer();
 };
 

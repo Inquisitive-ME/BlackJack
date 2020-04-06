@@ -16,6 +16,7 @@ private:
     std::string name;
     float purse;
     std::vector<BJHand> hands;
+    bool insurancePayed;
 
 public:
     PlayerImpl();
@@ -28,11 +29,13 @@ public:
 
     void dealerBusted() override;
 
-    void split(int) override;
+    void split(int handNumber) override;
 
-    void doubleDown(int) override;
+    void doubleDown(int handNumber) override;
 
-    void surrender(int) override;
+    void surrender(int handNumber) override;
+
+    void payInsurance() override;
 
     const uint numHands() const override;
 

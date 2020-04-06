@@ -37,7 +37,6 @@ public:
     bool isSoft() {
         return soft;
     }
-
 };
 
 

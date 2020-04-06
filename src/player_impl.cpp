@@ -14,6 +14,7 @@ PlayerImpl::PlayerImpl() {
     name = " ";
     purse = 0;
     std::vector<BJHand> hands;
+    insurancePayed = false;
 }
 
 // TODO Redo PlayerImpl class so that it is more intelligent
@@ -63,6 +64,10 @@ void PlayerImpl::doubleDown(int handNum) {
 
 void PlayerImpl::surrender(int handNum) {
     purse -= (hands[handNum].getBet() * SURRENDERPENALTY);
+}
+
+void PlayerImpl::payInsurance() {
+    insurancePayed = true;
 }
 
 const uint PlayerImpl::numHands() const {

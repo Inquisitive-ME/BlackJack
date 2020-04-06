@@ -18,6 +18,17 @@ bool dealer::isHitting() {
         return (dealerTotal < 17);
 }
 
+std::vector<card> dealer::getFaceUpCards(){
+    std::vector<card> faceUpCards;
+    for(int i = 0; i < getNumCards(); i++)
+    {
+        if(getCard(i).isFaceUp()) {
+            faceUpCards.push_back(getCard(i));
+        }
+    }
+    return faceUpCards;
+}
+
 dealer::~dealer() {
     //std::cout << "BJDealer Destroyed" << std::endl;
 }

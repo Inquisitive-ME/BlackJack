@@ -11,9 +11,14 @@ class AiInterface {
 public:
     virtual ~AiInterface() = default;
 
-    virtual const int getPlayerBet(const PlayerInterface &gamePlayer) const = 0;
+    virtual const int getPlayerBet(const PlayerInterface &gamePlayer) = 0;
 
-    virtual const MOVES getMove(const PlayerInterface &gamePlayer) const = 0;
+    virtual const MOVES getMove(std::vector<card> dealerHand, const PlayerInterface &gamePlayer) = 0;
+
+    virtual const bool continuePlaying() = 0;
+
+    virtual const bool payInsurance(const PlayerInterface &gamePlayer) = 0;
+
 };
 
 #endif //BLACKJACK_ABSTRACTGAMEPLAYER_H

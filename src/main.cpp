@@ -78,18 +78,18 @@ int main() {
 
     cout << "Took " << elapsed.count() << " seconds to generate " << numNumberToGenerate << " random numbers" << endl;
 
+    // Initialize player list for game
     std::vector<PlayerImpl*> gamePlayers = get_players_list();
     for(auto i : gamePlayers){
         std:: cout << i->getName() << std::endl;
     }
-
     CommandLineAI AI;
 
     BJGame main_game{{gamePlayers.begin(), gamePlayers.end()}, AI};
 
     main_game.printDeck();
-
     main_game.play();
+
 
     return 0;
 }

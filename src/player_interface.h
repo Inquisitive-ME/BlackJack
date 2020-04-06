@@ -22,11 +22,13 @@ public:
 
     virtual void dealerBusted() = 0;
 
-    virtual void split(int) = 0;
+    virtual void split(int handNumber) = 0;
 
-    virtual void doubleDown(int) = 0;
+    virtual void doubleDown(int handNumber) = 0;
 
-    virtual void surrender(int) = 0;
+    virtual void surrender(int handNumber) = 0;
+
+    virtual void payInsurance() = 0;
 
     virtual const uint numHands() const = 0;
 

@@ -22,4 +22,5 @@ In order to build you must have sqlite3 installed on your local machine to build
 and the rootfs must be copied from a rapberry pi with sqlite3 in order to cross compile
 
 ## TODO's
+* Implement Insurance Logic for game. Currently it just sets a flag in the player but nothing is done.
 * Add needed rootfs files for sqlite3 to repo so there is no need to copy over rootfs

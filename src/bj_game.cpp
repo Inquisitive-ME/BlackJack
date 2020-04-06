@@ -67,8 +67,40 @@ void BJGame::play() {
                 // TODO this is where you could get prebet deck
                 BJGameFunctions::deal_to_all_players(gameDeck, gamePlayers, gameAI);
                 BJGameFunctions::deal_to_dealer(gameDeck, gameDealer);
+                if(gameDealer.getCard(0).isAce()) {
+                    gameState = INSURANCE;
+                } else{
+                    gameState = MOVE;
+                }
             }
+            break;
 
+            case INSURANCE: {
+                for(PlayerInterface* player : gamePlayers)
+                {
+                    if(gameAI.payInsurance(*player)){
+                        player->payInsurance();
+                    }
+                }
+                gameState = MOVE;
+            }
+            break;
+            case MOVE: {
+                for (PlayerInterface *player : gamePlayers) {
+                    gameAI.getMove(gameDealer.getFaceUpCards(), *player);
+                }
+                gameState = RESULT;
+            }
+            break;
+            case RESULT: {
+                std::cout << "RESULT" << std::endl;
+                if(gameAI.continuePlaying()){
+                    gameState = DEAL;
+                } else{
+                    gameState = GAME_OVER;
+                }
+            }
+            break;
 
         }
     }

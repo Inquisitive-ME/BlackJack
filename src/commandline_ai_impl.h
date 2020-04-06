@@ -10,16 +10,22 @@
 
 class CommandLineAI : public AiInterface {
 public:
-    CommandLineAI() = default;
+    CommandLineAI();
 
     virtual ~CommandLineAI() = default;
 
-    const int getPlayerBet(const PlayerInterface &gamePlayer) const override;
+    const int getPlayerBet(const PlayerInterface &gamePlayer) override;
 
-    const MOVES getMove(const PlayerInterface &gamePlayer) const override;
+    const MOVES getMove(std::vector<card> dealerHand, const PlayerInterface &gamePlayer) override;
+
+    const bool continuePlaying() override;
+
+    const bool payInsurance(const PlayerInterface &gamePlayer) override;
 
 private:
+    int rounds;
     int ask_number(std::string question, int low, int high) const;
+    MOVES ask_move();
 };
 
 #endif //BLACKJACK_COMMANDLINE_AI_IMPL_H
