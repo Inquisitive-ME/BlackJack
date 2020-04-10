@@ -16,7 +16,7 @@ BJHand::BJHand(float bet) {
     soft = false;
 }
 
-std::string BJHand::print() {
+std::string BJHand::print() const {
     std::string returnString;
     for (card mcard : cards) {
         if (mcard.isFaceUp())
@@ -28,7 +28,32 @@ std::string BJHand::print() {
     return returnString;
 }
 
-int BJHand::getTotal() {
+void BJHand::clear() {
+    hand::clear();
+    calculateTotal();
+}
+
+void BJHand::add(card cardToAdd) {
+    hand::add(cardToAdd);
+    calculateTotal();
+}
+
+void BJHand::move_to_hand(card &cardToMove) {
+    hand::move_to_hand(cardToMove);
+    calculateTotal();
+}
+
+void BJHand::give(int cardIndex, hand &handToGiveTo) {
+    hand::give(cardIndex, handToGiveTo);
+    calculateTotal();
+}
+
+void BJHand::flipCard(int cardIndex) {
+    hand::flipCard(cardIndex);
+    calculateTotal();
+}
+
+int BJHand::calculateTotal() {
     total = 0;
     bool hasAce = false;
     for (card mcard : cards) {
@@ -47,10 +72,14 @@ int BJHand::getTotal() {
     return total;
 }
 
-bool BJHand::isBusted() {
+int BJHand::getTotal() const {
+    return total;
+}
+
+bool BJHand::isBusted() const {
     return (getTotal() > 21);
 }
 
-bool BJHand::isBlackJack() {
+bool BJHand::isBlackJack() const {
     return (getTotal() == 21 && getNumCards() == 2);
 }

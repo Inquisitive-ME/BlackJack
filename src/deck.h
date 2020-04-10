@@ -31,9 +31,9 @@ public:
 
     int getCount();
 
-    virtual void deal(hand &, int);
+    virtual void dealFaceDown(hand &, int);
 
-    virtual void deal(PlayerInterface &, int);
+    virtual void dealFaceUp(PlayerInterface &, int);
 
     virtual ~deck();
 };

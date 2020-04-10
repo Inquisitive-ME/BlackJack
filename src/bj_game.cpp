@@ -17,12 +17,12 @@ namespace BJGameFunctions {
         //TODO this is where you would get the prebet Deck
         for_each(PlayersInGame.begin(), PlayersInGame.end(), [&gameDeck, &gameAI](PlayerInterface *gamePlayer) {
             gamePlayer->newHand(gameAI.getPlayerBet(*gamePlayer));
-            gameDeck.deal(*gamePlayer, 2);
+            gameDeck.dealFaceUp(*gamePlayer, 2);
         });
     }
 
     void deal_to_dealer(deck &gameDeck, dealer &gameDealer) {
-        gameDeck.deal(gameDealer, 2);
+        gameDeck.dealFaceDown(gameDealer, 2);
         gameDealer.flipCard(0);
     }
 
@@ -33,7 +33,7 @@ namespace BJGameFunctions {
                 // TODO this could be a function that get's passed into for each
                 if (PRINT_OUTPUT) { printHand(player->getName(), pHand); }
                 while (not(pHand.isBusted()) && pHand.getTotal() < 21) {
-                    gDeck.deal(pHand, 1);
+                    gDeck.dealFaceDown(pHand, 1);
                     if (PRINT_OUTPUT) { printHand(player->getName(), pHand); }
                 }
                 if (pHand.isBusted()) {
@@ -60,18 +60,22 @@ void BJGame::printDeck() {
     cout << "Count: " << gameDeck.getCount() << endl;
 }
 
+GameState BJGame::deal(){
+    BJGameFunctions::deal_to_all_players(gameDeck, gamePlayers, gameAI);
+    BJGameFunctions::deal_to_dealer(gameDeck, gameDealer);
+    if(gameDealer.getCard(0).isAce()) {
+        return INSURANCE;
+    } else{
+        return MOVE;
+    }
+}
+
 void BJGame::play() {
     while (gameState != GAME_OVER) {
         switch (gameState) {
             case DEAL: {
                 // TODO this is where you could get prebet deck
-                BJGameFunctions::deal_to_all_players(gameDeck, gamePlayers, gameAI);
-                BJGameFunctions::deal_to_dealer(gameDeck, gameDealer);
-                if(gameDealer.getCard(0).isAce()) {
-                    gameState = INSURANCE;
-                } else{
-                    gameState = MOVE;
-                }
+                deal();
             }
             break;
 
@@ -87,7 +91,12 @@ void BJGame::play() {
             break;
             case MOVE: {
                 for (PlayerInterface *player : gamePlayers) {
-                    gameAI.getMove(gameDealer.getFaceUpCards(), *player);
+                    for(BJHand playerHand : player->getHands()) {
+                        if (!playerHand.isBusted()){
+                            gameAI.getMove(gameDealer.getFaceUpCards(), playerHand);
+                            //TODO apply move
+                        }
+                    }
                 }
                 gameState = RESULT;
             }
@@ -95,8 +104,10 @@ void BJGame::play() {
             case RESULT: {
                 std::cout << "RESULT" << std::endl;
                 if(gameAI.continuePlaying()){
+                    std::cout << "CONTINUE" << std::endl;
                     gameState = DEAL;
                 } else{
+                    std::cout<< "END" << std::endl;
                     gameState = GAME_OVER;
                 }
             }

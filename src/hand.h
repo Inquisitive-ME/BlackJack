@@ -13,24 +13,23 @@
 #include "card.h"
 
 class hand {
-private:
-    void add_move(card &cardToMove);
-
 protected:
     std::vector<card> cards;
 
 public:
     hand();
 
-    void clear();
+    virtual void clear();
 
-    void add(card cardToAdd);
+    virtual void add(card cardToAdd);
 
-    void give(int cardIndex, hand &handToGiveTo);
+    virtual void move_to_hand(card &cardToMove);
 
-    uint getNumCards();
+    virtual void give(int cardIndex, hand &handToGiveTo);
 
-    const card &getCard(int cardIndex);
+    uint getNumCards() const;
+
+    const card &getCard(int cardIndex) const;
 
     virtual void flipCard(int cardIndex);
 

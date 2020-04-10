@@ -17,20 +17,20 @@ void hand::add(card cardToAdd) {
     cards.push_back(cardToAdd);
 }
 
-void hand::add_move(card &cardToAdd) {
+void hand::move_to_hand(card &cardToAdd) {
     cards.push_back(std::move(cardToAdd));
 }
 
 void hand::give(int cardIndex, hand &handToGiveTo) {
-    handToGiveTo.add_move(cards[cardIndex]);
+    handToGiveTo.move_to_hand(cards[cardIndex]);
     cards.erase(cards.begin() + cardIndex);
 }
 
-uint hand::getNumCards() {
+uint hand::getNumCards() const{
     return (static_cast<uint> (cards.size()));
 }
 
-const card &hand::getCard(int cardIndex) {
+const card &hand::getCard(int cardIndex) const{
     return cards[cardIndex];
 };
 

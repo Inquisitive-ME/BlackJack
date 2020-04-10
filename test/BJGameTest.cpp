@@ -12,8 +12,8 @@
 
 class MockDeck : public deck {
 public:
-    MOCK_METHOD2(deal, void(hand&, int));
-    MOCK_METHOD2(deal, void(PlayerInterface&, int));
+    MOCK_METHOD2(dealFaceDown, void(hand&, int));
+    MOCK_METHOD2(dealFaceUp, void(PlayerInterface&, int));
 };
 
 class MockDealer : public dealer {
@@ -46,7 +46,7 @@ public:
 class MockAI : public AiInterface {
 public:
     MOCK_METHOD1(getPlayerBet, const int(const PlayerInterface&));
-    MOCK_METHOD2(getMove, const MOVES(std::vector<card>, const PlayerInterface &));
+    MOCK_METHOD2(getMove, const MOVES(std::vector<card>, const BJHand &));
     MOCK_METHOD0(continuePlaying,const bool());
     MOCK_METHOD1(payInsurance, const bool(const PlayerInterface &));
 
@@ -64,11 +64,11 @@ TEST(BJGameFunctions, deal_to_all_players) {
 
     EXPECT_CALL(testAI, getPlayerBet(Matcher<const PlayerInterface &>(Eq(ByRef(testPlayer1))))).WillOnce(Return(1));
     EXPECT_CALL(testPlayer1, newHand(1));
-    EXPECT_CALL(testDeck, deal(Matcher<PlayerInterface &>(Eq(ByRef(testPlayer1))), 2));
+    EXPECT_CALL(testDeck, dealFaceUp(Matcher<PlayerInterface &>(Eq(ByRef(testPlayer1))), 2));
 
     EXPECT_CALL(testAI, getPlayerBet(Matcher<const PlayerInterface &>(Eq(ByRef(testPlayer2))))).WillOnce(Return(2));
     EXPECT_CALL(testPlayer2, newHand(2));
-    EXPECT_CALL(testDeck, deal(Matcher<PlayerInterface &>(Eq(ByRef(testPlayer2))), 2));
+    EXPECT_CALL(testDeck, dealFaceUp(Matcher<PlayerInterface &>(Eq(ByRef(testPlayer2))), 2));
 
     BJGameFunctions::deal_to_all_players(testDeck, playerList, testAI);
 }
@@ -79,12 +79,13 @@ TEST(BJGameFunctions, deal_to_dealer) {
     MockDeck testDeck;
     MockDealer testDealer;
 
-    EXPECT_CALL(testDeck, deal(testDealer, 2));
+    EXPECT_CALL(testDeck, dealFaceDown(testDealer, 2));
     EXPECT_CALL(testDealer, flipCard(_));
 
     BJGameFunctions::deal_to_dealer(testDeck, testDealer);
 }
 
-TEST(BJGameFunction, DISABLED_test) {
+TEST(BJGame, DISABLED_deal_dealer_has_ace_faceup) {
+
     ASSERT_TRUE(false);
 }

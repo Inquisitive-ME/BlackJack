@@ -13,7 +13,7 @@ public:
 
     virtual const int getPlayerBet(const PlayerInterface &gamePlayer) = 0;
 
-    virtual const MOVES getMove(std::vector<card> dealerHand, const PlayerInterface &gamePlayer) = 0;
+    virtual const MOVES getMove(std::vector<card> dealerHand, const BJHand& playerHand) = 0;
 
     virtual const bool continuePlaying() = 0;
 

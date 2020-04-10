@@ -12,21 +12,32 @@ private:
     float bet;
     int total;
     bool soft;
+    int calculateTotal();
 
 public:
     BJHand();
 
     BJHand(float bet);
 
-    std::string print();
+    std::string print() const;
 
-    int getTotal();
+    void clear() override;
 
-    bool isBusted();
+    void add(card cardToAdd) override;
 
-    bool isBlackJack();
+    void move_to_hand(card &cardToMove) override;
 
-    float getBet() {
+    void give(int cardIndex, hand &handToGiveTo) override;
+
+    void flipCard(int cardIndex) override;
+
+    int getTotal() const;
+
+    bool isBusted() const;
+
+    bool isBlackJack() const;
+
+    float getBet() const{
         return bet;
     }
 
@@ -34,7 +45,7 @@ public:
         bet *= 2;
     }
 
-    bool isSoft() {
+    bool isSoft() const{
         return soft;
     }
 };

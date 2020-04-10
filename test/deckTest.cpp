@@ -48,7 +48,7 @@ TEST(Deck, Shuffle_occurs_when_deck_is_at_shuffle_limit) {
     BJHand testHand(0);
 
     testDeck.populate();
-    testDeck.deal(testHand, numDecks * 52 - whenToShuffle);
+    testDeck.dealFaceDown(testHand, numDecks * 52 - whenToShuffle);
 
     ASSERT_EQ(uint(numDecks * 52), testDeck.getNumCards());
 }
@@ -61,7 +61,7 @@ TEST(Deck, Deal_to_hand_verify_correct_number_of_cards_dealt) {
 
     testDeck.populate();
 
-    testDeck.deal(testHand, numDecks * 52);
+    testDeck.dealFaceDown(testHand, numDecks * 52);
 
     ASSERT_EQ(testHand.getNumCards(), numDecks * 52);
 }
@@ -74,7 +74,7 @@ TEST(Deck, Deal_to_hand_verify_correct_number_of_each_card_in_hand) {
 
     testDeck.populate();
 
-    testDeck.deal(testHand, numDecks * 52);
+    testDeck.dealFaceDown(testHand, numDecks * 52);
 
     std::map<std::string, int> cardCount;
     for (uint i = 0; i < testHand.getNumCards(); i++) {
@@ -92,6 +92,22 @@ TEST(Deck, Deal_to_hand_verify_correct_number_of_each_card_in_hand) {
     ASSERT_EQ(expectedUniqueCards, actualUniqueCards);
 }
 
+TEST(Deck, Deal_faceup_to_two_player_hands){
+    int numDecks = 1;
+    deck testDeck(numDecks, 0);
+
+    PlayerImpl testPlayer;
+    testPlayer.newHand(0);
+    testPlayer.newHand(0);
+
+    testDeck.populate();
+
+    testDeck.dealFaceUp(testPlayer, 1);
+
+    EXPECT_TRUE(testPlayer.getHand(0).getCard(0).isFaceUp());
+    EXPECT_TRUE(testPlayer.getHand(1).getCard(0).isFaceUp());
+}
+
 TEST(Deck, Deal_two_decks_to_two_player_hands) {
     int numDecks = 1;
     deck testDeck(numDecks, 0);
@@ -102,7 +118,7 @@ TEST(Deck, Deal_two_decks_to_two_player_hands) {
 
     testDeck.populate();
 
-    testDeck.deal(testPlayer, numDecks * 52);
+    testDeck.dealFaceUp(testPlayer, numDecks * 52);
 
     EXPECT_EQ(uint(numDecks * 52), testPlayer.getHand(0).getNumCards())
                         << "Deal 1 full deck to each player hand" << std::endl;
@@ -137,10 +153,10 @@ TEST(Deck, addCount_callback_is_called_after_card_is_dealt_andthen_flipped) {
 
     EXPECT_EQ(0, testDeck.getCount());
 
-    testDeck.deal(testHand, 1);
+    testDeck.dealFaceDown(testHand, 1);
     while (testHand.getCard(0).getHighLowCount() == 0) {
         testHand.clear();
-        testDeck.deal(testHand, 1);
+        testDeck.dealFaceDown(testHand, 1);
     }
 
     // Deck is still count of 0 before flipping card

@@ -19,20 +19,23 @@ const int CommandLineAI::getPlayerBet(const PlayerInterface &gamePlayer) {
     return ask_number(question, min_bet, max_bet);
 }
 
-const MOVES CommandLineAI::getMove(std::vector<card> dealerHand, const PlayerInterface &gamePlayer) {
+
+const MOVES CommandLineAI::getMove(std::vector<card> dealerHand, const BJHand &playerHand) {
     std::cout << "Dealer Hand: ";
     for (card dealerCard : dealerHand) {
         std::cout << dealerCard.print() << " ";
     };
     std::cout << std::endl;
 
+    std::cout << "For hand " << playerHand.print() << " ";
+
     return ask_move();
 }
 
 const bool CommandLineAI::continuePlaying() {
-    std::cout << "Continue if round is less than 10. Round: " << rounds << std::endl;
+    std::cout << "Continue if round is less than 2. Round: " << rounds << std::endl;
     rounds++;
-    return rounds >= 10;
+    return rounds <= 2;
 }
 
 const bool CommandLineAI::payInsurance(const PlayerInterface &gamePlayer) {

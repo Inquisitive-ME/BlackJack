@@ -12,6 +12,8 @@ enum MOVES {
     HIT, STAY, SPLIT, DOUBLED, SURRENDER
 };
 
+// TODO remove unneed functions such as winHand from interface?
+// TODO game interface and AI interface
 class PlayerInterface {
 public:
     virtual ~PlayerInterface() = default;

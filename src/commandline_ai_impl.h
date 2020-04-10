@@ -16,7 +16,7 @@ public:
 
     const int getPlayerBet(const PlayerInterface &gamePlayer) override;
 
-    const MOVES getMove(std::vector<card> dealerHand, const PlayerInterface &gamePlayer) override;
+    const MOVES getMove(std::vector<card> dealerHand, const BJHand &playerHand) override;
 
     const bool continuePlaying() override;
 
