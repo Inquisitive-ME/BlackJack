@@ -46,8 +46,7 @@ const bool CommandLineAI::payInsurance(const PlayerInterface &gamePlayer) {
 }
 
 bool CommandLineAI::illegalMove(){
-
-    std::cout << MOVE_TO_STRING[lastMove] << std::endl;
+    std::cout << MOVE_TO_STRING[lastMove] << " is Invalid" << std::endl;
     return true;
 }
 

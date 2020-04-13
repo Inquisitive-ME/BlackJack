@@ -111,6 +111,7 @@ void BJGame::play() {
                             } else if(playerMove == DOUBLED){
                                 if(canDoubleDown) {
                                     player->doubleDown(handNumber);
+                                    gameDeck.dealFaceUp(*player, handNumber);
                                 } else{
                                     if(!gameAI.illegalMove()){break;}
                                 }
@@ -132,7 +133,6 @@ void BJGame::play() {
                     for(uint handNumber = 0; handNumber < numHands; handNumber++){
                         BJHand playerHand = player->getHand(handNumber);
                         if(playerHand.isBusted()){
-                            std::cout << "LOSE HAND" << std::endl;
                             player->loseHand(handNumber);
                         } else{
                             if(player->getHand(handNumber).getTotal() > gameDealer.getTotal()){
@@ -145,11 +145,12 @@ void BJGame::play() {
                             } else if(player->getHand(handNumber).getTotal() == gameDealer.getTotal()){
                                 player->pushHand(handNumber);
                             } else{
-                                std::cout << "2 LOSE HAND" << std::endl;
                                 player->loseHand(handNumber);
                             }
                         }
                     }
+                    player->clearAllHands();
+                    gameDealer.clear();
                 }
                 if(gameAI.continuePlaying()){
                     gameState = DEAL;
