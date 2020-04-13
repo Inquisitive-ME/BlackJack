@@ -13,6 +13,15 @@
 #include "player_interface.h"
 #include "ai_interface.h"
 
+enum GameState {
+    BET,
+    DEAL,
+    INSURANCE,
+    MOVE,
+    RESULT,
+    GAME_OVER
+};
+
 namespace BJGameFunctions {
     using std::vector;
 
@@ -22,17 +31,10 @@ namespace BJGameFunctions {
 
     void deal_to_dealer(deck &gameDeck, dealer &gameDealer);
 
+    GameState deal_next_state(dealer &gameDealer);
+
     void evaluate_dealer_has_blackjack(vector<PlayerInterface *> PlayersInGame, deck &gDeck, bool PRINT_OUTPUT = false);
 }
-
-enum GameState {
-    BET,
-    DEAL,
-    INSURANCE,
-    MOVE,
-    RESULT,
-    GAME_OVER
-};
 
 class BJGame {
 private:
@@ -49,7 +51,7 @@ public:
 
     void printDeck();
 
-    GameState deal();
+    GameState deal_next_state();
 
     void play();
 };

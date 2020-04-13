@@ -19,6 +19,8 @@ public:
 
     virtual const bool payInsurance(const PlayerInterface &gamePlayer) = 0;
 
+    virtual bool illegalMove() = 0;
+
 };
 
 #endif //BLACKJACK_ABSTRACTGAMEPLAYER_H

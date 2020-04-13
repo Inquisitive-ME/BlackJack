@@ -12,6 +12,8 @@ enum MOVES {
     HIT, STAY, SPLIT, DOUBLED, SURRENDER
 };
 
+const char MOVE_TO_STRING[5][12] = {"Hit", "Stay", "Split", "Double Down", "Surrender"};
+
 // TODO remove unneed functions such as winHand from interface?
 // TODO game interface and AI interface
 class PlayerInterface {
@@ -21,6 +23,8 @@ public:
     virtual void winHand(int handNumber) = 0;
 
     virtual void loseHand(int handNumber) = 0;
+
+    virtual void pushHand(int handNumber) = 0;
 
     virtual void dealerBusted() = 0;
 

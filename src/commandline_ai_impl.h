@@ -22,8 +22,11 @@ public:
 
     const bool payInsurance(const PlayerInterface &gamePlayer) override;
 
+    bool illegalMove();
+
 private:
     int rounds;
+    MOVES lastMove;
     int ask_number(std::string question, int low, int high) const;
     MOVES ask_move();
 };

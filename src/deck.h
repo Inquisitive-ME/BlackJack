@@ -33,6 +33,8 @@ public:
 
     virtual void dealFaceDown(hand &, int);
 
+    virtual void dealFaceUp(hand &, int);
+
     virtual void dealFaceUp(PlayerInterface &, int);
 
     virtual ~deck();

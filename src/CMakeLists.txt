@@ -13,7 +13,8 @@ set(SOURCE_FILES
 		bj_game.cpp
 		get_random_int.cpp
         blackjack_database.cpp
-		commandline_ai_impl.cpp)
+		commandline_ai_impl.cpp
+		command_line_player.cpp)
 
 find_library(SQLITE sqlite3)
 

@@ -5,7 +5,7 @@
 #include <iostream>
 #include "card.h"
 #include "bj_hand.h"
-#include "player_impl.h"
+#include "command_line_player.h"
 #include "get_random_int.h"
 #include <iostream>
 #include <chrono>
@@ -46,7 +46,7 @@ std::vector<PlayerImpl*> get_players_list()
         std::cin >> pName;
         std::cout << pName << " ";
         int pPurse = ask_number("how much money will you start with?",0,100);
-        PlayerImpl* player = new PlayerImpl(pName, pPurse);
+        PlayerImpl* player = new CommandLinePlayer(pName, pPurse);
         playersList.push_back(player);
     }
 

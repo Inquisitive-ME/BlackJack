@@ -7,21 +7,19 @@ state Initialize {
 }
 
 state Deal {
-  [*] --> NewValueSelection
-  NewValueSelection --> NewValuePreview : EvNewValue
-  NewValuePreview --> NewValueSelection : EvNewValueRejected
-  NewValuePreview --> NewValueSelection : EvNewValueSaved
+  [*] --> DealToAllPlayers
+  DealToAllPlayers --> DealToDealer
 
-  state NewValuePreview {
-     State1 -> State2
-  }
   Deal -down-> Insurance: Dealer Face Up Card Ace
+  Deal -down-> Moves: Dealer Not Showing Ace
 }
 
 state Insurance{
+  Insurance -down->Moves
 }
 
 state Moves{
+[*] --> AskPlayerMove
 
 }
 

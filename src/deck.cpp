@@ -58,6 +58,18 @@ void deck::dealFaceDown(hand &dealToHand, int numCards) {
     }
 }
 
+void deck::dealFaceUp(hand &dealToHand, int numCards) {
+    for (int i = 0; i < numCards; i++) {
+        // TODO this could be removed for speed if it doesn't add to being more random
+        int cardToGive = getRandomInt(0, getNumCards() - 1);
+        cards[cardToGive].flip();
+        give(cardToGive, dealToHand);
+        if (getNumCards() <= whenToShuffle) {
+            populate();
+        }
+    }
+}
+
 void deck::dealFaceUp(PlayerInterface &dealToPlayer, int numCards) {
     for (BJHand &pHand : dealToPlayer.getHands()) {
         for (int j = 0; j < numCards; j++) {

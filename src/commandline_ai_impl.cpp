@@ -13,7 +13,8 @@ CommandLineAI::CommandLineAI() {
 const int CommandLineAI::getPlayerBet(const PlayerInterface &gamePlayer) {
     int min_bet = 5;
     int max_bet = 500;
-    std::string question = gamePlayer.getName() + " how much would you like to bet? table min $" +
+    std::string question = gamePlayer.getName() + " you have $" + std::to_string(gamePlayer.getPurse()) +
+                           " how much would you like to bet? table min $" +
                            std::to_string(min_bet) +
                            " table max $" + std::to_string(max_bet);
     return ask_number(question, min_bet, max_bet);
@@ -29,7 +30,8 @@ const MOVES CommandLineAI::getMove(std::vector<card> dealerHand, const BJHand &p
 
     std::cout << "For hand " << playerHand.print() << " ";
 
-    return ask_move();
+    lastMove = ask_move();
+    return lastMove;
 }
 
 const bool CommandLineAI::continuePlaying() {
@@ -41,6 +43,12 @@ const bool CommandLineAI::continuePlaying() {
 const bool CommandLineAI::payInsurance(const PlayerInterface &gamePlayer) {
     std::cout << "NO Insurance" << std::endl;
     return false;
+}
+
+bool CommandLineAI::illegalMove(){
+
+    std::cout << MOVE_TO_STRING[lastMove] << std::endl;
+    return true;
 }
 
 int CommandLineAI::ask_number(std::string question, int low, int high) const {

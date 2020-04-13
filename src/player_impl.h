@@ -23,11 +23,13 @@ public:
 
     PlayerImpl(std::string playerName, float startPurse);
 
-    void winHand(int handNumber) override;
+    virtual void winHand(int handNumber) override;
 
-    void loseHand(int handNumber) override;
+    virtual void loseHand(int handNumber) override;
 
-    void dealerBusted() override;
+    virtual void pushHand(int handNumber) override {};
+
+    virtual void dealerBusted() override;
 
     void split(int handNumber) override;
 

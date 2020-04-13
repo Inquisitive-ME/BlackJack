@@ -19,13 +19,15 @@ public:
 class MockDealer : public dealer {
 public:
     MOCK_METHOD1(flipCard, void(int));
+    MOCK_METHOD1(getCard, const card(int));
 };
 
 class MockPlayer : public PlayerInterface {
 public:
     MOCK_METHOD1(winHand, void(int));
-
     MOCK_METHOD1(loseHand, void(int));
+    MOCK_METHOD1(pushHand, void(int));
+
     MOCK_METHOD0(dealerBusted, void());
     MOCK_METHOD1(split, void(int));
     MOCK_METHOD1(doubleDown, void(int));
@@ -49,6 +51,7 @@ public:
     MOCK_METHOD2(getMove, const MOVES(std::vector<card>, const BJHand &));
     MOCK_METHOD0(continuePlaying,const bool());
     MOCK_METHOD1(payInsurance, const bool(const PlayerInterface &));
+    MOCK_METHOD0(illegalMove, bool());
 
 };
 
@@ -85,7 +88,24 @@ TEST(BJGameFunctions, deal_to_dealer) {
     BJGameFunctions::deal_to_dealer(testDeck, testDealer);
 }
 
-TEST(BJGame, DISABLED_deal_dealer_has_ace_faceup) {
+TEST(BJGameFunctions, next_state_deal_dealer_has_ace_faceup) {
+    using namespace std;
+    using namespace testing;
+    dealer testDealer;
+    testDealer.add(card(1));
 
-    ASSERT_TRUE(false);
+    GameState result = BJGameFunctions::deal_next_state(testDealer);
+
+    EXPECT_EQ(result, INSURANCE);
+}
+
+TEST(BJGameFunctions, next_state_deal_dealer_no_ace_faceup) {
+    using namespace std;
+    using namespace testing;
+    dealer testDealer;
+    testDealer.add(card(2));
+
+    GameState result = BJGameFunctions::deal_next_state(testDealer);
+
+    EXPECT_EQ(result, MOVE);
 }
