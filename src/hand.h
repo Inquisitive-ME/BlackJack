@@ -21,7 +21,7 @@ public:
 
     virtual void clear();
 
-    virtual void add(card cardToAdd);
+    virtual void copy_to_hand(card cardToAdd);
 
     virtual void move_to_hand(card &cardToMove);
 

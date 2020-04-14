@@ -9,7 +9,7 @@
 #include "card.h"
 #include "bj_hand.h"
 #include "deck.h"
-#include "dealer.h"
+#include "dealer_interface.h"
 #include "player_interface.h"
 #include "ai_interface.h"
 
@@ -29,29 +29,27 @@ namespace BJGameFunctions {
 
     void deal_to_all_players(deck &gameDeck, vector<PlayerInterface *> PlayersInGame, AiInterface &gameAI);
 
-    void deal_to_dealer(deck &gameDeck, dealer &gameDealer);
+    void deal_to_dealer(deck &gameDeck, DealerInterface &gameDealer);
 
-    GameState deal_next_state(dealer &gameDealer);
+    GameState deal_next_state(DealerInterface &gameDealer);
 
     void evaluate_dealer_has_blackjack(vector<PlayerInterface *> PlayersInGame, deck &gDeck, bool PRINT_OUTPUT = false);
 }
 
 class BJGame {
 private:
+    DealerInterface &gameDealer;
     std::vector<PlayerInterface *> gamePlayers;
     AiInterface &gameAI;
     deck gameDeck;
-    dealer gameDealer;
     GameState gameState;
 
 public:
-    BJGame(std::vector<PlayerInterface *> players, AiInterface &ai);
+    BJGame(DealerInterface &dealer, std::vector<PlayerInterface *> players, AiInterface &ai);
 
     virtual ~BJGame() {};
 
     void printDeck();
-
-    GameState deal_next_state();
 
     void play();
 };

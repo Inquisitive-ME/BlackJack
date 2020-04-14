@@ -11,6 +11,7 @@
 #include <chrono>
 #include "bj_game.h"
 #include "commandline_ai_impl.h"
+#include "command_line_dealer.h"
 
 using namespace std;
 
@@ -59,7 +60,7 @@ int main() {
     PlayerImpl testPlayer;
 
     cout << "Created Card " << testCard.print() << endl;
-    testHand.add(testCard);
+    testHand.copy_to_hand(testCard);
     cout << "Test Hand: " << testHand.print() << endl;
     testPlayer.getHands().push_back(testHand);
     cout << "test Players Hand = " << testPlayer.getHands()[0].print() << endl;
@@ -84,8 +85,9 @@ int main() {
         std:: cout << i->getName() << std::endl;
     }
     CommandLineAI AI;
+    CommandLineDealer Dealer;
 
-    BJGame main_game{{gamePlayers.begin(), gamePlayers.end()}, AI};
+    BJGame main_game{Dealer, {gamePlayers.begin(), gamePlayers.end()}, AI};
 
     main_game.printDeck();
     main_game.play();

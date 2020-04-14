@@ -23,7 +23,7 @@ public:
 
     void clear() override;
 
-    void add(card cardToAdd) override;
+    void copy_to_hand(card cardToAdd) override;
 
     void move_to_hand(card &cardToMove) override;
 
@@ -33,9 +33,9 @@ public:
 
     int getTotal() const;
 
-    bool isBusted() const;
+    virtual bool isBusted() const;
 
-    bool isBlackJack() const;
+    virtual bool isBlackJack() const;
 
     float getBet() const{
         return bet;

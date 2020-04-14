@@ -19,7 +19,7 @@ TEST(Hand, Add_random_number_of_cards_verify_count) {
 
     for (uint i = 0; i < numCards; i++) {
         MockCard testCard;
-        testHand.add(testCard);
+        testHand.copy_to_hand(testCard);
     }
     ASSERT_EQ(numCards, testHand.getNumCards()) << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
 
@@ -35,7 +35,7 @@ TEST(Hand, Verify_Giving_card_from_one_hand_to_another) {
 
     MockCard testCard;
 
-    giveHand.add(testCard);
+    giveHand.copy_to_hand(testCard);
     giveHand.give(0, receiveHand);
 
     EXPECT_EQ(emptyHandSize, giveHand.getNumCards());
@@ -53,7 +53,7 @@ TEST(Hand, Verify_giving_card_from_non_zero_index_in_a_hand_to_another_hand) {
 
     for (int i = 0; i < 10; i++) {
         MockCard testCard;
-        giveHand.add(testCard);
+        giveHand.copy_to_hand(testCard);
         if (i == indexToGive) {
             expectedCard = testCard;
         }
@@ -66,7 +66,7 @@ TEST(Hand, Verify_giving_card_from_non_zero_index_in_a_hand_to_another_hand) {
 TEST(Hand, Verify_flip_card) {
     hand testHand;
     MockCard testCard;
-    testHand.add(testCard);
+    testHand.copy_to_hand(testCard);
 
     testHand.flipCard(0);
     ASSERT_TRUE(testHand.getCard(0).isFaceUp());

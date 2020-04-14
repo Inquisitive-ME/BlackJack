@@ -5,12 +5,11 @@
  *      Author: richard
  */
 
-#include "dealer.h"
+#include "dealer_impl.h"
 
-dealer::dealer() : BJHand(0) {
-}
+DealerImpl::DealerImpl() : BJHand(0) {}
 
-bool dealer::isHitting() {
+const bool DealerImpl::isHitting() const {
     int dealerTotal = getTotal();
     if (isSoft())
         return (dealerTotal < 18);
@@ -18,7 +17,7 @@ bool dealer::isHitting() {
         return (dealerTotal < 17);
 }
 
-std::vector<card> dealer::getFaceUpCards(){
+std::vector<card> DealerImpl::getFaceUpCards(){
     std::vector<card> faceUpCards;
     for(int i = 0; i < getNumCards(); i++)
     {
@@ -29,7 +28,7 @@ std::vector<card> dealer::getFaceUpCards(){
     return faceUpCards;
 }
 
-dealer::~dealer() {
+DealerImpl::~DealerImpl() {
     //std::cout << "BJDealer Destroyed" << std::endl;
 }
 

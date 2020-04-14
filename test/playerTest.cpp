@@ -46,17 +46,17 @@ TEST_F(playerTest, Win_function) {
 }
 
 TEST_F(playerTest, Win_with_blackjack) {
-    testPlayer.getHand(0).add(testAce);
-    testPlayer.getHand(0).add(testTen);
+    testPlayer.getHand(0).copy_to_hand(testAce);
+    testPlayer.getHand(0).copy_to_hand(testTen);
 
     testPlayer.winHand(0);
     ASSERT_EQ(betForHand * 1.5, testPlayer.getPurse());
 }
 
 TEST_F(playerTest, Win_with_total_21_not_blackjack) {
-    testPlayer.getHand(0).add(testAce);
-    testPlayer.getHand(0).add(testFive);
-    testPlayer.getHand(0).add(testFive);
+    testPlayer.getHand(0).copy_to_hand(testAce);
+    testPlayer.getHand(0).copy_to_hand(testFive);
+    testPlayer.getHand(0).copy_to_hand(testFive);
 
     testPlayer.winHand(0);
     ASSERT_EQ(betForHand, testPlayer.getPurse());
@@ -79,12 +79,12 @@ TEST_F(playerTest, Dealer_bust_function_with_2_non_busted_hands) {
 }
 
 TEST_F(playerTest, Dealer_bust_function_with_1_busted_hand) {
-    testPlayer.getHand(0).add(testTen);
-    testPlayer.getHand(0).add(testTen);
-    testPlayer.getHand(0).add(testFive);
+    testPlayer.getHand(0).copy_to_hand(testTen);
+    testPlayer.getHand(0).copy_to_hand(testTen);
+    testPlayer.getHand(0).copy_to_hand(testFive);
     testPlayer.newHand(betForHand);
     testPlayer.newHand(betForHand);
-    testPlayer.getHand(2).add(testTen);
+    testPlayer.getHand(2).copy_to_hand(testTen);
 
     testPlayer.dealerBusted();
     float expectedPurse = betForHand + betForHand - betForHand;
@@ -92,8 +92,8 @@ TEST_F(playerTest, Dealer_bust_function_with_1_busted_hand) {
 }
 
 TEST_F(playerTest, Dealer_bust_function_with_1_blackjack_hand) {
-    testPlayer.getHand(0).add(testTen);
-    testPlayer.getHand(0).add(testAce);
+    testPlayer.getHand(0).copy_to_hand(testTen);
+    testPlayer.getHand(0).copy_to_hand(testAce);
     testPlayer.newHand(betForHand);
 
     testPlayer.dealerBusted();
@@ -107,8 +107,8 @@ TEST_F(playerTest, Surrender) {
 }
 
 TEST_F(playerTest, Split) {
-    testPlayer.getHand(0).add(testAce);
-    testPlayer.getHand(0).add(testFive);
+    testPlayer.getHand(0).copy_to_hand(testAce);
+    testPlayer.getHand(0).copy_to_hand(testFive);
 
     testPlayer.split(0);
 

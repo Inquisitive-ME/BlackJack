@@ -21,12 +21,12 @@ namespace BJGameFunctions {
         });
     }
 
-    void deal_to_dealer(deck &gameDeck, dealer &gameDealer) {
+    void deal_to_dealer(deck &gameDeck, DealerInterface &gameDealer) {
         gameDeck.dealFaceDown(gameDealer, 2);
         gameDealer.flipCard(0);
     }
 
-    GameState deal_next_state(dealer &gameDealer){
+    GameState deal_next_state(DealerInterface &gameDealer){
         if(gameDealer.getCard(0).isAce()) {
             return INSURANCE;
         } else{
@@ -58,7 +58,8 @@ namespace BJGameFunctions {
 
 // TODO Currently planning on just having 1 "AI" that will handle all decisions for players
 
-BJGame::BJGame(std::vector<PlayerInterface *> players, AiInterface &ai) : gamePlayers{std::move(players)}, gameAI{ai} {
+BJGame::BJGame(DealerInterface &dealer, std::vector<PlayerInterface *> players, AiInterface &ai) :
+                gameDealer{dealer}, gamePlayers{std::move(players)}, gameAI{ai} {
     gameDeck.populate();
     gameState = DEAL;
 }

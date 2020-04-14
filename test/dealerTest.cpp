@@ -2,13 +2,13 @@
 // Created by richard on 8/4/19.
 //
 
-#include "../src/dealer.h"
+#include "../src/dealer_impl.h"
 
 #include "gtest/gtest.h"
 
 class dealerTest : public ::testing::Test {
 public:
-    dealer testDealer;
+    DealerImpl testDealer;
     card testAce = card(1);
     card testFive = card(5);
     card testTen = card(10);
@@ -22,35 +22,35 @@ public:
 };
 
 TEST_F(dealerTest, Dealer_is_hitting_when_hand_is_not_soft) {
-    testDealer.add(testFive);
-    testDealer.add(testTen);
-    testDealer.add(testAce);
+    testDealer.copy_to_hand(testFive);
+    testDealer.copy_to_hand(testTen);
+    testDealer.copy_to_hand(testAce);
 
     ASSERT_TRUE(testDealer.isHitting());
 }
 
 TEST_F(dealerTest, Dealer_is_not_hitting_when_hand_is_not_soft) {
-    testDealer.add(testFive);
-    testDealer.add(testTen);
-    testDealer.add(testAce);
-    testDealer.add(testAce);
+    testDealer.copy_to_hand(testFive);
+    testDealer.copy_to_hand(testTen);
+    testDealer.copy_to_hand(testAce);
+    testDealer.copy_to_hand(testAce);
 
     ASSERT_FALSE(testDealer.isHitting());
 }
 
 TEST_F(dealerTest, Dealer_is_hitting_with_two_aces_one_soft) {
-    testDealer.add(testFive);
-    testDealer.add(testAce);
-    testDealer.add(testAce);
+    testDealer.copy_to_hand(testFive);
+    testDealer.copy_to_hand(testAce);
+    testDealer.copy_to_hand(testAce);
 
     ASSERT_TRUE(testDealer.isHitting());
 }
 
 TEST_F(dealerTest, Dealer_is_not_hitting_with_three_aces_one_soft) {
-    testDealer.add(testFive);
-    testDealer.add(testAce);
-    testDealer.add(testAce);
-    testDealer.add(testAce);
+    testDealer.copy_to_hand(testFive);
+    testDealer.copy_to_hand(testAce);
+    testDealer.copy_to_hand(testAce);
+    testDealer.copy_to_hand(testAce);
 
     ASSERT_FALSE(testDealer.isHitting());
 }

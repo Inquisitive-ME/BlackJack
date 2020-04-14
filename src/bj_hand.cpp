@@ -33,8 +33,8 @@ void BJHand::clear() {
     calculateTotal();
 }
 
-void BJHand::add(card cardToAdd) {
-    hand::add(cardToAdd);
+void BJHand::copy_to_hand(card cardToAdd) {
+    hand::copy_to_hand(cardToAdd);
     calculateTotal();
 }
 

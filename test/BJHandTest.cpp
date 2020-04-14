@@ -38,7 +38,7 @@ TEST(BJHand, Add_random_number_of_cards_verify_count_and_total) {
         card testCard(getRandomInt(2, 13));
         testCard.flip();
         expectedTotal += testCard.getValue();
-        testHand.add(testCard);
+        testHand.copy_to_hand(testCard);
     }
     EXPECT_EQ(numCards, testHand.getNumCards());
     ASSERT_EQ(expectedTotal, testHand.getTotal()) << "Add " + std::to_string(numCards) + " cards to hand" << std::endl;
@@ -49,44 +49,44 @@ TEST(BJHand, Add_random_number_of_cards_verify_count_and_total) {
 }
 
 TEST_F(BJHandTest, Busted_hand_is_busted) {
-    testHand.add(testTen);
-    testHand.add(testFive);
-    testHand.add(testSeven);
+    testHand.copy_to_hand(testTen);
+    testHand.copy_to_hand(testFive);
+    testHand.copy_to_hand(testSeven);
 
     ASSERT_TRUE(testHand.isBusted());
 }
 
 TEST_F(BJHandTest, Hand_with_ace_isSoft) {
-    testHand.add(testAce);
-    testHand.add(testSeven);
+    testHand.copy_to_hand(testAce);
+    testHand.copy_to_hand(testSeven);
 
     EXPECT_EQ(18, testHand.getTotal());
     ASSERT_TRUE(testHand.isSoft());
 
-    testHand.add(testSeven);
+    testHand.copy_to_hand(testSeven);
 
     EXPECT_EQ(15, testHand.getTotal());
     ASSERT_FALSE(testHand.isSoft());
 }
 
 TEST_F(BJHandTest, Blackjack_is_true) {
-    testHand.add(testAce);
-    testHand.add(testTen);
+    testHand.copy_to_hand(testAce);
+    testHand.copy_to_hand(testTen);
 
     ASSERT_TRUE(testHand.isBlackJack());
 }
 
 TEST_F(BJHandTest, BlackJack_is_false_with_ace_as_1) {
-    testHand.add(testAce);
-    testHand.add(testFive);
-    testHand.add(testFive);
+    testHand.copy_to_hand(testAce);
+    testHand.copy_to_hand(testFive);
+    testHand.copy_to_hand(testFive);
 
     ASSERT_FALSE(testHand.isBlackJack());
 }
 
 TEST_F(BJHandTest, BlackJack_is_false) {
-    testHand.add(testFive);
-    testHand.add(testFive);
+    testHand.copy_to_hand(testFive);
+    testHand.copy_to_hand(testFive);
 
     ASSERT_FALSE(testHand.isBlackJack());
 }

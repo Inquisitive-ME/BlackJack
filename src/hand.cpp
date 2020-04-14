@@ -13,7 +13,7 @@ void hand::clear() {
     cards.clear();
 }
 
-void hand::add(card cardToAdd) {
+void hand::copy_to_hand(card cardToAdd) {
     cards.push_back(cardToAdd);
 }
 

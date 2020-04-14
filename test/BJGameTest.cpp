@@ -5,6 +5,7 @@
 
 #include "../src/bj_game.h"
 #include "../src/deck.h"
+#include "../src/dealer_impl.h"
 #include <algorithm>
 
 #include "gtest/gtest.h"
@@ -16,8 +17,11 @@ public:
     MOCK_METHOD2(dealFaceUp, void(PlayerInterface&, int));
 };
 
-class MockDealer : public dealer {
+class MockDealer : public DealerInterface {
 public:
+    MOCK_CONST_METHOD0(isHitting, const bool());
+    MOCK_METHOD0(getFaceUpCards, std::vector<card>());
+
     MOCK_METHOD1(flipCard, void(int));
     MOCK_METHOD1(getCard, const card(int));
 };
@@ -91,8 +95,8 @@ TEST(BJGameFunctions, deal_to_dealer) {
 TEST(BJGameFunctions, next_state_deal_dealer_has_ace_faceup) {
     using namespace std;
     using namespace testing;
-    dealer testDealer;
-    testDealer.add(card(1));
+    DealerImpl testDealer;
+    testDealer.copy_to_hand(card(1));
 
     GameState result = BJGameFunctions::deal_next_state(testDealer);
 
@@ -102,8 +106,8 @@ TEST(BJGameFunctions, next_state_deal_dealer_has_ace_faceup) {
 TEST(BJGameFunctions, next_state_deal_dealer_no_ace_faceup) {
     using namespace std;
     using namespace testing;
-    dealer testDealer;
-    testDealer.add(card(2));
+    DealerImpl testDealer;
+    testDealer.copy_to_hand(card(2));
 
     GameState result = BJGameFunctions::deal_next_state(testDealer);
 

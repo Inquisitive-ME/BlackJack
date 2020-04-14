@@ -9,7 +9,7 @@ set(SOURCE_FILES
 		bj_hand.cpp
 		player_impl.cpp
 		deck.cpp
-		dealer.cpp
+		dealer_impl.cpp
 		bj_game.cpp
 		get_random_int.cpp
         blackjack_database.cpp
