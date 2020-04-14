@@ -77,7 +77,6 @@ int BJHand::getTotal() const {
 }
 
 bool BJHand::isBusted() const {
-    std::cout << "TOTAL: " << getTotal() << std::endl;
     return (getTotal() > 21);
 }
 

@@ -59,7 +59,6 @@ void deck::dealFaceDown(hand &dealToHand, int numCards) {
 }
 
 void deck::dealFaceUp(hand &dealToHand, int numCards) {
-    std::cout << "Deal Face Up" << std::endl;
     for (int i = 0; i < numCards; i++) {
         // TODO this could be removed for speed if it doesn't add to being more random
         int cardToGive = getRandomInt(0, getNumCards() - 1);

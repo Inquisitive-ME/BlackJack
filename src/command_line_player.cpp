@@ -4,6 +4,8 @@
 
 #include "command_line_player.h"
 
+// TODO implement same function in command line dealer to display when card is added
+
 CommandLinePlayer::CommandLinePlayer() : PlayerImpl() {}
 
 CommandLinePlayer::CommandLinePlayer(std::string playerName, float startPurse = 0) : PlayerImpl(playerName, startPurse) {}
@@ -15,7 +17,12 @@ void CommandLinePlayer::winHand(int handNumber) {
 
 void CommandLinePlayer::loseHand(int handNumber) {
     PlayerImpl::loseHand(handNumber);
-    std::cout << getName() << " lost $" << getHand(handNumber).getBet() <<  " and now has $" << getPurse() << std::endl;
+    if(PlayerImpl::getHand(handNumber).isBusted()){
+        std::cout << PlayerImpl::getName() << " busted and";
+    } else{
+        std::cout << getName();
+    }
+    std::cout << " lost $" << getHand(handNumber).getBet() <<  " and now has $" << getPurse() << std::endl;
 }
 
 void CommandLinePlayer::pushHand(int handNumber) {

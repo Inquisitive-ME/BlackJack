@@ -137,12 +137,10 @@ void BJGame::play() {
                         if(playerHand.isBusted()){
                             player->loseHand(handNumber);
                         } else{
-                            if(player->getHand(handNumber).getTotal() > gameDealer.getTotal()){
-                                while(gameDealer.isHitting()){
-                                    gameDeck.dealFaceUp(gameDealer, 1);
-                                }
+                            while(gameDealer.isHitting()){
+                                gameDeck.dealFaceUp(gameDealer, 1);
                             }
-                            if(player->getHand(handNumber).getTotal() > gameDealer.getTotal()){
+                            if(player->getHand(handNumber).getTotal() > gameDealer.getTotal() or gameDealer.isBusted()){
                                 player->winHand(handNumber);
                             } else if(player->getHand(handNumber).getTotal() == gameDealer.getTotal()){
                                 player->pushHand(handNumber);
