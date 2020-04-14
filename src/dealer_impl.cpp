@@ -19,7 +19,7 @@ const bool DealerImpl::isHitting() const {
 
 std::vector<card> DealerImpl::getFaceUpCards(){
     std::vector<card> faceUpCards;
-    for(int i = 0; i < getNumCards(); i++)
+    for(uint i = 0; i < getNumCards(); i++)
     {
         if(getCard(i).isFaceUp()) {
             faceUpCards.push_back(getCard(i));

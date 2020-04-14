@@ -13,7 +13,7 @@ int blackjack_database::create() {
     sqlite3 *db;
     char *zErrMsg = 0;
     int rc;
-    char *sql;
+    std::string sql;
 
 /* Open database */
     rc = sqlite3_open("test.db", &db);
@@ -34,7 +34,7 @@ int blackjack_database::create() {
       "SALARY         REAL );";
 
 /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+    rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &zErrMsg);
 
     if (rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
@@ -43,6 +43,8 @@ int blackjack_database::create() {
         fprintf(stdout, "Table created successfully\n");
     }
     sqlite3_close(db);
+
+    return 0;
 }
 
 blackjack_database::~blackjack_database() = default;

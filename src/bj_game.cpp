@@ -72,6 +72,7 @@ void BJGame::printDeck() {
 void BJGame::play() {
     while (gameState != GAME_OVER) {
         switch (gameState) {
+            case BET:{} break;
             case DEAL: {
                 // TODO this is where you could get prebet deck
                 BJGameFunctions::deal_to_all_players(gameDeck, gamePlayers, gameAI);
@@ -160,6 +161,8 @@ void BJGame::play() {
                     gameState = GAME_OVER;
                 }
             }
+            break;
+            case GAME_OVER: {std::cout << "GAMEOVER" << std::endl;}
             break;
         }
     }
