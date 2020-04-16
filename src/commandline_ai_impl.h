@@ -14,7 +14,7 @@ public:
 
     virtual ~CommandLineAI() = default;
 
-    const int getPlayerBet(const PlayerInterface &gamePlayer) override;
+    const int getPlayerBet(const std::unique_ptr<PlayerInterface>& gamePlayer) override;
 
     const MOVES getMove(std::vector<card> dealerHand, const BJHand &playerHand) override;
 

@@ -20,9 +20,9 @@ std::string BJHand::print() const {
     std::string returnString;
     for (card mcard : cards) {
         if (mcard.isFaceUp())
-            returnString.append(mcard.print());
+            returnString.append(mcard.print() + " ");
     }
-    returnString.append(" Total: ");
+    returnString.append("Total: ");
     returnString.append(std::to_string(getTotal()));
 
     return returnString;

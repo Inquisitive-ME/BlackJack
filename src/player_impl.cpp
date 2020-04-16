@@ -70,20 +70,24 @@ void PlayerImpl::payInsurance() {
     insurancePayed = true;
 }
 
-const uint PlayerImpl::numHands() const {
-    return (hands.size());
+const uint PlayerImpl::getNumHands() const {
+    return ((uint) hands.size());
 }
 
-BJHand &PlayerImpl::getHand(uint handNum) {
-    return (hands[handNum]);
+const BJHand& PlayerImpl::getHand(int handNumber) const {
+    return hands[handNumber];
 }
 
-std::vector<BJHand> &PlayerImpl::getHands() {
-    return (hands);
+void PlayerImpl::moveToHand(int handNumber, card cardToMove){
+    hands[handNumber].move_to_hand(cardToMove);
+}
+
+void PlayerImpl::hitHand(int handNumber, card cardToAdd){
+    moveToHand(handNumber, cardToAdd);
 }
 
 void PlayerImpl::newHand(float pbet) {
-    hands.push_back(BJHand(pbet));
+    hands.emplace_back(BJHand(pbet));
 }
 
 void PlayerImpl::removeHand(int handNumberToRemove) {

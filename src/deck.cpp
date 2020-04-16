@@ -13,7 +13,7 @@ deck::deck() {
     whenToShuffle = 93;
 }
 
-deck::deck(int numDecks, int whenShuffle) {
+deck::deck(uint numDecks, uint whenShuffle) {
     count = 0;
     numberOfDecks = numDecks;
     whenToShuffle = whenShuffle;
@@ -70,16 +70,30 @@ void deck::dealFaceUp(hand &dealToHand, int numCards) {
     }
 }
 
-void deck::dealFaceUp(PlayerInterface &dealToPlayer, int numCards) {
-    for (BJHand &pHand : dealToPlayer.getHands()) {
+void deck::giveToPlayerHand(uint cardIndex, std::unique_ptr<PlayerInterface>& player, uint playerHandIndex){
+    player->moveToHand(playerHandIndex, cards[cardIndex]);
+    cards.erase(cards.begin() + cardIndex);
+}
+
+void deck::dealFaceUp(std::unique_ptr<PlayerInterface>& dealToPlayer, int numCards) {
+    for (uint handNumber = 0; handNumber < dealToPlayer->getNumHands(); handNumber++) {
         for (int j = 0; j < numCards; j++) {
-            int cardToGive = getRandomInt(0, getNumCards() - 1);
+            uint cardToGive = (uint) getRandomInt(0, getNumCards() - 1);
             cards[cardToGive].flip();
-            give(cardToGive, pHand);
+            giveToPlayerHand(cardToGive, dealToPlayer, handNumber);
             if (getNumCards() <= whenToShuffle) {
                 populate();
             }
         }
+    }
+}
+
+void deck::hitPlayerHand(std::unique_ptr<PlayerInterface>& dealToPlayer, int playerHandNumber){
+    uint cardToGive = (uint) getRandomInt(0, getNumCards() - 1);
+    cards[cardToGive].flip();
+    giveToPlayerHand(cardToGive, dealToPlayer, playerHandNumber);
+    if (getNumCards() <= whenToShuffle) {
+        populate();
     }
 }
 

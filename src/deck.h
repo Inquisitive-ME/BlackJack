@@ -13,6 +13,7 @@
 #include "player_interface.h"
 #include "get_random_int.h"
 #include <algorithm>
+#include <memory>
 
 class deck : public hand {
 private:
@@ -21,11 +22,12 @@ private:
     uint whenToShuffle;
 
     void addCountFromCard(card);
+    void giveToPlayerHand(uint cardIndex, std::unique_ptr<PlayerInterface>& player, uint playerHandIndex);
 
 public:
     deck();
 
-    deck(int numDecks, int whenShuffle);
+    deck(uint numDecks, uint whenShuffle);
 
     void populate();
 
@@ -35,7 +37,9 @@ public:
 
     virtual void dealFaceUp(hand &, int);
 
-    virtual void dealFaceUp(PlayerInterface &, int);
+    virtual void dealFaceUp(std::unique_ptr<PlayerInterface>& dealToPlayer, int playerHandNumber);
+
+    void hitPlayerHand(std::unique_ptr<PlayerInterface> &dealToPlayer, int playerHandNumber);
 
     virtual ~deck();
 };

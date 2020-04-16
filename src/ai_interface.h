@@ -11,7 +11,7 @@ class AiInterface {
 public:
     virtual ~AiInterface() = default;
 
-    virtual const int getPlayerBet(const PlayerInterface &gamePlayer) = 0;
+    virtual const int getPlayerBet(const std::unique_ptr<PlayerInterface>& gamePlayer) = 0;
 
     virtual const MOVES getMove(std::vector<card> dealerHand, const BJHand& playerHand) = 0;
 

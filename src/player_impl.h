@@ -39,11 +39,12 @@ public:
 
     void payInsurance() override;
 
-    const uint numHands() const override;
+    const uint getNumHands() const override;
 
-    BJHand &getHand(uint handNum) override;
+    const BJHand& getHand(int handNumber) const override;
 
-    std::vector<BJHand> &getHands() override;
+    virtual void moveToHand(int handNumber, card cardToMove) override;
+    virtual void hitHand(int handNumber, card cardToMove) override;
 
     virtual void newHand(float) override;
 

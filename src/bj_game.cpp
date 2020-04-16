@@ -13,11 +13,11 @@ namespace BJGameFunctions {
         pHand.print();
     }
 
-    void deal_to_all_players(deck &gameDeck, vector<PlayerInterface *> PlayersInGame, AiInterface &gameAI) {
+    void deal_to_all_players(deck &gameDeck, vector<unique_ptr<PlayerInterface>>& PlayersInGame, AiInterface &gameAI) {
         //TODO this is where you would get the prebet Deck
-        for_each(PlayersInGame.begin(), PlayersInGame.end(), [&gameDeck, &gameAI](PlayerInterface *gamePlayer) {
-            gamePlayer->newHand(gameAI.getPlayerBet(*gamePlayer));
-            gameDeck.dealFaceUp(*gamePlayer, 2);
+        for_each(PlayersInGame.begin(), PlayersInGame.end(), [&gameDeck, &gameAI](unique_ptr<PlayerInterface>& gamePlayer) {
+            gamePlayer->newHand(gameAI.getPlayerBet(gamePlayer));
+            gameDeck.dealFaceUp(gamePlayer, 2);
         });
     }
 
@@ -35,21 +35,18 @@ namespace BJGameFunctions {
     }
 
     // TODO complete evaluate dealer has 21, consider having logic in PlayerInterface class, or adding callbacks for abstract class
-    void evaluate_dealer_has_blackjack(vector<PlayerInterface *> PlayersInGame, deck &gDeck, bool PRINT_OUTPUT) {
-        for (PlayerInterface *player : PlayersInGame) {
-            for (BJHand pHand : player->getHands()) {
+    void evaluate_dealer_has_blackjack(vector<unique_ptr<PlayerInterface>> PlayersInGame, deck &gDeck, bool PRINT_OUTPUT) {
+        for (unique_ptr<PlayerInterface>& player : PlayersInGame) {
+            for (uint handNumber = 0; handNumber < player->getNumHands(); handNumber++) {
                 // TODO this could be a function that get's passed into for each
-                if (PRINT_OUTPUT) { printHand(player->getName(), pHand); }
-                while (not(pHand.isBusted()) && pHand.getTotal() < 21) {
-                    gDeck.dealFaceDown(pHand, 1);
-                    if (PRINT_OUTPUT) { printHand(player->getName(), pHand); }
+                while (player->getHand(handNumber).getTotal() < 21) {
+                    gDeck.hitPlayerHand(player, handNumber);
                 }
-                if (pHand.isBusted()) {
-                    if (PRINT_OUTPUT) { cout << player->getName() << " BUSTED " << endl; }
-                    player->loseHand(0);
+                if (player->getHand(handNumber).isBusted()) {
+                    player->loseHand(handNumber);
                 } else {
                     if (PRINT_OUTPUT) { cout << player->getName() << " PUSHED " << std::endl; }
-                    //PlayerInterface->push();
+                    player->pushHand(handNumber);
                 }
             }
         }
@@ -58,8 +55,8 @@ namespace BJGameFunctions {
 
 // TODO Currently planning on just having 1 "AI" that will handle all decisions for players
 
-BJGame::BJGame(DealerInterface &dealer, std::vector<PlayerInterface *> players, AiInterface &ai) :
-                gameDealer{dealer}, gamePlayers{std::move(players)}, gameAI{ai} {
+BJGame::BJGame(DealerInterface &dealer, std::vector<std::unique_ptr<PlayerInterface>>& players, AiInterface &ai) :
+                gameDealer{dealer}, gamePlayers(players), gameAI{ai} {
     gameDeck.populate();
     gameState = DEAL;
 }
@@ -82,7 +79,7 @@ void BJGame::play() {
             break;
 
             case INSURANCE: {
-                for(PlayerInterface* player : gamePlayers)
+                for(unique_ptr<PlayerInterface>& player : gamePlayers)
                 {
                     if(gameAI.payInsurance(*player)){
                         player->payInsurance();
@@ -92,28 +89,26 @@ void BJGame::play() {
             }
             break;
             case MOVE: {
-                for (PlayerInterface *player : gamePlayers) {
-                    uint numHands = player->numHands();
+                for (unique_ptr<PlayerInterface>& player : gamePlayers) {
+                    uint numHands = player->getNumHands();
                     for(uint handNumber = 0; handNumber < numHands; handNumber++){
-                        BJHand playerHand = player->getHand(handNumber);
                         MOVES playerMove = HIT;
                         bool canDoubleDown = true;
-                        while(playerMove != STAY and playerMove != SURRENDER and !playerHand.isBusted()){
-                            playerMove = gameAI.getMove(gameDealer.getFaceUpCards(), playerHand);
+                        while(playerMove != STAY and playerMove != SURRENDER and !player->getHand(handNumber).isBusted()){
+                            playerMove = gameAI.getMove(gameDealer.getFaceUpCards(), player->getHand(handNumber));
                             if(playerMove == HIT) {
-                                gameDeck.dealFaceUp(*player, 1);
+                                gameDeck.hitPlayerHand(player, handNumber);
                             } else if(playerMove == SPLIT){
-                                if(player->getHand(handNumber).getNumCards() == 2){
+                                if(player->getHand(0).getNumCards() == 2){
                                     player->split(handNumber);
-                                    numHands = player->numHands();
+                                    numHands = player->getNumHands();
                                 } else {
                                     if(!gameAI.illegalMove()){break;}
                                 }
-
                             } else if(playerMove == DOUBLED){
                                 if(canDoubleDown) {
                                     player->doubleDown(handNumber);
-                                    gameDeck.dealFaceUp(*player, handNumber);
+                                    gameDeck.hitPlayerHand(player, handNumber);
                                 } else{
                                     if(!gameAI.illegalMove()){break;}
                                 }
@@ -121,7 +116,6 @@ void BJGame::play() {
                                 player->surrender(handNumber);
                             }
                             canDoubleDown = false;
-                            playerHand = player->getHand(handNumber);
                         }
                     }
                 }
@@ -130,8 +124,8 @@ void BJGame::play() {
             break;
             case RESULT: {
                 gameDealer.flipCard(1);
-                for (PlayerInterface *player : gamePlayers) {
-                    uint numHands = player->numHands();
+                for (unique_ptr<PlayerInterface>& player : gamePlayers) {
+                    uint numHands = player->getNumHands();
                     for(uint handNumber = 0; handNumber < numHands; handNumber++){
                         BJHand playerHand = player->getHand(handNumber);
                         if(playerHand.isBusted()){

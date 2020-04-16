@@ -10,10 +10,10 @@ CommandLineAI::CommandLineAI() {
     rounds = 0;
 }
 
-const int CommandLineAI::getPlayerBet(const PlayerInterface &gamePlayer) {
+const int CommandLineAI::getPlayerBet(const std::unique_ptr<PlayerInterface>& gamePlayer) {
     int min_bet = 5;
     int max_bet = 500;
-    std::string question = gamePlayer.getName() + " you have $" + std::to_string(gamePlayer.getPurse()) +
+    std::string question = gamePlayer->getName() + " you have $" + std::to_string(gamePlayer->getPurse()) +
                            " how much would you like to bet? table min $" +
                            std::to_string(min_bet) +
                            " table max $" + std::to_string(max_bet);
@@ -22,11 +22,6 @@ const int CommandLineAI::getPlayerBet(const PlayerInterface &gamePlayer) {
 
 
 const MOVES CommandLineAI::getMove(std::vector<card> dealerHand, const BJHand &playerHand) {
-    std::cout << "Dealer Hand: ";
-    for (card dealerCard : dealerHand) {
-        std::cout << dealerCard.print() << " ";
-    };
-    std::cout << std::endl;
 
     std::cout << "For hand " << playerHand.print() << " ";
 

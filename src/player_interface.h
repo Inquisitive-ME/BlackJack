@@ -7,6 +7,7 @@
 
 #include "bj_hand.h"
 #include <vector>
+#include <memory>
 
 enum MOVES {
     HIT, STAY, SPLIT, DOUBLED, SURRENDER
@@ -36,11 +37,13 @@ public:
 
     virtual void payInsurance() = 0;
 
-    virtual const uint numHands() const = 0;
+    virtual const uint getNumHands() const = 0;
 
-    virtual BJHand &getHand(uint handNum) = 0;
+    virtual const BJHand &getHand(int handNum) const = 0;
 
-    virtual std::vector<BJHand> &getHands() = 0;
+    virtual void hitHand(int handNumber, card cardToAdd) = 0;
+
+    virtual void moveToHand(int handNumber, card cardToMove) = 0;
 
     virtual void newHand(float) = 0;
 

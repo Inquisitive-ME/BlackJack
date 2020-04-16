@@ -33,25 +33,19 @@ int ask_number(std::string question, int low,int high)
     }
 }
 
-std::vector<PlayerImpl*> get_players_list()
-{
+void set_players_list(std::vector<std::unique_ptr<PlayerInterface>>& inputPlayerList) {
     int numPlayersInput;
     std::cout << "How many players?" << std::endl;
     std::cin >> numPlayersInput;
 
-    std::vector<PlayerImpl*> playersList;
-
-    for(int i = 0; i < numPlayersInput; i++){
+    for (int i = 0; i < numPlayersInput; i++) {
         string pName;
         std::cout << "What is your name?" << std::endl;
         std::cin >> pName;
         std::cout << pName << " ";
-        int pPurse = ask_number("how much money will you start with?",0,100);
-        PlayerImpl* player = new CommandLinePlayer(pName, pPurse);
-        playersList.push_back(player);
+        int pPurse = ask_number("how much money will you start with?", 0, 100);
+        inputPlayerList.push_back(std::make_unique<CommandLinePlayer>(pName, pPurse));
     }
-
-    return playersList;
 }
 
 int main() {
@@ -62,8 +56,6 @@ int main() {
     cout << "Created Card " << testCard.print() << endl;
     testHand.copy_to_hand(testCard);
     cout << "Test Hand: " << testHand.print() << endl;
-    testPlayer.getHands().push_back(testHand);
-    cout << "test Players Hand = " << testPlayer.getHands()[0].print() << endl;
 
     int numNumberToGenerate = 100000;
 
@@ -80,14 +72,16 @@ int main() {
     cout << "Took " << elapsed.count() << " seconds to generate " << numNumberToGenerate << " random numbers" << endl;
 
     // Initialize player list for game
-    std::vector<PlayerImpl*> gamePlayers = get_players_list();
-    for(auto i : gamePlayers){
+    std::vector<unique_ptr<PlayerInterface>> gamePlayers;
+    set_players_list(gamePlayers);
+
+    for(auto& i : gamePlayers){
         std:: cout << i->getName() << std::endl;
     }
     CommandLineAI AI;
     CommandLineDealer Dealer;
 
-    BJGame main_game{Dealer, {gamePlayers.begin(), gamePlayers.end()}, AI};
+    BJGame main_game{Dealer, gamePlayers, AI};
 
     main_game.printDeck();
     main_game.play();
