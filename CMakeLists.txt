@@ -9,6 +9,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -02")
 
 # get compiler for Raspberry Pi
+# Didn't use cmakes git add submodule because the directory needs to be there for cmake before building
 if("${PLATFORM}" STREQUAL "rpi3b+")
     if(NOT IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools)
         execute_process(COMMAND git clone https://github.com/raspberrypi/tools.git ${CMAKE_CURRENT_SOURCE_DIR}/tools)

@@ -32,5 +32,5 @@ fi
 
 cd $buildDIR
 
-cmake -D CMAKE_TOOLCHAIN_FILE=$HOME/Documents/BlackJack/rpi_toolchain.cmake -D PLATFORM=rpi3b+ ..
+cmake -D CMAKE_TOOLCHAIN_FILE=$PWD/../rpi_toolchain.cmake -D PLATFORM=rpi3b+ ..
 

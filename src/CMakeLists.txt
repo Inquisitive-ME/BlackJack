@@ -16,7 +16,8 @@ set(SOURCE_FILES
 		commandline_ai_impl.cpp
 		command_line_player.cpp)
 
-find_library(SQLITE sqlite3)
+find_package(SQLite3)
+include_directories(${SQLite3_INCLUDE_DIRS})
 
 add_executable(BlackJack ${SOURCE_FILES})
-target_link_libraries(BlackJack ${SQLITE})
+target_link_libraries(BlackJack ${SQLite3_LIBRARIES})

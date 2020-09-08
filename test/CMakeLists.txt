@@ -29,14 +29,14 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 file(GLOB SRC_FILES ../src/*.cpp)
 list(FILTER SRC_FILES EXCLUDE REGEX ".*main.cpp$")
 
-find_library(SQLITE sqlite3)
+find_package(SQLite3)
 function(test name addition_run_arguements)
     string(REPLACE "/" "_" out ${name})
     add_executable(${out} ${CMAKE_CURRENT_LIST_DIR}/${name}.cpp ${SRC_FILES})
     #add_test(${out} ./${out})
     # gtest_discover_tests will only run tests that change
     gtest_discover_tests(${out} TEST_PREFIX ${scenario}:)
-    target_link_libraries(${out} ${SQLITE} gtest_main gmock_main)
+    target_link_libraries(${out} ${SQLite3_LIBRARIES} gtest_main gmock_main)
     add_custom_command(TARGET ${out} COMMAND ./${out} ${addition_run_arguements})
 endfunction()
 
