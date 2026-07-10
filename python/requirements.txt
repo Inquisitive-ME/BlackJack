@@ -1,0 +1,10 @@
+# Core: binding build + gym env + comparison plots
+pybind11>=2.10
+numpy
+gymnasium
+matplotlib
+
+# Optional: the deep-RL example (train_ppo.py)
+torch
+stable-baselines3
+sb3-contrib

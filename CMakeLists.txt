@@ -23,3 +23,8 @@ enable_testing()
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(bench)
+
+option(BJ_BUILD_PYTHON "Build the pybind11 Python binding" OFF)
+if(BJ_BUILD_PYTHON)
+    add_subdirectory(bindings)
+endif()
