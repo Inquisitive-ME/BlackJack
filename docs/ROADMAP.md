@@ -12,10 +12,13 @@ counting (High-Low / Zen / Omega-II).
 - [x] **Phase 2** — incremental `Hand` + dealer policy
 - [x] **Phase 3** — `RulesConfig` + correct round logic — house edge 0.65% (basic strategy)
 - [x] **Phase 4** — `SimEngine` reset/step/observation/reward — 8.7 M rounds/s, golden edge 0.59%
-- [ ] **Phase 5** — C ABI (+ optional Python binding)
+- [x] **Phase 5** — pybind11 binding + Gymnasium env + RL-vs-counting walkthrough (`python/`).
+      Headline: count-aware **play** beats a High-Low basic-strategy counter by +37% EV
+      (+1.44% → +1.98%/round). A learned betting count only ties High-Low (near the
+      linear ceiling). See `python/README.md`.
 - [ ] **Phase 6** — converge: port CLI onto the engine, delete legacy, finalize build
 
-137 tests pass. Realized design: bet spread `{1,2,4,8,16}` units; observation = 35 floats
+141 tests pass. Realized design: bet spread `{1,2,4,8,16}` units; observation = 35 floats
 (used-fraction composition[10] + penetration + hand total/soft/pair + dealer up-card
 one-hot[10] + action mask[10] + phase); episode = one shoe; splits played one hand at a time.
 
