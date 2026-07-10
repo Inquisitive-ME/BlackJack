@@ -2,7 +2,6 @@
 #define BJ_SIM_DEALER_H
 
 #include "sim/hand.h"
-#include "sim/shoe.h"
 
 namespace bj {
 
@@ -15,8 +14,9 @@ constexpr bool dealerShouldHit(int total, bool soft, bool hitSoft17) {
 }
 
 // Play the dealer's hand to completion, drawing face-up from the shoe.
-template <int MaxDecks>
-void dealerPlay(Hand &dealer, Shoe<MaxDecks> &shoe, bool hitSoft17) {
+// Templated on the shoe type so tests can drive it with a deterministic stack.
+template <class ShoeT>
+void dealerPlay(Hand &dealer, ShoeT &shoe, bool hitSoft17) {
     while (dealerShouldHit(dealer.total(), dealer.isSoft(), hitSoft17))
         dealer.add(shoe.dealFaceUp());
 }
