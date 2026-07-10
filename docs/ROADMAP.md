@@ -16,9 +16,12 @@ counting (High-Low / Zen / Omega-II).
       Headline: count-aware **play** beats a High-Low basic-strategy counter by +37% EV
       (+1.44% → +1.98%/round). A learned betting count only ties High-Low (near the
       linear ceiling). See `python/README.md`.
-- [ ] **Phase 6** — converge: port CLI onto the engine, delete legacy, finalize build
+- [x] **Phase 6** — converged: console game ported onto the core (`src/main.cpp`),
+      entire legacy stack deleted (~2.5k lines, incl. the SQLite stub), build
+      simplified (no SQLite). The `sim/` core is now the single implementation.
 
-141 tests pass. Realized design: bet spread `{1,2,4,8,16}` units; observation = 35 floats
+**All phases complete.** 43 sim tests pass; the legacy tests were removed after
+their coverage was folded into `test/sim/`. Realized design: bet spread `{1,2,4,8,16}` units; observation = 35 floats
 (used-fraction composition[10] + penetration + hand total/soft/pair + dealer up-card
 one-hot[10] + action mask[10] + phase); episode = one shoe; splits played one hand at a time.
 
