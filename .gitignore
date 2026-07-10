@@ -1,0 +1,17 @@
+# Build output
+build*/
+BUILD_*/
+cmake-build-*/
+
+# Compiled objects / libraries / binaries
+*.o
+*.a
+*.so
+*.out
+
+# Test / runtime artifacts
+test.db
+
+# Editor / IDE
+.idea/
+.vscode/
