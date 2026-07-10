@@ -70,6 +70,7 @@ public:
     // Reshuffle decision -- check once at the round boundary, never per card.
     bool needsShuffle() const { return cursor_ >= cut_; }
 
+    int    size()           const { return n_; } // active cards in a full shoe
     int    cardsDealt()     const { return cursor_; }
     int    cardsRemaining() const { return n_ - cursor_; }
     double decksRemaining() const { return (n_ - cursor_) / 52.0; }

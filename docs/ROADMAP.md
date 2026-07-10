@@ -5,6 +5,20 @@ environment for training a card-counting agent that consumes the full **deck
 history** (every card seen so far) and learns strategies stronger than classic
 counting (High-Low / Zen / Omega-II).
 
+## Status
+
+- [x] **Phase 0** — scaffolding, `.gitignore`, `bjsim` target
+- [x] **Phase 1** — `Card` + `Shoe` deck-history core — 123 M deals/s
+- [x] **Phase 2** — incremental `Hand` + dealer policy
+- [x] **Phase 3** — `RulesConfig` + correct round logic — house edge 0.65% (basic strategy)
+- [x] **Phase 4** — `SimEngine` reset/step/observation/reward — 8.7 M rounds/s, golden edge 0.59%
+- [ ] **Phase 5** — C ABI (+ optional Python binding)
+- [ ] **Phase 6** — converge: port CLI onto the engine, delete legacy, finalize build
+
+137 tests pass. Realized design: bet spread `{1,2,4,8,16}` units; observation = 35 floats
+(used-fraction composition[10] + penetration + hand total/soft/pair + dealer up-card
+one-hot[10] + action mask[10] + phase); episode = one shoe; splits played one hand at a time.
+
 ## Decisions (locked)
 
 - **Architecture:** grow a new POD-based core in `src/sim/` next to the legacy
