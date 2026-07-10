@@ -14,6 +14,10 @@ using Card = std::uint8_t;
 
 inline constexpr int NUM_BUCKETS = 10;
 
+// Named buckets for the extremes (the ranks with special blackjack meaning).
+inline constexpr Card ACE = 0;
+inline constexpr Card TEN = 9; // ten-group: 10, J, Q, K
+
 // Blackjack value of each bucket (Ace as 1; the soft +10 promotion lives in Hand).
 inline constexpr std::int8_t VALUE[NUM_BUCKETS]    = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 

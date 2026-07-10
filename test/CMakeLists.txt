@@ -36,7 +36,13 @@ add_bj_test(BJGameTest)
 add_bj_test(blackjack_database_test)
 
 # --- Fast-core (bjsim) tests: no SQLite, no legacy blob ---
-# card.cpp is linked only to pin the new count tables against the legacy source.
-add_executable(shoe_test sim/shoe_test.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../src/card.cpp)
-target_link_libraries(shoe_test PRIVATE bjsim GTest::gtest_main GTest::gmock_main)
-gtest_discover_tests(shoe_test)
+function(add_sim_test name)
+    add_executable(${name} sim/${name}.cpp ${ARGN})
+    target_link_libraries(${name} PRIVATE bjsim GTest::gtest_main GTest::gmock_main)
+    gtest_discover_tests(${name})
+endfunction()
+
+# shoe_test links legacy card.cpp only to pin the new count tables against it.
+add_sim_test(shoe_test ${CMAKE_CURRENT_SOURCE_DIR}/../src/card.cpp)
+add_sim_test(hand_test)
+add_sim_test(dealer_test)
