@@ -1,53 +1,36 @@
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/googletest-download/CMakeLists.txt)
-else()
-    # Download and unpack googletest at configure time
-    configure_file(includeGTest.cmake googletest-download/CMakeLists.txt)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-    if(result)
-        message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-    if(result)
-        message(FATAL_ERROR "Build step for googletest failed: ${result}")
-    endif()
+# GoogleTest: prefer a system install; otherwise fetch a pinned release.
+find_package(GTest QUIET)
+if(NOT GTest_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG        v1.15.2)
+    # Prevent overriding the parent project's compiler/linker settings on Windows
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
 endif()
-
-# Prevent overriding the parent project's compiler/linker
-# settings on Windows
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-# Add googletest directly to our build. This defines
-# the gtest and gtest_main targets.
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-        ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
-        EXCLUDE_FROM_ALL)
-
-file(GLOB SRC_FILES ../src/*.cpp)
-list(FILTER SRC_FILES EXCLUDE REGEX ".*main.cpp$")
-
-find_package(SQLite3)
-function(test name addition_run_arguements)
-    string(REPLACE "/" "_" out ${name})
-    add_executable(${out} ${CMAKE_CURRENT_LIST_DIR}/${name}.cpp ${SRC_FILES})
-    #add_test(${out} ./${out})
-    # gtest_discover_tests will only run tests that change
-    gtest_discover_tests(${out} TEST_PREFIX ${scenario}:)
-    target_link_libraries(${out} ${SQLite3_LIBRARIES} gtest_main gmock_main)
-    add_custom_command(TARGET ${out} COMMAND ./${out} ${addition_run_arguements})
-endfunction()
 
 include(GoogleTest)
 
-test(cardTest "")
-test(handTest "")
-test(BJHandTest "")
-test(deckTest "")
-test(dealerTest "")
-test(playerTest "")
-test(randomTest "")
-test(BJGameTest "")
-test(blackjack_database_test "")
+# All simulator sources except the CLI entry point, shared by every test executable.
+file(GLOB SIM_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../src/*.cpp)
+list(FILTER SIM_SOURCES EXCLUDE REGEX ".*main\\.cpp$")
+
+find_package(SQLite3 REQUIRED)
+
+function(add_bj_test name)
+    add_executable(${name} ${CMAKE_CURRENT_SOURCE_DIR}/${name}.cpp ${SIM_SOURCES})
+    target_include_directories(${name} PRIVATE ${SQLite3_INCLUDE_DIRS})
+    target_link_libraries(${name} PRIVATE ${SQLite3_LIBRARIES} GTest::gtest_main GTest::gmock_main)
+    gtest_discover_tests(${name})
+endfunction()
+
+add_bj_test(cardTest)
+add_bj_test(handTest)
+add_bj_test(BJHandTest)
+add_bj_test(deckTest)
+add_bj_test(dealerTest)
+add_bj_test(playerTest)
+add_bj_test(randomTest)
+add_bj_test(BJGameTest)
+add_bj_test(blackjack_database_test)

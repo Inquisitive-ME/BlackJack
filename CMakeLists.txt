@@ -1,12 +1,12 @@
-SET(CMAKE_SYSTEM_NAME Linux)
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 project(BlackJack)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall" )
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -02")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 # get compiler for Raspberry Pi
 # Didn't use cmakes git add submodule because the directory needs to be there for cmake before building
@@ -21,6 +21,4 @@ endif()
 
 enable_testing()
 add_subdirectory(src)
-if("${PLATFORM}" STREQUAL "LINUX_X86_GCC")
-    add_subdirectory(test)
-endif()
+add_subdirectory(test)
