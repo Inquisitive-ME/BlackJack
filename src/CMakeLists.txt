@@ -1,23 +1,12 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 project(BlackJack)
 
-set(SOURCE_FILES
-        main.cpp
-        card.cpp
-		hand.cpp
-		bj_hand.cpp
-		player_impl.cpp
-		deck.cpp
-		dealer_impl.cpp
-		bj_game.cpp
-		get_random_int.cpp
-        blackjack_database.cpp
-		commandline_ai_impl.cpp
-		command_line_player.cpp)
+# Header-only fast simulation core. Consumers include "sim/shoe.h" etc.
+add_library(bjsim INTERFACE)
+target_include_directories(bjsim INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(bjsim INTERFACE cxx_std_23)
 
-find_package(SQLite3)
-include_directories(${SQLite3_INCLUDE_DIRS})
-
-add_executable(BlackJack ${SOURCE_FILES})
-target_link_libraries(BlackJack ${SQLite3_LIBRARIES})
+# Console game: a thin human front-end over the core engine.
+add_executable(BlackJack main.cpp)
+target_link_libraries(BlackJack PRIVATE bjsim)

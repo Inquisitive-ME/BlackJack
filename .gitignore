@@ -1,0 +1,26 @@
+# Build output
+build*/
+BUILD_*/
+cmake-build-*/
+
+# Compiled objects / libraries / binaries
+*.o
+*.a
+*.so
+*.out
+
+# Test / runtime artifacts
+test.db
+
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+# generated training artifacts (keep the committed plots + summary)
+python/artifacts/*.npz
+python/artifacts/ppo_blackjack.zip
+python/artifacts/train_log.txt
+
+# Editor / IDE
+.idea/
+.vscode/

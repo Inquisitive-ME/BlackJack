@@ -1,0 +1,16 @@
+Blackjack strategy comparison  (6-deck H17, 1-12 bet spread, per initial-bet unit)
+==================================================================================
+1. No counting   (flat bet, basic play)     EV/round = -0.00651  (-0.65%)   <- house edge
+2. Standard count(High-Low bet, basic play) EV/round = +0.01445  (+1.44%)   <- counting flips it to a PLAYER edge
+3. Count-aware   (High-Low bet, deviations) EV/round = +0.01979  (+1.98%)   <- +insurance & index plays
+----------------------------------------------------------------------------------
+Play-deviation gain (3 - 2): +0.00534 +/- 0.00090  (z=11.6),  +37% relative EV
+  -> using the deck composition for PLAY (not just betting) beats the standard counter.
+
+Betting-count experiment (secondary): an ES agent learns its own count weights.
+  learned linear count below High-Low: paired diff -0.00241 +/- 0.00024 (300M shared shoes)
+  High-Low is near the ceiling for a LINEAR betting count, so the margin is tiny;
+  the learned weights (below) rediscover a High-Low-like counting system from reward.
+    rank:         A     2     3     4     5     6     7     8     9    10
+    High-Low:  -1.0   1.0   1.0   1.0   1.0   1.0   0.0   0.0   0.0  -1.0
+    learned:   -0.8   0.8   1.1   0.9   0.6   0.9  -0.2   0.6   0.1  -1.0
