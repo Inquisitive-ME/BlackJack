@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpp-tests:
+    name: C++ build & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: sudo apt-get update && sudo apt-get install -y cmake g++ libgtest-dev libgmock-dev
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j"$(nproc)"
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure -j"$(nproc)"
+
+  python-binding:
+    name: Python binding smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake g++
+          python -m pip install --upgrade pip
+          python -m pip install pybind11 numpy gymnasium
+
+      - name: Build binding
+        run: |
+          cmake -S . -B build/py -DBJ_BUILD_PYTHON=ON \
+            -Dpybind11_DIR="$(python -m pybind11 --cmakedir)" \
+            -DPython_EXECUTABLE="$(which python)"
+          cmake --build build/py --target _bjsim -j"$(nproc)"
+
+      - name: Import & quick eval
+        working-directory: python
+        run: >
+          python -c "import numpy as np, bjrl;
+          r=bjrl.RulesConfig();
+          s=bjrl.evaluate_linear_policy(r, list(np.asarray(bjrl.W_HILO)), -1.0, 1.0, 1.0, 12.0, 1_000_000, 1);
+          assert s['ev_per_round']==s['ev_per_round'];
+          env=bjrl.BlackjackEnv(seed=0); o,_=env.reset(seed=0);
+          assert o.shape==(bjrl.OBS_SIZE,);
+          print('python binding smoke OK, EV/round=', round(s['ev_per_round'],4))"
