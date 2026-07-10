@@ -1,5 +1,4 @@
 #include "sim/shoe.h"
-#include "card.h" // legacy card, to pin the count tables against the old source of truth
 
 #include "gtest/gtest.h"
 
@@ -80,22 +79,18 @@ TEST(Shoe, BalancedCountsSumToZeroOverAFullShoe) {
     EXPECT_EQ(shoe.runningCount(bj::W_OMEGA), 0);
 }
 
-TEST(Shoe, CountTablesMatchLegacyCard) {
-    // Pin the new constexpr weight tables against the legacy card.cpp implementation
-    // that the existing cardTest suite already covers -- one representative rank per bucket.
-    const int repRank[NUM_BUCKETS] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+TEST(Shoe, CountTablesAreStandard) {
+    // Pin the count tables against the published values (independent literals), so
+    // a transcription typo in the header is caught. Buckets: A,2,3,4,5,6,7,8,9,ten.
+    const int value[NUM_BUCKETS] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    const int hilo[NUM_BUCKETS]  = {-1, 1, 1, 1, 1, 1, 0, 0, 0, -1};
+    const int zen[NUM_BUCKETS]   = {-1, 1, 1, 2, 2, 2, 1, 0, 0, -2};
+    const int omega[NUM_BUCKETS] = {0, 1, 1, 2, 2, 2, 1, 0, -1, -2};
     for (int b = 0; b < NUM_BUCKETS; ++b) {
-        card legacy(repRank[b]);
-        EXPECT_EQ(legacy.getValue(), int(bj::VALUE[b])) << "value bucket " << b;
-        EXPECT_EQ(legacy.getHighLowCount(), int(bj::W_HILO[b])) << "hilo bucket " << b;
-        EXPECT_EQ(legacy.getZenCount(), int(bj::W_ZEN[b])) << "zen bucket " << b;
-        EXPECT_EQ(legacy.getOmegaIICount(), int(bj::W_OMEGA[b])) << "omega bucket " << b;
-    }
-    // The ten-group is all of 10/J/Q/K; verify J, Q, K agree too.
-    for (int r : {11, 12, 13}) {
-        card legacy(r);
-        EXPECT_EQ(legacy.getHighLowCount(), int(bj::W_HILO[9]));
-        EXPECT_EQ(legacy.getValue(), int(bj::VALUE[9]));
+        EXPECT_EQ(int(bj::VALUE[b]), value[b]) << "value bucket " << b;
+        EXPECT_EQ(int(bj::W_HILO[b]), hilo[b]) << "hilo bucket " << b;
+        EXPECT_EQ(int(bj::W_ZEN[b]), zen[b]) << "zen bucket " << b;
+        EXPECT_EQ(int(bj::W_OMEGA[b]), omega[b]) << "omega bucket " << b;
     }
     for (int r = 1; r <= 13; ++r) {
         Card expect = r == 1 ? 0 : r <= 9 ? Card(r - 1) : Card(9);
