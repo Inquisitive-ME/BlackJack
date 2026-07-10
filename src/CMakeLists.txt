@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 
 project(BlackJack)
 
+# Header-only fast simulation core (Phase 1: Card + Shoe). Consumers include
+# "sim/shoe.h"; no SQLite, no legacy classes.
+add_library(bjsim INTERFACE)
+target_include_directories(bjsim INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(bjsim INTERFACE cxx_std_23)
+
 set(SOURCE_FILES
         main.cpp
         card.cpp
