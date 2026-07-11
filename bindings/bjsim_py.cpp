@@ -94,6 +94,11 @@ struct CountingGame {
     // Place `bet` units and play one round with basic strategy; returns net chips.
     // (Reward is linear in the bet, so this is bet * the 1-unit round result.)
     double bet_and_play(double bet) { return bet * playRound(shoe, rules, basicStrategy); }
+
+    // Card-level dealing, so a Python env can drive a full round itself.
+    int deal_up() { return shoe.dealFaceUp(); }   // draw + reveal (counted)
+    int deal_hole() { return shoe.dealHole(); }   // draw, not counted until reveal()
+    void reveal(int c) { shoe.reveal((Card)c); }
 };
 
 // Score a linear "count weights + ramp" betting policy over `rounds` rounds of
@@ -308,7 +313,10 @@ PYBIND11_MODULE(_bjsim, m) {
         .def("remaining_fraction", &CountingGame::remaining_fraction)
         .def("running_count", &CountingGame::running_count, py::arg("weights"))
         .def("true_count", &CountingGame::true_count, py::arg("weights"))
-        .def("bet_and_play", &CountingGame::bet_and_play, py::arg("bet"));
+        .def("bet_and_play", &CountingGame::bet_and_play, py::arg("bet"))
+        .def("deal_up", &CountingGame::deal_up)
+        .def("deal_hole", &CountingGame::deal_hole)
+        .def("reveal", &CountingGame::reveal, py::arg("card"));
 
     m.def("evaluate_linear_policy", &evaluate_linear_policy, py::arg("rules"), py::arg("weights"),
           py::arg("ramp_a"), py::arg("ramp_b"), py::arg("bet_min"), py::arg("bet_max"),
