@@ -4,7 +4,8 @@ numpy
 gymnasium
 matplotlib
 
-# Optional: the deep-RL example (train_ppo.py)
+# Optional: the deep-RL examples (train_dqn.py, train_ppo.py)
 torch
+tensorboard
 stable-baselines3
 sb3-contrib

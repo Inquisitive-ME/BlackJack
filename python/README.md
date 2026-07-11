@@ -132,46 +132,54 @@ the Monte-Carlo noise floor, so reliably extracting *net* gain is hard — the
 hand-designed Illustrious-18 (+1.98%) marks the ceiling. What's demonstrated is the
 *learning* of the deviation structure, not a new EV record.
 
-**Deep Q-Network** (`train_dqn.py`) — the neural counterpart you might reach for: a
-masked DQN over the 35-float observation.
+Note: this tabular learner keys its state on the High-Low true-count *bin*, so by
+construction it can only reach a High-Low-indexed table — it can't exploit the full
+composition. For that you need a function approximator over the raw observation ↓.
+
+## 7. End-to-end deep RL — the agent learns its *own* whole strategy
+
+`train_dqn.py` is a from-scratch agent with **no High-Low and no hand-coded rules
+anywhere**. It plays on `full_env.py` — a Gymnasium env that adds the **insurance**
+decision — and learns *everything* (bet size, insurance, every play) from the raw
+39-float observation, whose only deck information is the **10-rank remaining
+composition**. It must discover for itself that a ten-rich deck means bet big /
+insure / deviate.
+
+Built properly this time: **masked** action selection *and* targets, **Double DQN**
+(no Q-overestimation blow-up), a **dueling** network (the actions here have very
+close values), reward scaling, a target network, a long ε schedule, and
+**checkpoint/resume** for long runs.
 
 ```bash
-python train_dqn.py --steps 1800000     # ~12 min on CPU
+python train_dqn.py --steps 20000000 --logdir runs/dqn1
+tensorboard --logdir runs      # watch eval/ev_per_round and the bet-vs-count curve
+python train_dqn.py --steps 40000000 --logdir runs/dqn1 --resume runs/dqn1/ckpt.pt
 ```
 
-After ~800k steps (stabilized with `gamma=0.97`) it scores about **−4%/round** vs
-basic strategy's **+1.3%** under the same count-based betting — it has *not* reached
-basic-strategy play, let alone the deviations. Deep RL here is also finicky: with
-`gamma=1.0` the bootstrapped Q-values overestimate and the agent gets *worse* with
-more training.
+TensorBoard logs the loss, ε, mean-Q, a periodic **greedy-policy EV/round** (the
+metric that matters), and the **average bet placed at each true count** — so you can
+watch a betting strategy emerge from raw composition. The env is validated first
+(`python -c "import bjrl.full_env as F; print(F.validate_env())"` reproduces the
+known player edge), so any DQN number is measured against a correct env.
 
-On this small, discrete state space the tabular learner is far more sample-efficient;
-the DQN needs much more training just to reach basic-strategy quality. Value-based
-*tabular* RL is the better fit here — a useful reminder to match the method to the
-problem rather than defaulting to deep nets.
+This is a genuinely hard learning problem — delayed, high-variance reward, and the
+optimal solution is a small discrete table — so it needs long training. It's the one
+setup with the *information* to eventually exceed a High-Low counter (§6 explains
+why: High-Low is only ~50% efficient for *play*, so the raw composition leaves real
+playing EV on the table).
 
-## 7. Learn it all end-to-end (deep RL)
-
-`train_ppo.py` trains a full bet-and-play agent with `MaskablePPO` directly on the
-Gymnasium env — the standard Stable-Baselines3 path, with the observation's
-legal-action mask:
-
-```bash
-python train_ppo.py --timesteps 300000
-```
-
-It learns slowly and won't beat a hand-tuned counter in a short run; it's the
-starting point for an agent that exploits the *full* observation (both bet and the
-play deviations above) from scratch, rather than being handed the index plays.
+`train_ppo.py` is the same idea via Stable-Baselines3 `MaskablePPO` on the simpler
+bet+play `BlackjackEnv` (no insurance), if you'd rather use an off-the-shelf trainer.
 
 ## Files
 
 | file | what |
 |---|---|
-| `bjrl/env.py` | Gymnasium environment over `SimEngine` |
+| `bjrl/env.py` | Gymnasium environment over `SimEngine` (bet + play) |
+| `bjrl/full_env.py` | end-to-end env with insurance; `validate_env()` self-check |
 | `bjrl/baselines.py` | linear-policy evaluation + High-Low ramp tuning |
 | `train_es.py` | evolution-strategy trainer (learns a betting count) |
 | `compare.py` | paired High-Low vs learned comparison + plots |
 | `train_mc_play.py` | Monte-Carlo control: learns count-dependent play deviations |
-| `train_dqn.py` | masked DQN: neural counterpart for learning play |
-| `train_ppo.py` | MaskablePPO deep-RL example on the full env |
+| `train_dqn.py` | end-to-end Double+Dueling DQN (bet+insurance+play), TensorBoard |
+| `train_ppo.py` | MaskablePPO deep-RL example on the bet+play env |
