@@ -93,7 +93,7 @@ def greedy_ev(net, rounds=30_000, seed=777):
 
 
 def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
-          buffer=500_000, target_sync=2_000, eval_every=500_000, eval_rounds=30_000,
+          buffer=500_000, target_sync=2_000, eval_every=250_000, eval_rounds=30_000,
           ckpt_every=500_000, eps_decay_steps=3_000_000, seed=0):
     torch.manual_seed(seed)
     random.seed(seed)
@@ -118,10 +118,14 @@ def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
     shoe_seed = seed + 2
     nbuf = collections.deque(maxlen=NSTEP)  # recent (obs, action, scaled reward)
     t0 = time.time()
+    last_loss = 0.0
+    hands = 0                    # total rounds played
+    hb_reward, hb_hands = 0.0, 0  # accumulators for the rolling reward/hand in the heartbeat
 
     for step in range(start_step, steps):
         eps = max(0.05, 1.0 - step / eps_decay_steps)  # fixed decay -> works for "run for time"
         mask = env.action_masks()
+        bet_now = env.phase == F.PH_BET  # a bet action starts a new round
         if random.random() < eps:
             a = int(np.random.choice(np.flatnonzero(mask)))
         else:
@@ -131,6 +135,9 @@ def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
 
         nobs, r, done, _, _ = env.step(a)
         nmask = env.action_masks()
+        hb_reward += r
+        hands += bet_now
+        hb_hands += bet_now
         nbuf.append((obs, a, r * REWARD_SCALE))
         # Emit the oldest transition as a full n-step return once the window fills.
         if len(nbuf) == NSTEP and not done:
@@ -167,14 +174,21 @@ def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
             opt.zero_grad(); loss.backward()
             nn.utils.clip_grad_norm_(net.parameters(), 10.0)
             opt.step()
+            last_loss = loss.item()
 
             if step % 2000 == 0:
-                writer.add_scalar("train/loss", loss.item(), step)
+                writer.add_scalar("train/loss", last_loss, step)
                 writer.add_scalar("train/epsilon", eps, step)
                 writer.add_scalar("train/mean_q", q.mean().item(), step)
 
         if step % target_sync == 0:
             target.load_state_dict(net.state_dict())
+
+        if step % 20_000 == 0 and step > 0:  # flushed heartbeat so the log shows life
+            print(f"step {step:>10,} | hands {hands:>9,} | {step/(time.time()-t0):.0f} st/s | "
+                  f"eps {eps:.2f} | loss {last_loss:.3f} | "
+                  f"reward/hand(behavior) {hb_reward/max(hb_hands,1):+.3f}", flush=True)
+            hb_reward, hb_hands = 0.0, 0
 
         if step % eval_every == 0 and step > 0:
             ev, bet_curve = greedy_ev(net, rounds=eval_rounds)
@@ -182,7 +196,7 @@ def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
             for tc, avgbet in bet_curve.items():
                 writer.add_scalar(f"eval/bet_at_tc/{tc:+d}", avgbet, step)
             print(f"step {step:>10,}  eps={eps:.2f}  greedy EV/round={ev:+.4f}  "
-                  f"best={best_ev:+.4f}  ({time.time()-t0:.0f}s)")
+                  f"best={best_ev:+.4f}  ({time.time()-t0:.0f}s)", flush=True)
             if ev > best_ev:
                 best_ev = ev
                 torch.save({"net": net.state_dict(), "opt": opt.state_dict(),
