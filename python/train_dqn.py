@@ -42,7 +42,7 @@ NSTEP = 3           # n-step returns: bridge the delay between a bet and its rou
 
 
 class DuelingQ(nn.Module):
-    def __init__(self, obs=OBS, n_act=NA, hidden=256):
+    def __init__(self, obs=OBS, n_act=NA, hidden=512):
         super().__init__()
         self.feat = nn.Sequential(nn.Linear(obs, hidden), nn.ReLU(),
                                   nn.Linear(hidden, hidden), nn.ReLU())
@@ -93,8 +93,8 @@ def greedy_ev(net, rounds=30_000, seed=777):
 
 
 def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
-          buffer=300_000, target_sync=2_000, eval_every=250_000, eval_rounds=30_000,
-          ckpt_every=500_000, eps_end_frac=0.6, seed=0):
+          buffer=500_000, target_sync=2_000, eval_every=500_000, eval_rounds=30_000,
+          ckpt_every=500_000, eps_decay_steps=3_000_000, seed=0):
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -120,7 +120,7 @@ def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
     t0 = time.time()
 
     for step in range(start_step, steps):
-        eps = max(0.05, 1.0 - step / (eps_end_frac * steps))
+        eps = max(0.05, 1.0 - step / eps_decay_steps)  # fixed decay -> works for "run for time"
         mask = env.action_masks()
         if random.random() < eps:
             a = int(np.random.choice(np.flatnonzero(mask)))
@@ -201,11 +201,12 @@ def train(steps, logdir, resume=None, batch=256, gamma=0.99, lr=2.5e-4,
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--steps", type=int, default=20_000_000)
+    ap.add_argument("--steps", type=int, default=200_000_000)  # set high; run for time, stop with Ctrl-C
     ap.add_argument("--logdir", type=str, default="runs/dqn")
     ap.add_argument("--resume", type=str, default=None)
-    ap.add_argument("--eval-every", type=int, default=250_000)
+    ap.add_argument("--eval-every", type=int, default=500_000)
     ap.add_argument("--eval-rounds", type=int, default=30_000)
+    ap.add_argument("--eps-decay-steps", type=int, default=3_000_000)
     args = ap.parse_args()
-    train(args.steps, args.logdir, resume=args.resume,
-          eval_every=args.eval_every, eval_rounds=args.eval_rounds)
+    train(args.steps, args.logdir, resume=args.resume, eval_every=args.eval_every,
+          eval_rounds=args.eval_rounds, eps_decay_steps=args.eps_decay_steps)

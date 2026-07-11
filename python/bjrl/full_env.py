@@ -30,7 +30,10 @@ from ._bjsim import CountingGame, RulesConfig
 VALUE = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 PER_DECK = np.array([4, 4, 4, 4, 4, 4, 4, 4, 4, 16])
 ACE, TEN = 0, 9
-BET_UNITS = np.array([1.0, 2.0, 4.0, 8.0, 16.0])
+# A 1-8 spread (not 1-16): the max-bet reward variance is ~4x lower, which makes
+# the betting signal far easier to learn. Still a real counting ramp. Widen it
+# (e.g. add 16.0) once the agent has learned the structure.
+BET_UNITS = np.array([1.0, 2.0, 4.0, 6.0, 8.0])
 
 # Action indices.
 A_BET0 = 0
