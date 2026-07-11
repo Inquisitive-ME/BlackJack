@@ -12,6 +12,8 @@
 #include "sim/basic_strategy.h"
 #include "sim/cards.h"
 #include "sim/count_play.h"
+#include "sim/play_policy.h"
+#include "sim/play_state.h"
 #include "sim/round.h"
 #include "sim/rules.h"
 #include "sim/shoe.h"
@@ -24,6 +26,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <stdexcept>
 #include <vector>
 
 namespace py = pybind11;
@@ -217,6 +220,51 @@ py::dict evaluate_counting(const RulesConfig &rules, const std::vector<double> &
     return d;
 }
 
+// Score a tabular play policy (a greedy action per discretized state) with
+// High-Low betting, over many rounds at C++ speed. Comparable to
+// evaluate_counting (same betting/settlement), so a learned play policy can be
+// placed alongside basic and Illustrious-18 play.
+py::dict evaluate_play_policy(const RulesConfig &rules, py::array_t<std::int32_t> policy,
+                              const std::vector<double> &weights, double ramp_a, double ramp_b,
+                              double bet_min, double bet_max, long rounds, std::uint64_t seed) {
+    if (policy.size() != NUM_PLAY_STATES)
+        throw std::runtime_error("policy must have NUM_PLAY_STATES entries");
+    std::vector<std::int32_t> pol(NUM_PLAY_STATES);
+    auto pv = policy.unchecked<1>();
+    for (int i = 0; i < NUM_PLAY_STATES; ++i) pol[i] = pv(i);
+
+    std::array<double, NUM_BUCKETS> w{};
+    for (int b = 0; b < NUM_BUCKETS; ++b) w[b] = (b < (int)weights.size()) ? weights[b] : 0.0;
+
+    double sum = 0.0, sumsq = 0.0, wagered = 0.0;
+    long n = 0;
+    {
+        py::gil_scoped_release release;
+        Shoe<8> shoe(rules.decks, rules.penetration, seed);
+        for (long i = 0; i < rounds; ++i) {
+            if (shoe.needsShuffle()) shoe.shuffle();
+            double rc = 0.0, dr = shoe.decksRemaining();
+            for (int b = 0; b < NUM_BUCKETS; ++b) rc += shoe.seen(b) * w[b];
+            double tc = dr > 0.0 ? rc / dr : 0.0;
+            double bet = rampBet(tc, ramp_a, ramp_b, bet_min, bet_max);
+            double reward = playRoundPolicy(shoe, rules, pol.data(), bet);
+            sum += reward;
+            sumsq += reward * reward;
+            wagered += bet;
+            ++n;
+        }
+    }
+    double mean = sum / n;
+    double var = sumsq / n - mean * mean;
+    py::dict d;
+    d["ev_per_round"] = mean;
+    d["stderr"] = std::sqrt(var / n);
+    d["ev_per_unit"] = sum / wagered;
+    d["avg_bet"] = wagered / n;
+    d["rounds"] = n;
+    return d;
+}
+
 } // namespace
 
 PYBIND11_MODULE(_bjsim, m) {
@@ -278,6 +326,26 @@ PYBIND11_MODULE(_bjsim, m) {
           py::arg("deviations"), py::arg("insurance_tc"), py::arg("rounds"), py::arg("seed"),
           "Score a High-Low counter with basic vs count-aware play (deviations + insurance).");
 
+    m.def("evaluate_play_policy", &evaluate_play_policy, py::arg("rules"), py::arg("policy"),
+          py::arg("weights"), py::arg("ramp_a"), py::arg("ramp_b"), py::arg("bet_min"),
+          py::arg("bet_max"), py::arg("rounds"), py::arg("seed"),
+          "Score a tabular play policy (action per discretized state) with High-Low betting.");
+
+    // Basic-strategy action for an abstract hand state (0=hit,1=stand,2=double,3=split,4=surrender).
+    m.def("basic_action",
+          [](int total, bool soft, int pair_card, int up, bool cd, bool cs, bool csu) {
+              switch (basicStrategyAbstract(total, soft, (Card)pair_card, (Card)up, cd, cs, csu)) {
+                  case Action::Hit: return 0;
+                  case Action::Stand: return 1;
+                  case Action::Double: return 2;
+                  case Action::Split: return 3;
+                  default: return 4;
+              }
+          },
+          py::arg("total"), py::arg("soft"), py::arg("pair_card"), py::arg("up"),
+          py::arg("can_double"), py::arg("can_split"), py::arg("can_surrender"),
+          "Basic-strategy action index for an abstract hand state.");
+
     // Constants and reference tables.
     m.attr("OBS_SIZE") = OBS_SIZE;
     m.attr("NUM_ACTIONS") = NUM_ACTIONS;
@@ -289,6 +357,13 @@ PYBIND11_MODULE(_bjsim, m) {
     m.attr("A_DOUBLE") = A_DOUBLE;
     m.attr("A_SPLIT") = A_SPLIT;
     m.attr("A_SURRENDER") = A_SURRENDER;
+    // Tabular play-state discretization (mirror these in the Python trainer).
+    m.attr("NUM_PLAY_STATES") = NUM_PLAY_STATES;
+    m.attr("NUM_PLAY_ACTIONS") = NUM_PLAY_ACTIONS;
+    m.attr("PS_TOTAL_MIN") = PS_TOTAL_MIN;
+    m.attr("PS_TOTAL_MAX") = PS_TOTAL_MAX;
+    m.attr("PS_TC_MIN") = PS_TC_MIN;
+    m.attr("PS_TC_MAX") = PS_TC_MAX;
     {
         std::array<double, NUM_BUCKETS> hilo{};
         for (int b = 0; b < NUM_BUCKETS; ++b) hilo[b] = W_HILO[b];

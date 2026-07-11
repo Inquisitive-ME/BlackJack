@@ -19,7 +19,7 @@ __pycache__/
 # generated training artifacts (keep the committed plots + summary)
 python/artifacts/*.npz
 python/artifacts/ppo_blackjack.zip
-python/artifacts/train_log.txt
+python/artifacts/*_log.txt
 
 # Editor / IDE
 .idea/

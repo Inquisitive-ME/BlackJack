@@ -7,19 +7,17 @@
 
 namespace bj {
 
-// Multi-deck, H17 basic strategy. A reference policy used to validate the round
-// engine (its long-run EV must land in the known ~-0.5% house-edge band). It
-// respects the legality flags passed in (falls back to hit/stand when double,
-// split or surrender are not available).
-inline Action basicStrategy(const Hand &h, Card up, const RulesConfig &,
-                            bool canDouble, bool canSplit, bool canSurrender) {
+// Multi-deck, H17 basic strategy, expressed over the abstract hand state so it
+// can be queried without building a Hand (used to seed the RL base policy).
+inline Action basicStrategyAbstract(int total, bool soft, Card pairCard, Card up,
+                                    bool canDouble, bool canSplit, bool canSurrender) {
     // Dealer up-card value with Ace as 11.
     const int d = (up == ACE) ? 11 : (up == TEN) ? 10 : up + 1;
-    const int t = h.total();
+    const int t = total;
 
     // Pairs.
     if (canSplit) {
-        const Card pc = h.pairCard();
+        const Card pc = pairCard;
         const int pv = (pc == ACE) ? 11 : VALUE[pc]; // ten-group -> 10
         switch (pv) {
             case 11: return Action::Split;                                    // A,A
@@ -36,7 +34,7 @@ inline Action basicStrategy(const Hand &h, Card up, const RulesConfig &,
     }
 
     // Soft totals (an ace counted as 11).
-    if (h.isSoft()) {
+    if (soft) {
         if (t >= 20) return Action::Stand;
         if (t == 19) return (canDouble && d == 6) ? Action::Double : Action::Stand;
         if (t == 18) {
@@ -62,6 +60,13 @@ inline Action basicStrategy(const Hand &h, Card up, const RulesConfig &,
     if (t == 10) return (canDouble && d <= 9) ? Action::Double : Action::Hit;
     if (t == 9)  return (canDouble && d >= 3 && d <= 6) ? Action::Double : Action::Hit;
     return Action::Hit; // 5-8
+}
+
+// Hand-based wrapper (the reference play policy used to validate the engine).
+inline Action basicStrategy(const Hand &h, Card up, const RulesConfig &,
+                            bool canDouble, bool canSplit, bool canSurrender) {
+    return basicStrategyAbstract(h.total(), h.isSoft(), h.pairCard(), up,
+                                 canDouble, canSplit, canSurrender);
 }
 
 } // namespace bj
