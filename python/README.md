@@ -102,7 +102,55 @@ betting count (verified: even Wong Halves beats it by only that much), a margin 
 small for the ES's finite search to resolve. The lesson: betting is *not* where the
 deck-history observation pays off — **play** is.
 
-## 6. Learn it all end-to-end (deep RL)
+## 6. Learn the play deviations from reward (the RL play learner)
+
+Section 5 used the *hand-designed* Illustrious-18 deviations. Can an agent **learn**
+them from reward instead of being handed them? Yes.
+
+**Tabular Monte-Carlo control** (`train_mc_play.py`) — blackjack is the classic
+MC-control example (Sutton & Barto ch. 5); we extend the state with the true count
+so the agent can learn *count-dependent* play. State = (total, soft, pair, dealer
+up, true-count bin); reward = chips per round (flat bet, so the play signal is
+clean). Starting from basic strategy, it learns deviations on top.
+
+```bash
+python train_mc_play.py     # ~4 min -> artifacts/mc_policy.npz
+```
+
+It rediscovers the index plays. The clearest: **it learns to stand 16 v 10 exactly
+at true count 0** — the textbook Illustrious-18 index — from nothing but wins and
+losses:
+
+```
+  hand      -4  -3  -2  -1 | 0   1   2   3   4   5    (true count)
+  16 v 10   hit hit hit hit|stand stand stand ...     <- flips to STAND at TC 0
+```
+
+Honest EV: the learned play lands at **basic-strategy level** (~+1.3–1.5%/round with
+count betting), not above it. Each play deviation is worth very little and sits near
+the Monte-Carlo noise floor, so reliably extracting *net* gain is hard — the
+hand-designed Illustrious-18 (+1.98%) marks the ceiling. What's demonstrated is the
+*learning* of the deviation structure, not a new EV record.
+
+**Deep Q-Network** (`train_dqn.py`) — the neural counterpart you might reach for: a
+masked DQN over the 35-float observation.
+
+```bash
+python train_dqn.py --steps 1800000     # ~12 min on CPU
+```
+
+After ~800k steps (stabilized with `gamma=0.97`) it scores about **−4%/round** vs
+basic strategy's **+1.3%** under the same count-based betting — it has *not* reached
+basic-strategy play, let alone the deviations. Deep RL here is also finicky: with
+`gamma=1.0` the bootstrapped Q-values overestimate and the agent gets *worse* with
+more training.
+
+On this small, discrete state space the tabular learner is far more sample-efficient;
+the DQN needs much more training just to reach basic-strategy quality. Value-based
+*tabular* RL is the better fit here — a useful reminder to match the method to the
+problem rather than defaulting to deep nets.
+
+## 7. Learn it all end-to-end (deep RL)
 
 `train_ppo.py` trains a full bet-and-play agent with `MaskablePPO` directly on the
 Gymnasium env — the standard Stable-Baselines3 path, with the observation's
@@ -124,4 +172,6 @@ play deviations above) from scratch, rather than being handed the index plays.
 | `bjrl/baselines.py` | linear-policy evaluation + High-Low ramp tuning |
 | `train_es.py` | evolution-strategy trainer (learns a betting count) |
 | `compare.py` | paired High-Low vs learned comparison + plots |
+| `train_mc_play.py` | Monte-Carlo control: learns count-dependent play deviations |
+| `train_dqn.py` | masked DQN: neural counterpart for learning play |
 | `train_ppo.py` | MaskablePPO deep-RL example on the full env |
