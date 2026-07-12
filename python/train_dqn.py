@@ -211,7 +211,7 @@ def greedy_ev(net, rounds=40_000, seed=777):
 def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.99,
           lr=2.5e-4, buffer=500_000, target_sync=2_000, eval_every=250_000,
           eval_rounds=40_000, ckpt_every=500_000, eps_decay_steps=3_000_000,
-          baseline_path=BASELINE_PATH, seed=0):
+          baseline_path=BASELINE_PATH, mc=True, seed=0):
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -237,6 +237,7 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
     obs, _ = env.reset(seed=seed + 1)
     shoe_seed = seed + 2
     nbuf = collections.deque(maxlen=NSTEP)
+    round_trans = []                          # (obs, action) of the current round, for MC targets
     t0 = time.time()
     last_loss = 0.0
     hands = 0
@@ -269,20 +270,37 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
         hb_reward += r
         hands += (cur_phase == F.PH_BET)
         hb_hands += (cur_phase == F.PH_BET)
-        nbuf.append((obs, a, r_learn * REWARD_SCALE))
-        if len(nbuf) == NSTEP and not done:
-            s0, a0, _ = nbuf[0]
-            R = sum((gamma ** k) * nbuf[k][2] for k in range(NSTEP))
-            buf.append((s0, a0, R, nobs, False, nmask))
-        obs = nobs
-        if done:
-            m = len(nbuf)
-            for i in range(m):
-                si, ai, _ = nbuf[i]
-                R = sum((gamma ** (k - i)) * nbuf[k][2] for k in range(i, m))
-                buf.append((si, ai, R, nobs, True, nmask))
-            nbuf.clear()
-            obs, _ = env.reset(seed=shoe_seed); shoe_seed += 1
+        if mc:
+            # Monte-Carlo: each round is terminal (no cross-round bootstrap). Every
+            # decision in the round gets the round's realized advantage as its return,
+            # so "split my 20" is credited with the actual -0.5, not a smeared bootstrap.
+            round_trans.append((obs, a))
+            obs = nobs
+            if settled:
+                adv = r_learn * REWARD_SCALE
+                L = len(round_trans)
+                for i, (si, ai) in enumerate(round_trans):
+                    R = (gamma ** (L - 1 - i)) * adv
+                    buf.append((si, ai, R, nobs, True, nmask))
+                round_trans.clear()
+            if done:
+                round_trans.clear()
+                obs, _ = env.reset(seed=shoe_seed); shoe_seed += 1
+        else:
+            nbuf.append((obs, a, r_learn * REWARD_SCALE))
+            if len(nbuf) == NSTEP and not done:
+                s0, a0, _ = nbuf[0]
+                R = sum((gamma ** k) * nbuf[k][2] for k in range(NSTEP))
+                buf.append((s0, a0, R, nobs, False, nmask))
+            obs = nobs
+            if done:
+                m = len(nbuf)
+                for i in range(m):
+                    si, ai, _ = nbuf[i]
+                    R = sum((gamma ** (k - i)) * nbuf[k][2] for k in range(i, m))
+                    buf.append((si, ai, R, nobs, True, nmask))
+                nbuf.clear()
+                obs, _ = env.reset(seed=shoe_seed); shoe_seed += 1
 
         if len(buf) >= batch and step % 4 == 0:
             sb, act, rew, s2, term, nm = zip(*random.sample(buf, batch))
@@ -357,6 +375,7 @@ if __name__ == "__main__":
     ap.add_argument("--eps-decay-steps", type=int, default=3_000_000)
     ap.add_argument("--lr", type=float, default=2.5e-4)
     ap.add_argument("--gamma", type=float, default=0.99)
+    ap.add_argument("--td", action="store_true", help="use cross-round n-step TD targets instead of per-round Monte-Carlo")
     ap.add_argument("--build-baseline", action="store_true", help="build+cache the baseline table and exit")
     args = ap.parse_args()
     if args.build_baseline:
@@ -364,4 +383,4 @@ if __name__ == "__main__":
     else:
         train(args.steps, args.logdir, resume=args.resume, play_steps=args.play_steps,
               eval_every=args.eval_every, eval_rounds=args.eval_rounds,
-              eps_decay_steps=args.eps_decay_steps, lr=args.lr, gamma=args.gamma)
+              eps_decay_steps=args.eps_decay_steps, lr=args.lr, gamma=args.gamma, mc=not args.td)
