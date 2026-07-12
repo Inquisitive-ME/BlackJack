@@ -141,31 +141,46 @@ composition. For that you need a function approximator over the raw observation 
 `train_dqn.py` is a from-scratch agent with **no High-Low and no hand-coded rules
 anywhere**. It plays on `full_env.py` — a Gymnasium env that adds the **insurance**
 decision — and learns *everything* (bet size, insurance, every play) from the raw
-39-float observation, whose only deck information is the **10-rank remaining
+40-float observation, whose only deck information is the **10-rank remaining
 composition**. It must discover for itself that a ten-rich deck means bet big /
 insure / deviate.
 
-Built properly this time: **masked** action selection *and* targets, **Double DQN**
-(no Q-overestimation blow-up), a **dueling** network (the actions here have very
-close values), reward scaling, a target network, a long ε schedule, and
-**checkpoint/resume** for long runs.
+The naive version of this got **stuck far below basic strategy** — it never even
+learned to double down — because the play signal was buried under bet-size variance.
+Two fixes make it converge:
+
+- **Play-first curriculum** (`--play-steps`). For the first phase the bet is forced
+  to a flat 1 unit, so a play decision carries ±1–2 units of variance instead of ±32
+  (a **16× reduction**). The agent learns to play cleanly, *then* betting is unlocked.
+- **Control-variate reward.** `reward = chips − E[basic-strategy result on the same
+  starting hand]`, a precomputed table keyed on the round's opening state. It's
+  subtracted equally across every play action, so it **cannot** bias which play is
+  best — it only cancels the "which hand did I get dealt" variance, leaving a clean
+  "did I play/bet it better than basic" signal (mean 0 for basic itself — verified).
+  Same common-random-numbers idea that made `train_es.py` (§4) work.
+
+Plus the usual hygiene: **masked** selection *and* targets, **Double DQN** (no
+Q-overestimation blow-up), a **dueling** network (the actions here have very close
+values), n-step returns, a target network, a long ε schedule, and
+**checkpoint/resume** for multi-hour runs.
 
 ```bash
-python train_dqn.py --steps 20000000 --logdir runs/dqn1
-tensorboard --logdir runs      # watch eval/ev_per_round and the bet-vs-count curve
-python train_dqn.py --steps 40000000 --logdir runs/dqn1 --resume runs/dqn1/ckpt.pt
+python train_dqn.py --build-baseline                       # one-time: cache artifacts/play_baseline.npz
+python train_dqn.py --steps 60000000 --logdir runs/dqn1    # heartbeat every 20k steps
+tensorboard --logdir runs      # watch eval/play_ev → basic (~-0.006), then eval/ev_per_round
+python train_dqn.py --logdir runs/dqn1 --resume runs/dqn1/ckpt.pt
 ```
 
-TensorBoard logs the loss, ε, mean-Q, a periodic **greedy-policy EV/round** (the
-metric that matters), and the **average bet placed at each true count** — so you can
-watch a betting strategy emerge from raw composition. The env is validated first
-(`python -c "import bjrl.full_env as F; print(F.validate_env())"` reproduces the
-known player edge), so any DQN number is measured against a correct env.
+TensorBoard logs the loss, ε, mean-Q, the **greedy play-EV** and its **double-rate**
+(the play-learning metric — should climb to ≈ basic's −0.006), the full
+**greedy-policy EV/round**, and the **average bet at each true count**. The stdout
+heartbeat prints hands played, steps/sec, the current stage, double-rate, and
+reward/hand. The env is validated first
+(`python -c "import bjrl.full_env as F; print(F.validate_env())"`), so any DQN number
+is measured against a correct env.
 
-This is a genuinely hard learning problem — delayed, high-variance reward, and the
-optimal solution is a small discrete table — so it needs long training. It's the one
-setup with the *information* to eventually exceed a High-Low counter (§6 explains
-why: High-Low is only ~50% efficient for *play*, so the raw composition leaves real
+It's the one setup with the *information* to eventually exceed a High-Low counter
+(§6: High-Low is only ~50% efficient for *play*, so the raw composition leaves real
 playing EV on the table).
 
 `train_ppo.py` is the same idea via Stable-Baselines3 `MaskablePPO` on the simpler
