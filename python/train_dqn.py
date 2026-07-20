@@ -224,7 +224,15 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
     net, target = DuelingQ(), DuelingQ()
     target.load_state_dict(net.state_dict())
     opt = torch.optim.Adam(net.parameters(), lr=lr)
-    buf = collections.deque(maxlen=buffer)
+    buf, buf_i = [], 0                         # list ring buffer: O(1) random access (deque sampling is O(n*k))
+
+    def push(item):
+        nonlocal buf_i
+        if len(buf) < buffer:
+            buf.append(item)
+        else:
+            buf[buf_i] = item
+            buf_i = (buf_i + 1) % buffer
 
     start_step, best = 0, -1e9
     if resume and os.path.exists(resume):
@@ -281,7 +289,7 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
                 L = len(round_trans)
                 for i, (si, ai) in enumerate(round_trans):
                     R = (gamma ** (L - 1 - i)) * adv
-                    buf.append((si, ai, R, nobs, True, nmask))
+                    push((si, ai, R, nobs, True, nmask))
                 round_trans.clear()
             if done:
                 round_trans.clear()
@@ -291,19 +299,20 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
             if len(nbuf) == NSTEP and not done:
                 s0, a0, _ = nbuf[0]
                 R = sum((gamma ** k) * nbuf[k][2] for k in range(NSTEP))
-                buf.append((s0, a0, R, nobs, False, nmask))
+                push((s0, a0, R, nobs, False, nmask))
             obs = nobs
             if done:
                 m = len(nbuf)
                 for i in range(m):
                     si, ai, _ = nbuf[i]
                     R = sum((gamma ** (k - i)) * nbuf[k][2] for k in range(i, m))
-                    buf.append((si, ai, R, nobs, True, nmask))
+                    push((si, ai, R, nobs, True, nmask))
                 nbuf.clear()
                 obs, _ = env.reset(seed=shoe_seed); shoe_seed += 1
 
         if len(buf) >= batch and step % 4 == 0:
-            sb, act, rew, s2, term, nm = zip(*random.sample(buf, batch))
+            idx = random.sample(range(len(buf)), batch)   # O(batch); list access O(1), unlike deque
+            sb, act, rew, s2, term, nm = zip(*(buf[i] for i in idx))
             sb = torch.from_numpy(np.stack(sb).astype(np.float32))
             s2 = torch.from_numpy(np.stack(s2).astype(np.float32))
             act = torch.tensor(act).unsqueeze(1)
