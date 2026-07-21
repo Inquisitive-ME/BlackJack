@@ -208,10 +208,56 @@ def greedy_ev(net, rounds=40_000, seed=777):
     return total / n, bet_curve
 
 
+def pretrain(rounds=400_000, epochs=25, lr=1e-3, seed=1):
+    """Supervised warm-start: train the net's argmax to basic strategy so RL begins
+    FROM basic play (~-0.008) and only has to learn the composition-dependent
+    deviations on top -- the tiny signal value RL could not find from scratch."""
+    from bjrl._bjsim import basic_action
+    env = F.FullBlackjackEnv()
+    obs, _ = env.reset(seed=seed)
+    X, Y, Msk, n = [], [], [], 0
+    while n < rounds:
+        m = env.action_masks(); ph = env.phase
+        if ph == F.PH_BET:
+            a = F.A_BET0; n += 1
+        elif ph == F.PH_INS:
+            a = F.A_INS_NO
+        else:
+            h = env.hands[env.cur]; pc = h.cards[0] if h.is_pair() else 0
+            b = basic_action(h.total(), h.soft(), pc, env.up,
+                             bool(m[F.A_DOUBLE]), bool(m[F.A_SPLIT]), bool(m[F.A_SURRENDER]))
+            a = [F.A_HIT, F.A_STAND, F.A_DOUBLE, F.A_SPLIT, F.A_SURRENDER][b]
+            X.append(obs.copy()); Y.append(a); Msk.append(m.copy())
+        obs, r, done, _, _ = env.step(a)
+        if done:
+            obs, _ = env.reset(seed=seed + n)
+    Xt = torch.from_numpy(np.asarray(X, np.float32))
+    Yt = torch.from_numpy(np.asarray(Y))
+    Mt = torch.from_numpy(np.asarray(Msk))
+    net = DuelingQ(); opt = torch.optim.Adam(net.parameters(), lr=lr)
+    lf = nn.CrossEntropyLoss()
+    for e in range(epochs):
+        perm = torch.randperm(len(Xt))
+        for i in range(0, len(Xt), 512):
+            idx = perm[i:i + 512]
+            logits = net(Xt[idx]).masked_fill(~Mt[idx], -1e9)
+            loss = lf(logits, Yt[idx]); opt.zero_grad(); loss.backward(); opt.step()
+    with torch.no_grad():
+        acc = (net(Xt).masked_fill(~Mt, -1e9).argmax(1) == Yt).float().mean().item()
+    # Shrink the advantage head so Q-values start near the (small) advantage scale
+    # instead of the large classification logits -- keeps the argmax=basic policy but
+    # prevents the first MC updates from having to collapse huge logits (which would
+    # transiently flip the policy = forgetting).
+    with torch.no_grad():
+        net.adv.weight *= 0.1; net.adv.bias *= 0.1
+    print(f"pretrain: {len(Xt):,} states, imitation accuracy {acc:.1%}", flush=True)
+    return net
+
+
 def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.99,
           lr=2.5e-4, buffer=500_000, target_sync=2_000, eval_every=250_000,
           eval_rounds=40_000, ckpt_every=500_000, eps_decay_steps=3_000_000,
-          baseline_path=BASELINE_PATH, mc=True, seed=0):
+          baseline_path=BASELINE_PATH, mc=True, init_from=None, eps_start=1.0, seed=0):
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -223,6 +269,10 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
 
     net, target = DuelingQ(), DuelingQ()
     target.load_state_dict(net.state_dict())
+    if init_from and os.path.exists(init_from):
+        ck0 = torch.load(init_from)
+        net.load_state_dict(ck0["net"]); target.load_state_dict(ck0["net"])
+        print(f"warm-started net from {init_from}", flush=True)
     opt = torch.optim.Adam(net.parameters(), lr=lr)
     buf, buf_i = [], 0                         # list ring buffer: O(1) random access (deque sampling is O(n*k))
 
@@ -253,7 +303,7 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
     hb_reward, hb_hands, hb_dbl, hb_play = 0.0, 0, 0, 0
 
     for step in range(start_step, steps):
-        eps = max(0.05, 1.0 - step / eps_decay_steps)
+        eps = max(0.05, eps_start - step / eps_decay_steps)
         stage1 = step < play_steps
         cur_phase = env.phase
         mask = env.action_masks()
@@ -385,11 +435,21 @@ if __name__ == "__main__":
     ap.add_argument("--lr", type=float, default=2.5e-4)
     ap.add_argument("--gamma", type=float, default=0.99)
     ap.add_argument("--td", action="store_true", help="use cross-round n-step TD targets instead of per-round Monte-Carlo")
+    ap.add_argument("--init-from", type=str, default=None, help="warm-start net weights from a checkpoint (e.g. a pretrained-basic net)")
+    ap.add_argument("--eps-start", type=float, default=1.0, help="initial epsilon (use ~0.05 to fine-tune from a warm start)")
     ap.add_argument("--build-baseline", action="store_true", help="build+cache the baseline table and exit")
+    ap.add_argument("--pretrain", type=str, default=None, metavar="PATH", help="supervised-pretrain a basic-strategy net, save to PATH, and exit")
     args = ap.parse_args()
     if args.build_baseline:
         save_baseline(build_baseline(), BASELINE_PATH)
+    elif args.pretrain:
+        net = pretrain()
+        os.makedirs(os.path.dirname(args.pretrain) or ".", exist_ok=True)
+        torch.save({"net": net.state_dict(), "step": 0, "best": -1e9}, args.pretrain)
+        ev, dbl = greedy_play_ev(net, rounds=100_000)
+        print(f"saved {args.pretrain}  |  play_ev {ev:+.4f} (dbl {dbl:.1%})  vs basic -0.006", flush=True)
     else:
         train(args.steps, args.logdir, resume=args.resume, play_steps=args.play_steps,
               eval_every=args.eval_every, eval_rounds=args.eval_rounds,
-              eps_decay_steps=args.eps_decay_steps, lr=args.lr, gamma=args.gamma, mc=not args.td)
+              eps_decay_steps=args.eps_decay_steps, lr=args.lr, gamma=args.gamma, mc=not args.td,
+              init_from=args.init_from, eps_start=args.eps_start)
