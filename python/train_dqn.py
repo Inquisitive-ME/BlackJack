@@ -299,7 +299,16 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
         ck0 = torch.load(init_from)
         net.load_state_dict(ck0["net"], strict=False); target.load_state_dict(ck0["net"], strict=False)
         print(f"warm-started net from {init_from}" + (" (edge-bet mu head fresh)" if edge_bet else ""), flush=True)
-    opt = torch.optim.Adam(net.parameters(), lr=lr)
+    if edge_bet:
+        # The betting edge head mu learns a tiny, noisy signal and converges slower than
+        # the warm-started play -- give it a higher lr than the rest of the net.
+        mu_ids = {id(p) for p in net.mu.parameters()}
+        opt = torch.optim.Adam([
+            {"params": [p for p in net.parameters() if id(p) not in mu_ids], "lr": lr},
+            {"params": list(net.mu.parameters()), "lr": lr * 5},
+        ])
+    else:
+        opt = torch.optim.Adam(net.parameters(), lr=lr)
     buf, buf_i = [], 0                         # list ring buffer: O(1) random access (deque sampling is O(n*k))
 
     def push(item):
