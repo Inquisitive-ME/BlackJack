@@ -148,15 +148,21 @@ class EdgeBetQ(nn.Module):
     """Dueling Q for play/insurance, but the 5 BET actions share one learned per-unit
     deck edge mu(obs): Q(bet_k) = bet_k * mu(obs). Betting collapses to a single scalar
     regression (mu -> E[per-unit advantage | deck]) instead of 5 separate high-variance
-    Q-heads, so the agent can actually size bets to the count. Play weights load from a
-    DuelingQ warm start (strict=False); the mu head starts fresh."""
+    Q-heads, so the agent can actually size bets to the count.
+
+    The betting edge has its OWN feature trunk (feat_bet) reading the raw obs, separate
+    from the play trunk -- so learning to bet never perturbs the warm-started play (and
+    mu sees the deck composition directly, which the play trunk learns to ignore). Play
+    weights load from a DuelingQ warm start (strict=False); freeze_play() then pins them."""
     def __init__(self, obs=OBS, n_act=NA, hidden=512):
         super().__init__()
         self.feat = nn.Sequential(nn.Linear(obs, hidden), nn.ReLU(),
                                   nn.Linear(hidden, hidden), nn.ReLU())
         self.value = nn.Linear(hidden, 1)
         self.adv = nn.Linear(hidden, n_act)
-        self.mu = nn.Linear(hidden, 1)
+        self.feat_bet = nn.Sequential(nn.Linear(obs, 256), nn.ReLU(),
+                                      nn.Linear(256, 256), nn.ReLU())
+        self.mu = nn.Linear(256, 1)
         self.register_buffer("bet_units", torch.tensor(F.BET_UNITS, dtype=torch.float32))
         self._nbet = len(F.BET_UNITS)
 
@@ -164,8 +170,18 @@ class EdgeBetQ(nn.Module):
         f = self.feat(x)
         a = self.adv(f)
         q = self.value(f) + a - a.mean(dim=1, keepdim=True)
-        q_bet = self.mu(f) * self.bet_units                 # [B, nbet] = bet_k * mu(obs)
+        q_bet = self.mu(self.feat_bet(x)) * self.bet_units      # [B, nbet] = bet_k * mu(obs)
         return torch.cat([q_bet, q[:, self._nbet:]], dim=1)
+
+    def play_params(self):
+        return list(self.feat.parameters()) + list(self.value.parameters()) + list(self.adv.parameters())
+
+    def bet_params(self):
+        return list(self.feat_bet.parameters()) + list(self.mu.parameters())
+
+    def freeze_play(self):
+        for p in self.play_params():
+            p.requires_grad = False
 
 
 def masked_argmax(qvals: np.ndarray, mask: np.ndarray) -> int:
@@ -299,13 +315,21 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
         ck0 = torch.load(init_from)
         net.load_state_dict(ck0["net"], strict=False); target.load_state_dict(ck0["net"], strict=False)
         print(f"warm-started net from {init_from}" + (" (edge-bet mu head fresh)" if edge_bet else ""), flush=True)
-    if edge_bet:
-        # The betting edge head mu learns a tiny, noisy signal and converges slower than
-        # the warm-started play -- give it a higher lr than the rest of the net.
-        mu_ids = {id(p) for p in net.mu.parameters()}
+    frozen_play = bool(edge_bet and init_from and os.path.exists(init_from))
+    if frozen_play:
+        # Warm-started play is already ~optimal: FREEZE it so learning to bet can't
+        # erode it, and train only the dedicated betting trunk + edge head.
+        net.freeze_play(); target.freeze_play()
         opt = torch.optim.Adam([
-            {"params": [p for p in net.parameters() if id(p) not in mu_ids], "lr": lr},
-            {"params": list(net.mu.parameters()), "lr": lr * 5},
+            {"params": net.feat_bet.parameters(), "lr": lr},
+            {"params": net.mu.parameters(), "lr": lr * 3},
+        ])
+        print("froze play trunk; training betting head only", flush=True)
+    elif edge_bet:
+        opt = torch.optim.Adam([
+            {"params": net.feat_bet.parameters() , "lr": lr},
+            {"params": net.mu.parameters(), "lr": lr * 3},
+            {"params": net.play_params(), "lr": lr},
         ])
     else:
         opt = torch.optim.Adam(net.parameters(), lr=lr)
@@ -384,7 +408,7 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
                         for k in range(len(F.BET_UNITS)):
                             push((si, F.A_BET0 + k, disc * F.BET_UNITS[k] * per_unit_adv * REWARD_SCALE,
                                   nobs, True, nmask))
-                    else:
+                    elif not frozen_play:      # play frozen -> don't store play transitions
                         push((si, ai, disc * (r - base * round_bet) * REWARD_SCALE, nobs, True, nmask))
                 round_trans.clear()
             if done:
