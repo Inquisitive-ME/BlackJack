@@ -20,6 +20,7 @@ __pycache__/
 python/artifacts/*.npz
 python/artifacts/ppo_blackjack.zip
 python/artifacts/*_log.txt
+python/artifacts/*.pt
 python/runs/
 
 # Editor / IDE
