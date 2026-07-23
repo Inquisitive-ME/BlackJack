@@ -144,6 +144,30 @@ class DuelingQ(nn.Module):
         return self.value(f) + a - a.mean(dim=1, keepdim=True)
 
 
+class EdgeBetQ(nn.Module):
+    """Dueling Q for play/insurance, but the 5 BET actions share one learned per-unit
+    deck edge mu(obs): Q(bet_k) = bet_k * mu(obs). Betting collapses to a single scalar
+    regression (mu -> E[per-unit advantage | deck]) instead of 5 separate high-variance
+    Q-heads, so the agent can actually size bets to the count. Play weights load from a
+    DuelingQ warm start (strict=False); the mu head starts fresh."""
+    def __init__(self, obs=OBS, n_act=NA, hidden=512):
+        super().__init__()
+        self.feat = nn.Sequential(nn.Linear(obs, hidden), nn.ReLU(),
+                                  nn.Linear(hidden, hidden), nn.ReLU())
+        self.value = nn.Linear(hidden, 1)
+        self.adv = nn.Linear(hidden, n_act)
+        self.mu = nn.Linear(hidden, 1)
+        self.register_buffer("bet_units", torch.tensor(F.BET_UNITS, dtype=torch.float32))
+        self._nbet = len(F.BET_UNITS)
+
+    def forward(self, x):
+        f = self.feat(x)
+        a = self.adv(f)
+        q = self.value(f) + a - a.mean(dim=1, keepdim=True)
+        q_bet = self.mu(f) * self.bet_units                 # [B, nbet] = bet_k * mu(obs)
+        return torch.cat([q_bet, q[:, self._nbet:]], dim=1)
+
+
 def masked_argmax(qvals: np.ndarray, mask: np.ndarray) -> int:
     q = qvals.copy()
     q[~mask] = -1e9
@@ -258,7 +282,7 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
           lr=2.5e-4, buffer=500_000, target_sync=2_000, eval_every=250_000,
           eval_rounds=40_000, ckpt_every=500_000, eps_decay_steps=3_000_000,
           baseline_path=BASELINE_PATH, mc=True, init_from=None, eps_start=1.0,
-          eps_bet=None, cf_bet=True, seed=0):
+          eps_bet=None, cf_bet=True, edge_bet=False, seed=0):
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -268,12 +292,13 @@ def train(steps, logdir, resume=None, play_steps=8_000_000, batch=256, gamma=0.9
     baseline = get_baseline(baseline_path)
     print(f"baseline: {len(baseline)} opening states, play_steps={play_steps:,}", flush=True)
 
-    net, target = DuelingQ(), DuelingQ()
+    Net = EdgeBetQ if edge_bet else DuelingQ
+    net, target = Net(), Net()
     target.load_state_dict(net.state_dict())
     if init_from and os.path.exists(init_from):
         ck0 = torch.load(init_from)
-        net.load_state_dict(ck0["net"]); target.load_state_dict(ck0["net"])
-        print(f"warm-started net from {init_from}", flush=True)
+        net.load_state_dict(ck0["net"], strict=False); target.load_state_dict(ck0["net"], strict=False)
+        print(f"warm-started net from {init_from}" + (" (edge-bet mu head fresh)" if edge_bet else ""), flush=True)
     opt = torch.optim.Adam(net.parameters(), lr=lr)
     buf, buf_i = [], 0                         # list ring buffer: O(1) random access (deque sampling is O(n*k))
 
@@ -452,6 +477,7 @@ if __name__ == "__main__":
     ap.add_argument("--eps-start", type=float, default=1.0, help="initial epsilon (use ~0.05 to fine-tune from a warm start)")
     ap.add_argument("--eps-bet", type=float, default=None, help="separate (higher) epsilon for the BET phase: explore betting while preserving warm-started play")
     ap.add_argument("--no-cf-bet", action="store_true", help="disable the counterfactual all-bets update (train only the chosen bet)")
+    ap.add_argument("--edge-bet", action="store_true", help="edge-head betting: the 5 bet actions share one learned per-unit edge, Q(bet_k)=bet_k*mu(obs)")
     ap.add_argument("--build-baseline", action="store_true", help="build+cache the baseline table and exit")
     ap.add_argument("--pretrain", type=str, default=None, metavar="PATH", help="supervised-pretrain a basic-strategy net, save to PATH, and exit")
     args = ap.parse_args()
@@ -468,4 +494,4 @@ if __name__ == "__main__":
               eval_every=args.eval_every, eval_rounds=args.eval_rounds,
               eps_decay_steps=args.eps_decay_steps, lr=args.lr, gamma=args.gamma, mc=not args.td,
               init_from=args.init_from, eps_start=args.eps_start, eps_bet=args.eps_bet,
-              cf_bet=not args.no_cf_bet)
+              cf_bet=not args.no_cf_bet, edge_bet=args.edge_bet)
